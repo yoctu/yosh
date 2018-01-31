@@ -9,8 +9,10 @@ do
     source $file
 done
 
-
-for file in ${etc_conf_dir%/}/*.sh
-do
-    source $file
-done
+if ls -A ${etc_conf_dir%/}/*.sh &>/dev/null
+then
+    for file in ${etc_conf_dir%/}/*.sh
+    do
+        source $file
+    done
+fi
