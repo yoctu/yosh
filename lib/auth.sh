@@ -1,5 +1,10 @@
 function auth::source ()
 {
+    for auth_plugin in /usr/share/yosh/auth/*.sh
+    do
+        source $auth_plugin
+    done
+
     for auth_plugin in ${DOCUMENT_ROOT%/}/../auth/*.sh
     do
         source $auth_plugin
