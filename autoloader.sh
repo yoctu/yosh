@@ -9,13 +9,19 @@ do
 done
 
 # Source custom lib's
-for file in ${DOCUMENT_ROOT%/}/../lib/*
-do
-    source $file
-done
+if ls -A ${DOCUMENT_ROOT%/}/../lib/* &>/dev/null
+then
+    for file in ${DOCUMENT_ROOT%/}/../lib/*
+    do
+        source $file
+    done
+fi
 
-for file in ${DOCUMENT_ROOT%/}/../func/*
-do
-    source $file
-done
+if ls -A ${DOCUMENT_ROOT%/}/../func/* &>/dev/null
+then
+    for file in ${DOCUMENT_ROOT%/}/../func/*
+    do
+        source $file
+    done
+fi
 
