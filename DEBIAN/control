@@ -1,0 +1,6 @@
+Package: yosh
+Version: 0.1
+Architecture: all
+Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
+Depends: jq, ldap-utils, openssl
+Description: yosh (yoctu shell) - Micro Web Framework lib
