@@ -5,7 +5,7 @@ function ldap::auth::start ()
 
     [[ -z "$ldap_host" || -z "$ldap_port" || -z "$ldap_organization_name" || "${#ldap_domain_component[@]}" != "2" ]] && { route::error; return 1; }
 
-    if ! tmp::session::check
+    if ! $sessionPath::session::check
     then
         if [[ -z "$HTTP_AUTHORIZATION" ]]
         then
@@ -18,15 +18,15 @@ function ldap::auth::start ()
 
             if ldapwhoami -h $ldap_host -p $ldap_port -D "cn=$user,o=$ldap_organization_name,dc=${ldap_domain_component[0]},dc=${ldap_domain_component[1]}" -x -w "$pass" &>/dev/null
             then
-                tmp::session::start
-                tmp::session::set USERNAME "${user_pass%%:*}"
+                $sessionPath::session::start
+                $sessionPath::session::set USERNAME "${user_pass%%:*}"
             else
                 auth::request
                 return 1
             fi
         fi
     else
-        tmp::session::read
+        $sessionPath::session::read
     fi
 }
 
