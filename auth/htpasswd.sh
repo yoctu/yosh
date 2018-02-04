@@ -1,8 +1,6 @@
 #htpasswd file variable = htpasswd_file
 # openssl passwd -apr1 -salt r31....
 
-set -x
-
 function htpasswd::auth::start ()
 {
     [[ -z "$htpasswd_file" ]] && route::error
