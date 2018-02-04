@@ -32,8 +32,8 @@ function route::check ()
 
             for auth in "${auths[@]}"
             do
-                auth::start "$auth"
-                auth::check::rights "$auth" "${arrKey[3]}"
+                auth::start "$auth" || continue
+                auth::check::rights "$auth" "${arrKey[3]}" || continue
                 break
             done
 
