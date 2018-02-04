@@ -28,7 +28,7 @@ function route::check ()
         if [[ "/${uri}:${REQUEST_METHOD}" =~ ${arrKey[0]}:${arrKey[1]} ]]
         then
         
-            auths=( ${arrKey[2]//,/ })
+            auths=( ${arrKey[2]//,/ } )
 
             for auth in "${auths[@]}"
             do
@@ -49,7 +49,7 @@ function route::check ()
     do
         if [[ "$key" =~ "/:${REQUEST_METHOD}" ]]
         then
-            auths=( ${arrKey[2]//,/ })
+            auths=( ${arrKey[2]//,/ } )
 
             for auth in "${auths[@]}"
             do

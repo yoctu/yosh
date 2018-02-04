@@ -18,7 +18,7 @@ function auth::start ()
 {
     local auth_method="${1,,}"
 
-    [[ -z "$auth_method" || "$auth_method" == "none" ]] && return
+    [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccessful="1"; return; }
 
     auth::source
 
@@ -32,7 +32,7 @@ function auth::check::rights ()
 {
     local auth_method="${1,,}" auth_rights="${2,,}"
 
-    [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && return
+    [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && { rightsSuccessful="1"; return; }
 
     auth::source
 
