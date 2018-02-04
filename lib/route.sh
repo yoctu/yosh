@@ -27,8 +27,18 @@ function route::check ()
         arrKey=(${key//:/ })
         if [[ "/${uri}:${REQUEST_METHOD}" =~ ${arrKey[0]}:${arrKey[1]} ]]
         then
-            auth::start "${arrKey[2]}" || return
-            auth::check::rights "${arrKey[2]}" "${arrKey[3]}" || return
+        
+            auths=( ${arrKey[2]//,/ })
+
+            for auth in "${auths[@]}"
+            do
+                auth::start "$auth" || continue
+                auth::check::rights "$auth" "${arrKey[3]}" || continue
+                break
+            done
+
+            ! [[ "$authSuccessful" ]] && return
+            ! [[ "$rightsSuccessful" ]] && return
 
             eval ${ROUTE["$key"]}
             return
@@ -39,9 +49,17 @@ function route::check ()
     do
         if [[ "$key" =~ "/:${REQUEST_METHOD}" ]]
         then
-            key=(${key//:/ })
-            auth::start "${key[2]}" || return
-            auth::check::rights "${arrKey[2]}" "${arrKey[3]}"  || return           
+            auths=( ${arrKey[2]//,/ })
+
+            for auth in "${auths[@]}"
+            do
+                auth::start "$auth" || continue
+                auth::check::rights "$auth" "${arrKey[3]}" || continue
+                break
+            done
+
+            ! [[ "$authSuccessful" ]] && return
+            ! [[ "$rightsSuccessful" ]] && return
 
             break
         fi

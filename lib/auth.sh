@@ -24,6 +24,8 @@ function auth::start ()
 
     ${auth_method}::auth::start || return 1
     http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
+
+    authSuccessful="1"
 }
 
 function auth::check::rights ()
@@ -35,6 +37,8 @@ function auth::check::rights ()
     auth::source
 
     ${auth_method}::auth::check::rights || return 1
+
+    rightsSuccessful="1"
 }
 
 function auth::request ()
