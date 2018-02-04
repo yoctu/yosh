@@ -32,13 +32,13 @@ function route::check ()
 
             for auth in "${auths[@]}"
             do
-                auth::start "$auth" || continue
-                auth::check::rights "$auth" "${arrKey[3]}" || continue
+                auth::start "$auth"
+                auth::check::rights "$auth" "${arrKey[3]}"
                 break
             done
 
-            ! [[ "$authSuccessful" ]] && return
-            ! [[ "$rightsSuccessful" ]] && return
+            ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
+            ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
 
             eval ${ROUTE["$key"]}
             return
@@ -58,8 +58,8 @@ function route::check ()
                 break
             done
 
-            ! [[ "$authSuccessful" ]] && return
-            ! [[ "$rightsSuccessful" ]] && return
+            ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
+            ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
 
             break
         fi

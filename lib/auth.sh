@@ -22,6 +22,8 @@ function auth::start ()
 
     auth::source
 
+    $loginPage
+
     ${auth_method}::auth::start || return 1
     http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
@@ -43,8 +45,11 @@ function auth::check::rights ()
 
 function auth::request ()
 {
-    http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
-    http::send::status 401
+    if [[ -z "$HTTP_AUTHORIZATION" ]]
+    then
+        http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
+        http::send::status 401
+    fi
 }
 
 function auth::unauthorized ()
