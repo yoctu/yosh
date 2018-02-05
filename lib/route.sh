@@ -86,3 +86,20 @@ function route::error ()
     echo "No Route Found!"
 }
 
+function route::create ()
+{
+    ! [[ $# -gt 1 ]] && return 
+
+    local route_function="$1" route_location="$2" route_method="${3:-GET}" route_auth="${4:-none}" route_rights="${5:-none}"
+
+    route_requete="ROUTE['$route_location':'$route_method':'$route_auth':'$route_rights']='$route_function'"
+
+    # Where should i save the route?
+    if [[ -f "/etc/$application_name/route.sh" ]] 
+    then
+        echo "$route_requete" >> ${etc_conf_dir%/}/route.sh
+    else
+        echo "$route_requete" >> ${DOCUMENT_ROOT%/}/../config/route.sh
+    fi
+}
+
