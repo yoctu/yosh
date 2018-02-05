@@ -27,7 +27,7 @@ function route::check ()
         arrKey=(${key//:/ })
         if [[ "/${uri}:${REQUEST_METHOD}" =~ ${arrKey[0]}:${arrKey[1]} ]]
         then
-        
+
             auths=( ${arrKey[2]//,/ } )
 
             for auth in "${auths[@]}"
@@ -36,6 +36,8 @@ function route::check ()
                 auth::check::rights "$auth" "${arrKey[3]}" || continue
                 break
             done
+
+            [[ -z "${auths}" ]] && { auth::start; auth::check::rights; }
 
             ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
             ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
@@ -47,8 +49,10 @@ function route::check ()
 
     for key in "${!ROUTE[@]}"
     do
-        if [[ "$key" =~ "/:${REQUEST_METHOD}" ]]
+        if [[ "$key" =~ "/:${REQUEST_METHOD}:"* ]]
         then
+
+            arrKey=( ${key//:/ } )
             auths=( ${arrKey[2]//,/ } )
 
             for auth in "${auths[@]}"
@@ -64,6 +68,7 @@ function route::check ()
             break
         fi
     done
+
 
     if app::find &>/dev/null
     then
@@ -95,7 +100,7 @@ function route::create ()
     route_requete="ROUTE['$route_location':'$route_method':'$route_auth':'$route_rights']='$route_function'"
 
     # Where should i save the route?
-    if [[ -f "/etc/$application_name/route.sh" ]] 
+    if [[ -f "${etc_conf_dir%/}/route.sh" ]] 
     then
         echo "$route_requete" >> ${etc_conf_dir%/}/route.sh
     else
