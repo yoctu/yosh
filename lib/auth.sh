@@ -22,6 +22,8 @@ function auth::start ()
 
     auth::source
 
+    $loginPage
+
     ${auth_method}::auth::start || return 1
     http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
