@@ -7,53 +7,45 @@ declare -A SESSION
 default_session_name="${default_session_name:-BASHSESSID}"
 default_session_expiration="${default_session_expiration:-21600}"
 
-# Default is tmp 
-function tmp::session::start ()
+function session::start ()
 {
     local id="$(uuidgen)"
 
-    if ! tmp::session::check
+    if ! session::check
     then
 
-        touch /tmp/${id}
-    
+        $sessionPath::$FUNCNAME "$id"
+
         COOKIE[$default_session_name]="${id}"
         http::send::cookie "${default_session_name}=${id}; Max-Age=$default_session_expiration"
 
     else 
-        tmp::session::read 
+        session::read 
     fi
 }
 
-function tmp::session::check ()
+function session::check ()
 {
-    [[ -z "${COOKIE[$default_session_name]}" || "${COOKIE[$default_session_name]}" == "delete" ]] && return 1
-    ! [[ -f "/tmp/${COOKIE[$default_session_name]}" ]] && return 1
+
+    $sessionPath::$FUNCNAME || return 1
 
     return 0
 }
 
-function tmp::session::destroy ()
+function session::destroy ()
 {
     http::send::cookie "${default_session_name}=delete; Max-Age=1"
     
     # redirect stderr to dev null if there is a failure, just to be sure :p
-    rm "/tmp/${COOKIE[$default_session_name]}" 2>/dev/null
+    $sessionPath::$FUNCNAME
 }
 
-function tmp::session::save ()
+function session::save ()
 {
-    local key
-    # save session array to a file
-    for key in "${!SESSION[@]}"
-    do
-        # always run, remove from file the old value if exist
-        sed -i "/SESSION\['$key'\]=.*/d" /tmp/${COOKIE[$default_session_name]}
-        echo "SESSION['$key']=\"${SESSION[$key]}\"" >> /tmp/${COOKIE[$default_session_name]}
-    done
+    $sessionPath::$FUNCNAME
 }
 
-function tmp::session::set ()
+function session::set ()
 {
     local key="$1" value="${@:2}"
 
@@ -61,10 +53,10 @@ function tmp::session::set ()
 
     SESSION[$key]="$value"
 
-    tmp::session::save
+    $sessionPath::$FUNCNAME
 }
 
-function tmp::session::unset ()
+function session::unset ()
 {
     local key="$1"
 
@@ -72,21 +64,22 @@ function tmp::session::unset ()
 
     unset SESSION[$key]
 
-    sed -i "/SESSION\['$key'\]=.*/d" /tmp/${COOKIE[$default_session_name]}
+    $sessionPath::$FUNCNAME
 }
 
-function tmp::session::read ()
+function session::read ()
 {
-    source /tmp/${COOKIE[$default_session_name]}
+    $sessionPath::$FUNCNAME
 }
 
-function tmp::session::get ()
+function session::get ()
 {
     local key="$1"
 
     [[ -z "$key" ]] && return
 
-    tmp::session::read
+    session::read
 
     echo "${SESSION[$key]}"
 }
+
