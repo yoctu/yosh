@@ -1,5 +1,5 @@
 Package: yosh
-Version: 0.5.13
+Version: 0.5.14
 Architecture: all
 Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
 Depends: jq, ldap-utils, openssl

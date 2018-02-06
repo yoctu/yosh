@@ -9,6 +9,7 @@ function img::print::out ()
 
     # Set content-type
     http::send::content-type image/$extension
+    http::send::header Cache-Control "max-age=3600, public"
 
     [[ "$extension" == "svg" ]] && http::send::content-type image/$extension+xml
    
