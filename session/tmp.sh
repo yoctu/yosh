@@ -24,8 +24,14 @@ function tmp::session::destroy ()
 
 function tmp::session::save ()
 {
+    local key
     # save session array to a file
-    typeset -p SESSION > /tmp/${COOKIE[$default_session_name]}
+    for key in "${!SESSION[@]}"
+    do
+        # always run, remove from file the old value if exist
+        sed -i "/SESSION\['$key'\]=.*/d" /tmp/${COOKIE[$default_session_name]}
+        echo "SESSION['$key']=\"${SESSION[$key]}\"" >> /tmp/${COOKIE[$default_session_name]}
+    done
 }
 
 function tmp::session::set ()
@@ -38,7 +44,7 @@ function tmp::session::set ()
 function tmp::session::unset ()
 {
 
-    tmp::session::save
+    sed -i "/SESSION\['$key'\]=.*/d" /tmp/${COOKIE[$default_session_name]}
 
 }
 
