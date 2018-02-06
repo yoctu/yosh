@@ -30,7 +30,7 @@ function route::check ()
 
             auths=( ${arrKey[2]//,/ } )
 
-            [[ -z ${arrKey[2]}]] && auths=( "none" )
+            [[ -z "${arrKey[2]}" ]] && auths=( "none" )
 
             for auth in "${auths[@]}"
             do
@@ -55,7 +55,7 @@ function route::check ()
             arrKey=( ${key//:/ } )
             auths=( ${arrKey[2]//,/ } )
 
-            [[ -z ${arrKey[2]}]] && auths=( "none" )
+            [[ -z "${arrKey[2]}" ]] && auths=( "none" )
 
             for auth in "${auths[@]}"
             do
