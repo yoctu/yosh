@@ -30,14 +30,14 @@ function route::check ()
 
             auths=( ${arrKey[2]//,/ } )
 
+            [[ -z ${arrKey[2]}]] && auths=( "none" )
+
             for auth in "${auths[@]}"
             do
                 auth::start "$auth" || continue
                 auth::check::rights "$auth" "${arrKey[3]}" || continue
                 break
             done
-
-            [[ -z "${auths}" ]] && { auth::start; auth::check::rights; }
 
             ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
             ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
@@ -54,6 +54,8 @@ function route::check ()
 
             arrKey=( ${key//:/ } )
             auths=( ${arrKey[2]//,/ } )
+
+            [[ -z ${arrKey[2]}]] && auths=( "none" )
 
             for auth in "${auths[@]}"
             do
