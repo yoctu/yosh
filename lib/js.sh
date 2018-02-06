@@ -9,7 +9,8 @@ function js::print::out ()
 
     # Set content-type
     http::send::content-type application/javascript
-   
+    http::send::header Cache-Control "max-age=3600, public"   
+
     # Print javascript file
     cat ${js_dir}/$js_file
 

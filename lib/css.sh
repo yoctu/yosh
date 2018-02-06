@@ -9,6 +9,7 @@ function css::print::out ()
 
     # Set content-type
     http::send::content-type text/css
+    http::send::header Cache-Control "max-age=3600, public"
    
     # Print css file
     cat ${css_dir}/$css_file

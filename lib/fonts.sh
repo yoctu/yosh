@@ -9,6 +9,9 @@ function fonts::print::out ()
 
     # Set content-type
     http::send::content-type image/$extension
+    http::send::header Cache-Control "max-age=3600, public"
+
+    [[ "$extension" == "svg" ]] && http::send::content-type image/$extension+xml
    
     # Print fonts file
     cat ${fonts_dir}/$fonts_file
