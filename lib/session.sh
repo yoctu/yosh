@@ -7,6 +7,21 @@ declare -A SESSION
 default_session_name="${default_session_name:-BASHSESSID}"
 default_session_expiration="${default_session_expiration:-21600}"
 
+for file in /usr/share/yosh/session/*
+do
+    source $file
+done
+
+# Source custom lib's
+if ls -A ${DOCUMENT_ROOT%/}/../session/* &>/dev/null
+then
+    for file in ${DOCUMENT_ROOT%/}/../session/*
+    do
+        source $file
+    done
+fi
+
+
 function session::start ()
 {
     local id="$(uuidgen)"
