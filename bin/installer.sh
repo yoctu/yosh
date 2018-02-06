@@ -47,7 +47,7 @@ tmpDir="$(mktemp -d)"
 
 mkdir -p $tmpDir/usr/share/yosh
 
-cp -r $baseDir/{auth,func,lib} $tmpDir/usr/share/yosh
+cp -r $baseDir/{auth,func,lib,session} $tmpDir/usr/share/yosh
 cp -r $baseDir/autoloader.sh $tmpDir/usr/share/yosh/
 
 cp -r $baseDir/DEBIAN $tmpDir/
