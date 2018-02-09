@@ -1,0 +1,6 @@
+README.md usr/share/yosh/doc/
+func/ usr/share/yosh/func/
+lib/ usr/share/yosh/lib/
+auth/ usr/share/yosh/auth/
+session/ usr/share/yosh/session/
+autoloader.sh /usr/share/yosh/

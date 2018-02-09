@@ -1,6 +1,12 @@
+Source: yosh
+Section: utils
+Maintainer: Dzove855 <dzove855@yoctu.com>
+Build-Depends: debhelper
+Standards-Version: 0.6.0
+
 Package: yosh
-Version: 0.5.15
 Architecture: all
 Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
+Priority: optional
 Depends: jq, ldap-utils, openssl
 Description: yosh (yoctu shell) - Micro Web Framework lib
