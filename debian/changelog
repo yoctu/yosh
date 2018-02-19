@@ -1,3 +1,9 @@
+yosh (0.6.2) unstable; urgency=low
+
+  * correct session/tmp.sh
+
+ -- Dzove855 <dzove855@yoctu.com>  Fri, 19 Feb 2018 16:39:48 +0200
+
 yosh (0.6.1) unstable; urgency=low
 
   * correct yosh.install

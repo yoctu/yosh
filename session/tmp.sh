@@ -50,7 +50,7 @@ function tmp::session::unset ()
 
 function tmp::session::read ()
 {
-    source /tmp/${COOKIE[$default_session_name]}
+    [[ -f "/tmp/${COOKIE[$default_session_name]}" ]] && source /tmp/${COOKIE[$default_session_name]}
 }
 
 function tmp::session::get ()
