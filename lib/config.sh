@@ -3,6 +3,14 @@
 # you should not declare in a config, because we're good
 declare -A ROUTE
 
+# set default value for TMPDIR
+if [[ -d "/dev/shm" ]]
+then
+    TMPDIR="/dev/shm"
+else
+    TMPDIR="/tmp"
+fi
+
 # Source all config from DOCUMENT_ROOT/config/
 for file in ${DOCUMENT_ROOT%/}/../config/*.sh
 do
@@ -16,3 +24,6 @@ then
         source $file
     done
 fi
+
+# Just remove final slach :p
+TMPDIR="${TMPDIR%/}"

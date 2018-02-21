@@ -1,3 +1,9 @@
+yosh (0.6.3) unstable; urgency=low
+
+  * Set TMPDIR value
+
+ -- Dzove855 <dzove855@yoctu.com>  Fri, 21 Feb 2018 23:16:10 +0200
+
 yosh (0.6.2) unstable; urgency=low
 
   * correct session/tmp.sh
