@@ -32,6 +32,7 @@ then
 fi
 
 default_logging_method="${default_logging_method:-file}"
+default_auditing_method="${default_auditing_method:-file}"
 auditing="${auditing:-0}"
 
 function log ()
