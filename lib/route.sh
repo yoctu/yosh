@@ -71,7 +71,7 @@ function route::check ()
         fi
     done
 
-    [[ $auditing ]] && log -m $default_auditing_method -l info "ROUTE=$uri : QUERY_STRING=$QUERY_STRING : POST_DATA=$(typeset -p POST)"
+    [[ $auditing ]] && log -m $default_auditing_method -l info "ROUTE=$uri : QUERY_STRING=${REQUEST_URI#*\?} : POST_DATA=$(typeset -p POST | sed 's/declare -A POST=//g')"
 
     if app::find &>/dev/null
     then
