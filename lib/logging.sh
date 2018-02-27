@@ -31,13 +31,14 @@ then
     done
 fi
 
+default_logging_method="${default_logging_method:-file}"
 
 function log ()
 {    
     local _level _tag _message _method
 
     # Hmmmm Should we do it with a different way?
-    while getopts "l:t:" arg; do
+    while getopts "l:m" arg; do
         case "${arg}" in
             l) _level="${OPTARG}"               ;;
             m) _method="${OPTARG}"              ;;
@@ -49,7 +50,7 @@ function log ()
 
     [[ -z "$_level" || -z "$_method" || -z "$_message" ]] && return
 
-
-    ${LOGGING[$_method:'module']}::log
+    _tag="${LOGGING[$_method:'tag']}"
+    ${LOGGING[$_method:'method']}::log
 }
 
