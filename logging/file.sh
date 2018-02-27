@@ -7,7 +7,7 @@ logDir="${logDir:-/var/log/$application_name}"
 function file::write ()
 {
 
-    echo "$@" | sudo tee -a $file_to_write
+    echo "$@" | sudo tee -a $file_to_write &>/dev/null
 
 }
 
