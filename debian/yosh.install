@@ -3,4 +3,5 @@ func/* usr/share/yosh/func/
 lib/* usr/share/yosh/lib/
 auth/* usr/share/yosh/auth/
 session/* usr/share/yosh/session/
+logging/* usr/share/yosh/logging/
 autoloader.sh /usr/share/yosh/
