@@ -32,13 +32,14 @@ then
 fi
 
 default_logging_method="${default_logging_method:-file}"
+auditing="${auditing:-0}"
 
 function log ()
 {    
     local _level _tag _message _method
 
     # Hmmmm Should we do it with a different way?
-    while getopts "l:m" arg; do
+    while getopts "l:m:" arg; do
         case "${arg}" in
             l) _level="${OPTARG}"               ;;
             m) _method="${OPTARG}"              ;;
