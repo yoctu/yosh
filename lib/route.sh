@@ -14,13 +14,28 @@
 # RewriteRule ^.*$ - [NC,L]
 # RewriteRule ^.*$ /main.sh [NC,L]
 
-
 function route::check ()
 {
     local uri
 
     uri="${REQUEST_URI%\?*}"
     uri="${uri#/}"
+
+    if [[ $auditing ]] 
+    then
+
+        for key in "${!GET[@]}"
+        do
+            _get_message+="| get_${key}=${GET[$key]} "
+        done
+
+        for key in "${!POST[@]}"
+        do
+            _post_message+="| post_${key}=${POST[$key]} "
+        done
+
+        log -m $default_auditing_method -l info "ROUTE=$uri $_get_message $_post_message"
+    fi
 
     for key in "${!ROUTE[@]}"
     do
@@ -70,8 +85,6 @@ function route::check ()
             break
         fi
     done
-
-    [[ $auditing ]] && log -m $default_auditing_method -l info "ROUTE=$uri : GET_DATA=$(typeset -p GET | sed 's/declare -A GET=//g') : POST_DATA=$(typeset -p POST | sed 's/declare -A POST=//g')"
 
     if app::find &>/dev/null
     then

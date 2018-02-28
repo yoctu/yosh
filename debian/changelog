@@ -1,3 +1,9 @@
+yosh (0.7.1) unstable; urgency=low
+
+  * auditing - correct route auditing
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 28 Feb 2018 16:58:40 +0200
+
 yosh (0.7.0) unstable; urgency=low
 
   * auditing - Add Get data
