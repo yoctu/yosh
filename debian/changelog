@@ -1,3 +1,9 @@
+yosh (0.7.2) unstable; urgency=low
+
+  * create template lib
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 02 Mar 2018 14:53:04 +0200
+
 yosh (0.7.1) unstable; urgency=low
 
   * auditing - correct route auditing
