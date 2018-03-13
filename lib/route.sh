@@ -21,7 +21,7 @@ function route::check ()
     uri="${REQUEST_URI%\?*}"
     uri="${uri#/}"
 
-    if [[ $auditing ]] 
+    if (( $auditing ))
     then
 
         for key in "${!GET[@]}"

@@ -8,7 +8,7 @@ function ldap::auth::start ()
     if ! session::check
     then
             [[ -z "$HTTP_AUTHORIZATION" ]] && return 1
-            user_pass="$(echo "${HTTP_AUTHORIZATION/Basic /}" | base64 -d)"
+            user_pass="$(auth::decode "${HTTP_AUTHORIZATION/Basic /}")"
             user="${user_pass%%:*}"
             pass="${user_pass#*:}"
 

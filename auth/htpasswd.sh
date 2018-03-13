@@ -8,7 +8,7 @@ function htpasswd::auth::start ()
     if ! session::check
     then
             [[ -z "$HTTP_AUTHORIZATION" ]] && return 1
-            user_pass="$(echo "${HTTP_AUTHORIZATION/Basic /}" | base64 -d)"
+            user_pass="$(auth::decode "${HTTP_AUTHORIZATION/Basic /}")"
             if grep -o "${user_pass%%:*}:$(openssl passwd -apr1 -salt r31.... ${user_pass#*:})" $htpasswd_file &>/dev/null
             then
                 session::start

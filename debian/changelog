@@ -1,3 +1,9 @@
+yosh (0.7.3) unstable; urgency=low
+
+  * add custom login page
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 13 Mar 2018 17:42:56 +0200
+
 yosh (0.7.2) unstable; urgency=low
 
   * create template lib

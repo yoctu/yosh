@@ -22,7 +22,7 @@ function auth::start ()
 
     auth::source
 
-    $loginPage
+    $login_method
 
     ${auth_method}::auth::start || return 1
     http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
@@ -55,4 +55,62 @@ function auth::request ()
 function auth::unauthorized ()
 {
     http::send::status 401
+}
+
+function auth::encode ()
+{
+    [[ -z "$1" ]] && return
+
+    if [[ ! -z "$auth_encode" ]]
+    then
+        $auth_encode $@
+    else
+        echo "$@"
+    fi
+}
+
+function auth::decode ()
+{
+    [[ -z "$1" ]] && return
+
+    if [[ ! -z "$auth_decode" ]] 
+    then
+        $auth_decode $@
+    else
+        echo "$@"  
+    fi
+}
+
+function auth::custom::request ()
+{
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! $sessionPath::session::check
+    then
+        if [[ "$uri" != "$login_page" ]]
+        then
+            http::send::redirect temporary "$HTTP_HOST/${login_page}?requestUrl=$uri"
+        else
+            if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
+            then
+                
+            else
+
+                auth::encode "${POST['username']}:${POST['password']}"
+
+                { 
+                    auth::start;
+                    if [[ ! -z "${GET['requestUrl']}" ]]
+                    then
+                        http::send::redirect temporary "${HTTP_POST}${GET['requestUrl']}" ;
+                    else
+                        http::send::redirect temporary "${HTTP_POST}/"; 
+                    fi 
+                } || $login_unauthorized
+            fi
+        fi     
+    fi
+}
+
+function auth::custom::unauthorized ()
+{
+    echo "haha"
 }
