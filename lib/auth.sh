@@ -14,15 +14,27 @@ function auth::source ()
     fi
 }
 
+function auth::check ()
+{
+    local auth_method="${1,,}"
+
+    if [[ ! "$uri" == "$login_page" ]] && [[ -z "$auth_method" || "$auth_method" == "none" ]] 
+    then
+        authSuccessful="1" 
+        return
+    fi
+
+    $login_method && authSuccessful=1
+    auth::start $auth_method
+}
+
 function auth::start ()
 {
     local auth_method="${1,,}"
 
-    [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccessful="1"; return; }
+    [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
     auth::source
-
-    $login_method
 
     ${auth_method}::auth::start || return 1
     http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
@@ -38,7 +50,10 @@ function auth::check::rights ()
 
     auth::source
 
-    ${auth_method}::auth::check::rights || return 1
+    if [[ ! "$auth_method" == "none" ]]
+    then
+        ${auth_method}::auth::check::rights || return 1
+    fi
 
     rightsSuccessful="1"
 }
@@ -83,34 +98,44 @@ function auth::decode ()
 
 function auth::custom::request ()
 {
+    unset auth_method
     if [[ -z "$HTTP_AUTHORIZATION" ]] && ! $sessionPath::session::check
     then
         if [[ "$uri" != "$login_page" ]]
         then
-            http::send::redirect temporary "$HTTP_HOST/${login_page}?requestUrl=$uri"
+            http::send::redirect temporary "${login_page}?requestUrl=$uri"
         else
             if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
             then
-                
+                return
             else
-
-                auth::encode "${POST['username']}:${POST['password']}"
-
-                { 
-                    auth::start;
-                    if [[ ! -z "${GET['requestUrl']}" ]]
+                HTTP_AUTHORIZATION="$(auth::encode ${POST['username']}:${POST['password']})"
+                # Get auth method from requesturi
+                for key in "${!ROUTE[@]}"
+                do
+                    arrKey=(${key//:/ })
+                    if [[ "/${GET['requestUrl']}:GET" =~ ${arrKey[0]}:${arrKey[1]} ]]
                     then
-                        http::send::redirect temporary "${HTTP_POST}${GET['requestUrl']}" ;
-                    else
-                        http::send::redirect temporary "${HTTP_POST}/"; 
-                    fi 
-                } || $login_unauthorized
+                        auth_method="${arrKey[2]}"
+                    fi
+                done
+
+                if [[ -z "$auth_method" ]]
+                then
+                    for key in "${!ROUTE[@]}"
+                    do
+                        arrKey=(${key//:/ })
+                        if [[ "/:GET" == "${arrKey[0]}:${arrKey[1]}" ]]
+                        then
+                            auth_method="${arrKey[2]}"
+                        fi
+                    done
+                fi
+
+                auth::start $auth_method
+                http::send::redirect temporary "${GET['requestUrl']:-home}" 
             fi
-        fi     
+        fi
     fi
 }
 
-function auth::custom::unauthorized ()
-{
-    echo "haha"
-}

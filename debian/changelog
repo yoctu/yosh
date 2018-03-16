@@ -1,3 +1,9 @@
+yosh (0.7.4) unstable; urgency=low
+
+  * Correct login page
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 16 Mar 2018 13:43:03 +0200
+
 yosh (0.7.3) unstable; urgency=low
 
   * add custom login page
