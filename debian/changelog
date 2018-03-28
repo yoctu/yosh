@@ -1,3 +1,9 @@
+yosh (0.7.5) unstable; urgency=low
+
+  * add url_encode
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 28 Mar 2018 23:43:33 +0200
+
 yosh (0.7.4) unstable; urgency=low
 
   * Correct login page
