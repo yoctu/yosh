@@ -1,3 +1,9 @@
+yosh (0.7.6) unstable; urgency=low
+
+  * Implement Saml lib
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 30 Mar 2018 15:03:13 +0200
+
 yosh (0.7.5) unstable; urgency=low
 
   * add url_encode

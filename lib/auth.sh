@@ -139,3 +139,7 @@ function auth::custom::request ()
     fi
 }
 
+function auth::saml::request ()
+{
+    auth::start $auth_method
+}
