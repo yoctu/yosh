@@ -131,5 +131,7 @@ function saml::retrieve::Identity ()
     session::start
     session::set USERNAME $username
     session::save
+
+    http::send::redirect temporary /
 }
 
