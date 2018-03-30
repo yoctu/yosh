@@ -1,3 +1,9 @@
+yosh (0.7.9) unstable; urgency=low
+
+  * correct saml signature
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 30 Mar 2018 16:37:55 +0200
+
 yosh (0.7.8) unstable; urgency=low
 
   * change control file, add dependecies

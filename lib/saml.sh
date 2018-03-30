@@ -58,15 +58,22 @@ function saml::createSamlRequest ()
 }
 
 function saml::createSignature ()
-{
+{   
     local _query_string="$@" tmpQueryFile="$(mktemp)"
 
-    echo "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" -signature '' | base64 -w0
+    echo -n "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" | base64 -w0
 }
 
 function saml::buildAuthnRequest ()
 {
     local _query
+
+    if session::check
+    then
+        http::send::redirect temporary /
+        return
+    fi
+
     SAML['SAMLRequest']="$(saml::createSamlRequest)"
     saml::createRelayState
     SAML['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
