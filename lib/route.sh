@@ -69,13 +69,13 @@ function route::api::mode ()
 
 function route::check ()
 {
-
     # Default Mode
     # route_method="route::check"
     local uri
 
     uri="${REQUEST_URI%\?*}"
     uri="${uri#/}"
+    uri="${uri:-/}"
 
     route::audit    
 
@@ -93,7 +93,10 @@ function route::check ()
     ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
     ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
 
-    if app::find &>/dev/null
+    if [[ ! -z "${ROUTE[$uri:$REQUEST_METHOD]}" ]]
+    then
+        eval ${ROUTE[$uri:$REQUEST_METHOD]}
+    elif app::find &>/dev/null
     then
         app::source
     elif [[ -f "${html_dir}/${uri%.html}.html" ]]
@@ -101,7 +104,7 @@ function route::check ()
         html::print::out ${html_dir}/${uri%.html}.html
     elif [[ "$uri" =~ ^(css|js|img|fonts)/.* ]]
     then
-    uri="${uri#*/}"
+        uri="${uri#*/}"
         ${BASH_REMATCH[1]}::print::out ${uri} || route::error
     else        
         route::error
@@ -116,11 +119,29 @@ function route::error ()
 
 function route::get::auth ()
 {
-    echo "${AUTH[$uri:$REQUEST_METHOD]:-${AUTH['/':$REQUEST_METHOD]}}" 
+    for key in "${!AUTH[@]}"
+    do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
+        then
+            echo "${AUTH[$key]}"
+            return
+        fi
+    done
+
+    echo "${AUTH['/':$REQUEST_METHOD]}"
 }
 
 function route::get::rights ()
 {
-    echo "${RIGHTS[$uri:$REQUEST_METHOD]:-${RIGHTS['/':$REQUEST_METHOD]}}" 
+    for key in "${!RIGHTS[@]}"
+    do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
+        then
+            echo "${RIGHTS[$key]}"
+            return
+        fi
+    done
 
+    echo "${RIGHTS['/':$REQUEST_METHOD]}"
 }
+

@@ -2,6 +2,8 @@
 
 # you should not declare in a config, because we're good
 declare -A ROUTE
+declare -A RIGHTS
+declare -A AUTH
 
 # set default value for TMPDIR
 if [[ -d "/dev/shm" ]]

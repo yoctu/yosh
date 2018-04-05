@@ -103,7 +103,7 @@ function auth::custom::request ()
     then
         if [[ "$uri" != "$login_page" ]]
         then
-            http::send::redirect temporary "${login_page}?requestUrl=$uri"
+            http::send::redirect temporary "${login_page}?requestUrl=${uri%/}"
         else
             if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
             then
@@ -111,26 +111,10 @@ function auth::custom::request ()
             else
                 HTTP_AUTHORIZATION="$(auth::encode ${POST['username']}:${POST['password']})"
                 # Get auth method from requesturi
-                for key in "${!ROUTE[@]}"
-                do
-                    arrKey=(${key//:/ })
-                    if [[ "/${GET['requestUrl']}:GET" =~ ${arrKey[0]}:${arrKey[1]} ]]
-                    then
-                        auth_method="${arrKey[2]}"
-                    fi
-                done
-
-                if [[ -z "$auth_method" ]]
-                then
-                    for key in "${!ROUTE[@]}"
-                    do
-                        arrKey=(${key//:/ })
-                        if [[ "/:GET" == "${arrKey[0]}:${arrKey[1]}" ]]
-                        then
-                            auth_method="${arrKey[2]}"
-                        fi
-                    done
-                fi
+                # set uri
+                uri="${GET['requestUrl']}"
+                REQUEST_METHOD="GET"
+                auth_method="$(route::get::auth)"
 
                 auth::start $auth_method
                 http::send::redirect temporary "${GET['requestUrl']:-home}" 
@@ -143,3 +127,4 @@ function auth::saml::request ()
 {
     auth::start $auth_method
 }
+
