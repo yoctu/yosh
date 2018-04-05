@@ -1,51 +1,41 @@
-#!/bin/bash
+# Mysql connector
 
-# NOTE:
-#       password, user, host and database should be save in configfile in config/
-#
-# Config:
-#       db_user=
-#       db_password=
-#       db_host=
-#       db_name=
-#       db_port=
-
-# convert array to json
-# only to use on single result
-function mysql-to-json ()
+function mysql-escape ()
 {
-    local arrayname="$1" query="${@:2}"
+    local string="$@"
 
-    [[ -z "$db_user" || -z "$db_password" || -z "$db_host" || -z "$db_name" || -z "$db_port" ]] && return
+    string="${string%%;*}"
 
-    while read line
-    do
-        declare -gA ${arrayname}[${line%%:*}]="${line#*:}"
-    done < <(mysql -u $db_user -p$db_password -h $db_host -P $db_port $db_name -e "${query%;}\G;" 2>/dev/null | grep -Ev "^$")
+    printf "%q" "$string"
 }
 
-# generate sql requeste and save it in the database
-# only generates insert
-function json-to-mysql ()
+function mysql-connector ()
 {
-    local table="$1" json="${@:2}" column query
+    mysql -h ${mysql_host} -P ${mysql_port} -u ${mysql_user} --database=${mysql_dbname} -p${mysql_password} -e "$@" 2>/dev/null
+    echo END
+}
 
-    [[ -z "$db_user" || -z "$db_password" || -z "$db_host" || -z "$db_name" || -z "$db_port" ]] && return
-
-    json-to-array array "$json"
-
-    for key in "${!array[@]}"
+function mysql-to-json ()
+{
+    typeset -A arr
+    while read line
     do
-        column+="${key},"
-        value+="'${array[$key]}',"
-    done
+        if [[ "${line}" =~ .*row.* || "$line" == "END" ]]
+        then
+            continue
+        elif [[ "${line}" =~ key.* ]]
+        then
+            key="${line#*: }"
+        elif ! [[ "${line}" =~ .*row.* || "$line" == "END" ]]
+        then
+            arr[${key}]="${line#*: }"
+            unset key
+        fi
 
-    query="INSERT INTO $table (${column%,}) VALUES (${value%,})"
+    done < <(mysql-connector "$@\\G")
 
-    mysql -u $db_user -p$db_password -H $db_host -P $db_port $db_name -e "$query" || return
+    [[ ! -z "${arr[@]}" ]] && results+="$(array-to-json arr),"
 
-    unset array
-
-    return 1
+    echo "{ \"$service\": ${results%,} }"
 }
 

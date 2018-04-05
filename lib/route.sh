@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# Routes should be defined in a config file like:
-#       ROUTE['/fuu']='SCRIPTNAME or function or shell script'
-# or in a dir like DOCUMENT_ROOT/app with the name fuu.sh or fuu.bash or only fuu
-# 
-# this Script will automatically look for file with fuu or add extension .sh or .bash
-
-# To use this you should add the folowing rewrite rule in your vhost:
+# To use this you should add the following rewrite rule in your vhost:
 # RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} -s [OR]
 # RewriteCond %{REQUEST_FILENAME} -l [OR]
@@ -14,14 +8,9 @@
 # RewriteRule ^.*$ - [NC,L]
 # RewriteRule ^.*$ /main.sh [NC,L]
 
-function route::check ()
+function route::audit ()
 {
-    local uri
-
-    uri="${REQUEST_URI%\?*}"
-    uri="${uri#/}"
-
-    if (( $auditing ))
+    if (( $route_auditing ))
     then
 
         for key in "${!GET[@]}"
@@ -36,54 +25,73 @@ function route::check ()
 
         log -m $default_auditing_method -l info "ROUTE=$uri $_get_message $_post_message"
     fi
+}
 
-    for key in "${!ROUTE[@]}"
+function route::api::mode ()
+{
+    local errorMsg='{ "msg": "No Route Found!" }' unauthorizedMsg='{ "msg": "No Authorization!" }' uri
+
+    uri="${REQUEST_URI%\?*}"
+    uri="${uri#/}"
+    uri=(${uri//\// })
+
+    http::send::content-type ${default_api_content_type:-application/json}
+
+    # Api Mode
+    # route_method="route::api::mode"
+    
+    [[ "${uri[0]}" == "api" ]] || { http::send::status 404; echo "$errorMsg"; return; }
+
+    auths="$(route::get::auth)"
+    auths=(${auths//,/ })
+
+    route::audit
+
+    for auth in "${auths[@]}"
     do
-        arrKey=(${key//:/ })
-        if [[ "/${uri}:${REQUEST_METHOD}" =~ ${arrKey[0]}:${arrKey[1]} ]]
-        then
-            auths=( ${arrKey[2]//,/ } )
-
-            [[ -z "${arrKey[2]}" ]] && auths=( "none" )
-
-            for auth in "${auths[@]}"
-            do
-                auth::check "$auth" || continue
-                auth::check::rights "$auth" "${arrKey[3]}" || continue
-                break
-            done
-
-            ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
-            ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
-
-            eval ${ROUTE["$key"]}
-            return
-        fi
+        auth::check "$auth" || continue
+        # Does we really need this?
+        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        break
     done
 
-    for key in "${!ROUTE[@]}"
+    ! [[ "$authSuccessful" ]] && { http::send::status 404; echo "$unauthorizedMsg"; return; }
+    ! [[ "$rightsSuccessful" ]] && { http::send::status 404; echo "$unauthorizedMsg"; return; }
+
+    if [[ -z "$api_command" ]]
+    then
+        [[ -f "${api_dir%/}/${uri[1]}" ]] || { http::send::status 404; echo "$errorMsg"; return; }
+        source ${api_dir%/}/${uri[1]}
+    else
+        $api_command
+    fi
+}
+
+function route::check ()
+{
+
+    # Default Mode
+    # route_method="route::check"
+    local uri
+
+    uri="${REQUEST_URI%\?*}"
+    uri="${uri#/}"
+
+    route::audit    
+
+    auths="$(route::get::auth)"
+    auths=(${auths//,/ })
+
+    for auth in "${auths[@]}"
     do
-        if [[ "$key" =~ "/:${REQUEST_METHOD}:"* ]]
-        then
-
-            arrKey=( ${key//:/ } )
-            auths=( ${arrKey[2]//,/ } )
-
-            [[ -z "${arrKey[2]}" ]] && auths=( "none" )
-
-            for auth in "${auths[@]}"
-            do
-                auth::check "$auth" || continue
-                auth::check::rights "$auth" "${arrKey[3]}" || continue
-                break
-            done
-
-            ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
-            ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
-
-            break
-        fi
+        auth::check "$auth" || continue
+        # Does we really need this?
+        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        break
     done
+
+    ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
+    ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
 
     if app::find &>/dev/null
     then
@@ -93,7 +101,7 @@ function route::check ()
         html::print::out ${html_dir}/${uri%.html}.html
     elif [[ "$uri" =~ ^(css|js|img|fonts)/.* ]]
     then
-        uri="${uri#*/}"
+    uri="${uri#*/}"
         ${BASH_REMATCH[1]}::print::out ${uri} || route::error
     else        
         route::error
@@ -106,20 +114,13 @@ function route::error ()
     echo "No Route Found!"
 }
 
-function route::create ()
+function route::get::auth ()
 {
-    ! [[ $# -gt 1 ]] && return 
-
-    local route_function="$1" route_location="$2" route_method="${3:-GET}" route_auth="${4:-none}" route_rights="${5:-none}"
-
-    route_requete="ROUTE['$route_location':'$route_method':'$route_auth':'$route_rights']='$route_function'"
-
-    # Where should i save the route?
-    if [[ -f "${etc_conf_dir%/}/route.sh" ]] 
-    then
-        echo "$route_requete" >> ${etc_conf_dir%/}/route.sh
-    else
-        echo "$route_requete" >> ${DOCUMENT_ROOT%/}/../config/route.sh
-    fi
+    echo "${AUTH[$uri:$REQUEST_METHOD]:-${AUTH['/':$REQUEST_METHOD]}}" 
 }
 
+function route::get::rights ()
+{
+    echo "${RIGHTS[$uri:$REQUEST_METHOD]:-${RIGHTS['/':$REQUEST_METHOD]}}" 
+
+}

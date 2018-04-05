@@ -59,15 +59,43 @@ function url_decode ()
     echo -e "$value"
 }
 
-function url_encode() {
+function url_encode() 
+{
     local _length="${#1}"
-    for (( _offset = 0 ; _offset < _length ; _offset++ )); do
+
+    for (( _offset = 0 ; _offset < _length ; _offset++ ))
+    do
         _print_offset="${1:_offset:1}"
+
         case "${_print_offset}" in
             [a-zA-Z0-9.~_-]) printf "${_print_offset}" ;;
             ' ') printf + ;;
             *) printf '%%%X' "'${_print_offset}" ;;
         esac
+
     done
+}
+
+function isFunction ()
+{
+    local functionName="$1"
+
+    [[ -z "$functionName" ]] && return 1
+
+    if [[ $(type -t $functionName) == "function" ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function commandExist ()
+{
+    local commandName="$1"
+
+    [[ -z "$commandName" ]] && return 1
+
+    type $commandName &>/dev/null
 }
 
