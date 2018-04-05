@@ -1,3 +1,9 @@
+yosh (0.8.2) unstable; urgency=low
+
+  * Fix the Fix
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 05 Apr 2018 18:09:20 +0200
+
 yosh (0.8.1) unstable; urgency=low
 
   * Correct auth request

@@ -93,6 +93,9 @@ function route::check ()
     ! [[ "$authSuccessful" ]] && { $unauthorized; return; }
     ! [[ "$rightsSuccessful" ]] && { $unauthorized; return; }
 
+    # just be sure
+    uri="${uri:-/}"
+
     if [[ ! -z "${ROUTE[$uri:$REQUEST_METHOD]}" ]]
     then
         eval ${ROUTE[$uri:$REQUEST_METHOD]}

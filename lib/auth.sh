@@ -103,7 +103,8 @@ function auth::custom::request ()
     then
         if [[ "$uri" != "$login_page" ]]
         then
-            http::send::redirect temporary "${login_page}?requestUrl=${uri%/}"
+            uri="${uri%/}"
+            http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
         else
             if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
             then
@@ -112,7 +113,7 @@ function auth::custom::request ()
                 HTTP_AUTHORIZATION="$(auth::encode ${POST['username']}:${POST['password']})"
                 # Get auth method from requesturi
                 # set uri
-                uri="${GET['requestUrl']}"
+                uri="${GET['requestUrl']:-home}"
                 REQUEST_METHOD="GET"
                 auth_method="$(route::get::auth)"
 
