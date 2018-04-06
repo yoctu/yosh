@@ -1,3 +1,9 @@
+yosh (0.8.3) unstable; urgency=low
+
+  * Correct api mode
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 06 Apr 2018 13:45:26 +0200
+
 yosh (0.8.2) unstable; urgency=low
 
   * Fix the Fix

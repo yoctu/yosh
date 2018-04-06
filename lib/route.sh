@@ -47,6 +47,8 @@ function route::api::mode ()
 
     route::audit
 
+    [[ -z "$auths" ]] && auths=("none")
+
     for auth in "${auths[@]}"
     do
         auth::check "$auth" || continue
