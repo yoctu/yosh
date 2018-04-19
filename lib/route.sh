@@ -15,12 +15,12 @@ function route::audit ()
 
         for key in "${!GET[@]}"
         do
-            _get_message+="| get_${key}=${GET[$key]} "
+            _get_message+="| get_${key}=\"${GET[$key]}\" "
         done
 
         for key in "${!POST[@]}"
         do
-            _post_message+="| post_${key}=${POST[$key]} "
+            _post_message+="| post_${key}=\"${POST[$key]}\" "
         done
 
         log -m $default_auditing_method -l info "ROUTE=$uri $_get_message $_post_message"
