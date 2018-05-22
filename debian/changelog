@@ -2,7 +2,7 @@ yosh (0.8.6) unstable; urgency=low
 
   * add logger in logging/file.sh instead of custom script
 
- -- Dzove855 <dzove855@yoctu.com>  Tue, 22 Mai 2018 15:50:37 +0200
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 22 May 2018 15:50:37 +0200
 
 yosh (0.8.5) unstable; urgency=low
 
