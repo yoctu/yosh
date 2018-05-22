@@ -1,13 +1,15 @@
 # Custom file logging
 
-logDir="${logDir:-/var/log/$application_name}"
-
-[[ -d "$logDir" ]] || { sudo mkdir $logDir; sudo chown -R $USER $logDir; }
+# We ue now logger
+#logDir="${logDir:-/var/log/$application_name}"
+#
+#[[ -d "$logDir" ]] || { sudo mkdir $logDir; sudo chown -R $USER $logDir; }
 
 function file::write ()
 {
 
-    echo "$@" | sudo tee -a $file_to_write &>/dev/null
+    #echo "$@" | sudo tee -a $file_to_write &>/dev/null
+    logger -t esm "$*"
 
 }
 

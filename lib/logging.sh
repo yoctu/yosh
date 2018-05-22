@@ -48,7 +48,8 @@ function log ()
     done    
     shift $((OPTIND - 1))
 
-    _message="$@"
+    # shellcheck disable=SC2034
+    _message="$*"
 
     [[ -z "$_level" || -z "$_method" || -z "$_message" ]] && return
 

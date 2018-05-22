@@ -8,9 +8,10 @@
 # RewriteRule ^.*$ - [NC,L]
 # RewriteRule ^.*$ /main.sh [NC,L]
 
+# shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 function route::audit ()
 {
-    if (( $route_auditing ))
+    if (( route_auditing ))
     then
 
         for key in "${!GET[@]}"
