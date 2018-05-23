@@ -1,3 +1,9 @@
+yosh (0.8.7) unstable; urgency=low
+
+  * add default auth to none
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 23 May 2018 14:14:00 +0200
+
 yosh (0.8.6) unstable; urgency=low
 
   * add logger in logging/file.sh instead of custom script

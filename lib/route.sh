@@ -134,7 +134,7 @@ function route::get::auth ()
         fi
     done
 
-    echo "${AUTH['/':$REQUEST_METHOD]}"
+    echo "${AUTH['/':$REQUEST_METHOD]:-none}"
 }
 
 function route::get::rights ()
@@ -148,6 +148,6 @@ function route::get::rights ()
         fi
     done
 
-    echo "${RIGHTS['/':$REQUEST_METHOD]}"
+    echo "${RIGHTS['/':$REQUEST_METHOD]:-none}"
 }
 
