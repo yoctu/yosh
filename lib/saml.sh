@@ -128,7 +128,7 @@ function saml::retrieve::Identity ()
 {
     local xmlResponse username
 
-    xmlResponse="$(url_decode "${POST['SAMLResponse']}" | base64 -d -w0)"
+    xmlResponse="$(urlencode -d "${POST['SAMLResponse']}" | base64 -d -w0)"
 
     saml::validate::Issuer "$xmlResponse" || return 1
     saml::validate::Sign "$xmlResponse" || return 1

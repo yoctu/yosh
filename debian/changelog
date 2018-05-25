@@ -1,3 +1,9 @@
+yosh (0.8.8) unstable; urgency=low
+
+  * use gridsite-clients instead of url_decode
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 25 May 2018 16:11:20 +0200
+
 yosh (0.8.7) unstable; urgency=low
 
   * add default auth to none

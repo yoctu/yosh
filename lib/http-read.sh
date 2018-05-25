@@ -24,7 +24,7 @@ function http::read::post ()
         for key in "${raw[@]}"
         do
             trim key
-            POST[$(url_decode "${key%%=*}")]="$(url_decode "${key#*=}")"
+            POST[$(urlencode -d "${key%%=*}")]="$(urlencode -d "${key#*=}")"
         done
 
     elif [[ "$CONTENT_TYPE" =~ application/json.* ]]
