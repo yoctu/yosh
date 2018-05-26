@@ -99,9 +99,9 @@ function route::check ()
     # just be sure
     uri="${uri:-/}"
 
-    if [[ ! -z "${ROUTE[$uri:$REQUEST_METHOD]}" ]]
+    if [[ ! -z "${ROUTE[/${uri#/}:$REQUEST_METHOD]}" ]]
     then
-        eval ${ROUTE[$uri:$REQUEST_METHOD]}
+        eval ${ROUTE[/${uri#/}:$REQUEST_METHOD]}
     elif app::find &>/dev/null
     then
         app::source

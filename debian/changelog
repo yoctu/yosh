@@ -1,3 +1,9 @@
+yosh (0.8.9) unstable; urgency=low
+
+  * correct routing
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 27 May 2018 01:48:00 +0200
+
 yosh (0.8.8) unstable; urgency=low
 
   * use gridsite-clients instead of url_decode
