@@ -1,3 +1,10 @@
+yosh (0.8.10) unstable; urgency=low
+
+  * use file --mime-type instead of extension parsing in img lib
+  * Remove template lib
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 29 May 2018 14:47:40 +0200
+
 yosh (0.8.9) unstable; urgency=low
 
   * correct routing

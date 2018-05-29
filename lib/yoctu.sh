@@ -10,19 +10,19 @@ function @deprecated ()
 {
     local _name="$*"
     
-    @log "YOSH Depcrecated: $_name will no longer be available in the next Release!"
+    $log "YOSH Depcrecated: $_name will no longer be available in the next Release!"
 }
 
 function @error ()
 {
     local _msg="$*"
     
-    @log "YOSH Error: $_msg"
+    $log "YOSH Error: $_msg"
 }
 
 function @audit ()
 {
     local _msg="$*"
 
-    @log "YOSH Audit: $_msg"
+    $audit "YOSH Audit: $_msg"
 }
