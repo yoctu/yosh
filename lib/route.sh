@@ -52,7 +52,7 @@ function route::api::mode ()
 
     for auth in "${auths[@]}"
     do
-        auth::check "$auth" || continue
+        ${auth_check:-auth::check} "$auth" || continue
         # Does we really need this?
         auth::check::rights "$auth" "$(route::get::rights)" || continue
         break

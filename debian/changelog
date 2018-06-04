@@ -1,3 +1,9 @@
+yosh (0.8.12) unstable; urgency=low
+
+  * Correct api_key auth
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 04 Jun 2018 19:26:20 +0200
+
 yosh (0.8.11) unstable; urgency=low
 
   * Add api_key auth

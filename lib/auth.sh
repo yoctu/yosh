@@ -131,5 +131,6 @@ function auth::saml::request ()
 
 function auth::api ()
 {
-    $auth_method
+    auth::source
+    $auth_method && authSuccessful=1
 }
