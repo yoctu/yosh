@@ -1,3 +1,9 @@
+yosh (0.8.11) unstable; urgency=low
+
+  * Add api_key auth
+
+ -- Dzove855 <dzove855@yoctu.com>  Tue, 04 Jun 2018 18:23:50 +0200
+
 yosh (0.8.10) unstable; urgency=low
 
   * use file --mime-type instead of extension parsing in img lib

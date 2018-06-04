@@ -129,3 +129,7 @@ function auth::saml::request ()
     auth::start $auth_method
 }
 
+function auth::api ()
+{
+    $auth_method
+}
