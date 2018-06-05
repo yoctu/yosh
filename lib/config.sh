@@ -4,6 +4,7 @@
 declare -A ROUTE
 declare -A RIGHTS
 declare -A AUTH
+declare -A LOGIN
 
 # set default value for TMPDIR
 if [[ -d "/dev/shm" ]]
