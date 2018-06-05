@@ -52,14 +52,14 @@ function route::api::mode ()
 
     for auth in "${auths[@]}"
     do
-        ${auth_check:-auth::check} "$auth" || continue
+        auth::check "$auth" || continue
         # Does we really need this?
         auth::check::rights "$auth" "$(route::get::rights)" || continue
         break
     done
 
-    ! [[ "$authSuccessful" ]] && { http::send::status 404; echo "$unauthorizedMsg"; return; }
-    ! [[ "$rightsSuccessful" ]] && { http::send::status 404; echo "$unauthorizedMsg"; return; }
+    ! [[ "$authSuccessful" ]] && { http::send::status 401; echo "$unauthorizedMsg"; return; }
+    ! [[ "$rightsSuccessful" ]] && { http::send::status 401; echo "$unauthorizedMsg"; return; }
 
     if [[ -z "$api_command" ]]
     then

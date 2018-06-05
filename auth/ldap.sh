@@ -16,6 +16,7 @@ function ldap::auth::start ()
             then
                 session::start
                 session::set USERNAME "${user_pass%%:*}"
+                http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
             else
                 return 1
             fi

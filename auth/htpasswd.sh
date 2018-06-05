@@ -16,6 +16,7 @@ function htpasswd::auth::start ()
                 group="$(grep "${user_pass%%:*}:$(openssl passwd -apr1 -salt r31.... ${user_pass#*:}):" $htpasswd_file)"
                 group=(${group//:/ })
                 session::set GROUPNAME "${group[2]}"
+                http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
             else
                 return 1
             fi

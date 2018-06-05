@@ -37,7 +37,7 @@ function auth::start ()
     auth::source
 
     ${auth_method}::auth::start || return 1
-    http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
+#    http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
     authSuccessful="1"
 }
@@ -132,5 +132,5 @@ function auth::saml::request ()
 function auth::api ()
 {
     auth::source
-    $auth_method && authSuccessful=1
+    $auth_method
 }
