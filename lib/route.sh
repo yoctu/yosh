@@ -43,6 +43,8 @@ function route::api::mode ()
     
     [[ "${uri[0]}" == "api" ]] || { http::send::status 404; echo "$errorMsg"; return; }
 
+    route::get::login
+
     auths="$(route::get::auth)"
     auths=(${auths//,/ })
 
@@ -81,6 +83,8 @@ function route::check ()
     uri="${uri:-/}"
 
     route::audit    
+
+    route::get::login
 
     auths="$(route::get::auth)"
     auths=(${auths//,/ })
@@ -135,6 +139,21 @@ function route::get::auth ()
     done
 
     echo "${AUTH['/':$REQUEST_METHOD]:-none}"
+}
+
+function route::get::login ()
+{
+    for key in "${!LOGIN[@]}"
+    do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
+        then
+            login_method="${LOGIN[$key]}"
+            return
+        fi
+    done
+
+    login_method="${LOGIN['/':$REQUEST_METHOD]:-auth::request}"
+
 }
 
 function route::get::rights ()

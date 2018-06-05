@@ -105,6 +105,7 @@ function auth::custom::request ()
         then
             uri="${uri%/}"
             http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
+            return 1
         else
             if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
             then
