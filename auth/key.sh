@@ -6,7 +6,10 @@ function key::auth::start ()
 {
     [[ -z "$HTTP_AUTHORIZATION" ]] && return 1
 
-    [[ "$HTTP_AUTHORIZATION" == "${authorization_key}" ]] && return 0
+    for key in "${authorization_key[@]}"
+    do
+        [[ "$HTTP_AUTHORIZATION" == "${key}" ]] && return 0
+    done
 
     return 1 
 }

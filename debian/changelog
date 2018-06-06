@@ -1,3 +1,9 @@
+yosh (0.8.17) unstable; urgency=low
+
+  * Set multiple api keys
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 06 Jun 2018 14:17:15 +0200
+
 yosh (0.8.16) unstable; urgency=low
 
   * correct session::check in auth
