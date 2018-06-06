@@ -11,6 +11,7 @@ function tmp::session::start ()
 
 function tmp::session::check ()
 {
+    [[ -z "${COOKIE[$default_session_name]}" ]] && return 1
     ! [[ -f "$TMPDIR/${COOKIE[$default_session_name]}" ]] && return 1
 
     return 0

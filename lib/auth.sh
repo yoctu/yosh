@@ -60,7 +60,7 @@ function auth::check::rights ()
 
 function auth::request ()
 {
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! $sessionPath::session::check
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! session::check
     then
         http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
         http::send::status 401
@@ -99,7 +99,7 @@ function auth::decode ()
 function auth::custom::request ()
 {
     unset auth_method
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! $sessionPath::session::check
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! session::check
     then
         if [[ "$uri" != "$login_page" ]]
         then
@@ -122,6 +122,11 @@ function auth::custom::request ()
                 http::send::redirect temporary "${GET['requestUrl']:-home}" 
             fi
         fi
+    elif ! session::check
+    then
+        uri="${uri%/}"
+        http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
+        return 1
     fi
 }
 
