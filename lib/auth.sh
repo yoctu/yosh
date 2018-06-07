@@ -140,8 +140,5 @@ function auth::api ()
     local auth_method="$1"
     auth::source
    
-    $auth_method::auth::start || {
-        echo '{ "msg": "Unauthorized" }';
-        http::send::status 401;
-    }
+    $auth_method::auth::start || return 1
 }
