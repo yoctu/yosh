@@ -2,7 +2,7 @@ Source: yosh
 Section: utils
 Maintainer: Dzove855 <dzove855@yoctu.com>
 Build-Depends: debhelper
-Standards-Version: 0.8.17
+Standards-Version: 0.8.18
 
 Package: yosh
 Architecture: all

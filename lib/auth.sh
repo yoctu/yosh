@@ -24,7 +24,7 @@ function auth::check ()
         return
     fi
 
-    $login_method && authSuccessful=1
+    $login_method "$auth_method" && authSuccessful=1
     auth::start $auth_method
 }
 
@@ -137,6 +137,11 @@ function auth::saml::request ()
 
 function auth::api ()
 {
+    local auth_method="$1"
     auth::source
-    $auth_method
+   
+    $auth_method::auth::start || {
+        echo '{ "msg": "Unauthorized" }';
+        http::send::status 401;
+    }
 }
