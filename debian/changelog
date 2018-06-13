@@ -1,3 +1,9 @@
+yosh (0.8.19) unstable; urgency=low
+
+  * Url encode added for GET
+
+ -- Dzove855 <dzove855@yoctu.com>  Wed, 13 Jun 2018 18:41:15 +0200
+
 yosh (0.8.18) unstable; urgency=low
 
   * Add api auth

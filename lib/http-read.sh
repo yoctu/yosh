@@ -63,7 +63,7 @@ function http::read::get ()
     for key in "${raw[@]}"
     do
         trim key
-        GET[${key%%=*}]="${key#*=}"
+        GET[$(urlencode -d "${key%%=*}")]="$(urlencde -d "${key#*=}")"
     done
     
     unset key
