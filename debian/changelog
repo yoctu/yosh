@@ -1,3 +1,9 @@
+yosh (0.8.20) unstable; urgency=low
+
+  * Correct GET wirh URL Encode
+
+ -- Dzove855 <dzove855@yoctu.com>  Fri, 15 Jun 2018 09:51:15 +0200
+
 yosh (0.8.19) unstable; urgency=low
 
   * Url encode added for GET
