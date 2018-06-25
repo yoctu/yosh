@@ -10,3 +10,4 @@ sudo apt-get update
 sudo apt-get install yosh
 ```
 
+For more Information see: yosh.readthedocs.
