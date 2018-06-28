@@ -49,7 +49,12 @@ sudo chmod +x /bin/jq
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
 sudo apt-get update
-sudo apt-get --nodeps install yoctu-client-scripts
+cd /tmp
+sudo apt-get download yoctu-client-scripts
+sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
+
+cd -
+pwd
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
