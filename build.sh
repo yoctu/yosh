@@ -44,7 +44,7 @@ oldPWD="$PWD"
 
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
-echo "https://ppa.yoctu.com all unstable" | sudo tee /etc/apt/sources.list
+echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
 sudo apt update
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
