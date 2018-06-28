@@ -66,6 +66,8 @@ git config --global user.name "git"
 
 git-to-deb -U build
 
+head -20 debian/changelog
+
 ls -l ..
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
