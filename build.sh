@@ -54,7 +54,12 @@ sudo apt-get download yoctu-client-scripts
 sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
 
 cd -
-pwd
+
+filer-client.sh -u http://filer.test.flash-global.net -X get -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6 
+mv /tmp/yosh-changelog debian/
+sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
+sudo chmod + /bin/git-to-deb
+git-to-deb build
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
