@@ -41,7 +41,7 @@ shift $((OPTIND - 1))
 
 oldPWD="$PWD"
 
-sudo apt-get install -y apt-transport-https
+sudo apt-get install -y apt-transport-https debuild devscripts dpkg-buildpackage
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 sudo curl -o /bin/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
@@ -58,7 +58,7 @@ cd -
 filer-client.sh -u http://filer.test.flash-global.net -X get -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6 
 mv /tmp/yosh-changelog debian/
 sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
-sudo chmod + /bin/git-to-deb
+sudo chmod +x /bin/git-to-deb
 git-to-deb build
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
