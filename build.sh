@@ -41,17 +41,17 @@ shift $((OPTIND - 1))
 
 oldPWD="$PWD"
 
-sudo apt-get update
-sudo apt-get install -y apt-transport-https devscripts debianutils
+sudo apt-get update &>/dev/null
+sudo apt-get install -y apt-transport-https devscripts debianutils &>/dev/null
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 sudo curl -o /bin/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
 
-echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
-sudo apt-get update
+echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list 
+sudo apt-get update &>/dev/null
 cd /tmp
-sudo apt-get download yoctu-client-scripts
+sudo apt-get download yoctu-client-scripts &>/dev/null
 sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
 
 cd -
@@ -60,7 +60,13 @@ filer-client.sh -u http://filer.test.flash-global.net -X get -u bck8:f5b949f6-92
 mv /tmp/yosh-changelog debian/
 sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
 sudo chmod +x /bin/git-to-deb
+
+git config --global user.email "git@yoctu.com"
+git config --global user.name "git"
+
 git-to-deb build
+
+ls -l ..
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
