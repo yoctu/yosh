@@ -64,7 +64,7 @@ sudo chmod +x /bin/git-to-deb
 git config --global user.email "git@yoctu.com"
 git config --global user.name "git"
 
-git-to-deb build
+git-to-deb -U build
 
 ls -l ..
 
