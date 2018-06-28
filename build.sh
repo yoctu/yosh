@@ -41,6 +41,7 @@ shift $((OPTIND - 1))
 
 oldPWD="$PWD"
 
+sudo apt-get update
 sudo apt-get install -y apt-transport-https devscripts debianutils
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
