@@ -66,9 +66,13 @@ git config --global user.name "git"
 
 git-to-deb -U build
 
-head -20 debian/changelog
+filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "yosh-changelog" -f debian/changelog -C "need=Changelog file for yosh" -m "text/plain" -X update -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6
 
-ls -l ..
+mv ../yosh*.deb ../yosh.deb
+export LC_FLASH_BRANCH=$CPHP_GIT_REF && scp -P2222 -o StrictHostKeyChecking=no -i ~/.ssh/automate.key ../yosh.deb automate@term.test.flash-global.net:/tmp/${LC_FLASH_PROJECT_ID}.deb
+ 
+
+rm -rf debian
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
