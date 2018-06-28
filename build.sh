@@ -41,7 +41,7 @@ shift $((OPTIND - 1))
 
 oldPWD="$PWD"
 
-
+sudo apt install -y apt-transport-https
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
