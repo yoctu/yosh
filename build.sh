@@ -57,7 +57,7 @@ sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
 cd -
 
 filer-client.sh -U http://filer.test.flash-global.net -X get -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6 
-mv /tmp/yosh-changelog debian/
+mv /tmp/yosh-changelog debian/changelog
 sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
 sudo chmod +x /bin/git-to-deb
 
