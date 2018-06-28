@@ -41,11 +41,12 @@ shift $((OPTIND - 1))
 
 oldPWD="$PWD"
 
-sudo apt install -y apt-transport-https
+sudo apt-get install -y apt-transport-https
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
-sudo apt update
+sudo apt-get update
+sudo apt-get install yoctu-client-scripts
 
 #git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
