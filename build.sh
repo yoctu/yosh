@@ -46,14 +46,13 @@ sudo apt-get update &>/dev/null
 sudo apt-get install -y apt-transport-https devscripts debianutils &>/dev/null
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
-sudo curl -o /bin/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
-sudo chmod +x /bin/jq
-
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list 
 sudo apt-get update &>/dev/null
 cd /tmp
-sudo apt-get download yoctu-client-scripts &>/dev/null
-sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
+#sudo apt-get download yoctu-client-scripts &>/dev/null
+#sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
+
+sudo apt-get install yoctu-client-scripts
 
 cd -
 
