@@ -42,8 +42,7 @@ shift $((OPTIND - 1))
 fileuuid="bck8:6497ccd4-8df3-46bf-aa3e-cfd6e748da69"
 oldPWD="$PWD"
 
-sudo apt-get update &>/dev/null
-sudo apt-get install -y apt-transport-https devscripts debianutils &>/dev/null
+sudo apt-get update; sudo apt-get install -y apt-transport-https devscripts debianutils jq gridsite-clients
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list 
