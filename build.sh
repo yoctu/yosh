@@ -39,6 +39,7 @@ while getopts "${OPTS}" arg; do
 done
 shift $((OPTIND - 1))
 
+fileuuid="bck8:6497ccd4-8df3-46bf-aa3e-cfd6e748da69"
 oldPWD="$PWD"
 
 sudo apt-get update &>/dev/null
@@ -56,7 +57,8 @@ sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
 
 cd -
 
-filer-client.sh -U http://filer.test.flash-global.net -X get -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6 
+filer-client.sh -U http://filer.test.flash-global.net -X get -u $fileuuid
+
 mv /tmp/yosh-changelog debian/changelog
 sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
 sudo chmod +x /bin/git-to-deb
@@ -66,9 +68,10 @@ git config --global user.name "git"
 
 git-to-deb -U build
 
-filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "yosh-changelog" -f debian/changelog -C "need=Changelog file for yosh" -m "text/plain" -X update -u bck8:f5b949f6-92e5-4105-9662-b47f4a8b6ef6
+filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "yosh-changelog" -f debian/changelog -C "need=Changelog file for yosh" -m "text/plain" -X update -u $fileuuid
 
 mv ../yosh*.deb ../yosh.deb
+export LC_FLASH_PROJECT_ID="yosh"
 export LC_FLASH_BRANCH=$CPHP_GIT_REF && scp -P2222 -o StrictHostKeyChecking=no -i ~/.ssh/automate.key ../yosh.deb automate@term.test.flash-global.net:/tmp/${LC_FLASH_PROJECT_ID}.deb
  
 
