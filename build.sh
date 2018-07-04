@@ -26,6 +26,11 @@ function _quit ()
     exit $retCode
 }
 
+function _notify()
+{
+    echo -e "\n\n\n\n\n################################## $* #####################################\n\n\n\n\n" >&2
+}
+
 while getopts "${OPTS}" arg; do
     case "${arg}" in
         s) _run="echo"                                                  ;;
@@ -40,44 +45,54 @@ done
 shift $((OPTIND - 1))
 
 fileuuid="bck8:6497ccd4-8df3-46bf-aa3e-cfd6e748da69"
-oldPWD="$PWD"
+project="yosh"
 
-sudo apt-get update; sudo apt-get install -y apt-transport-https devscripts debianutils jq gridsite-clients
+trap '_quit 2 "An Error occured while running script"' ERR
+
+_notify "Install dependencies"
+sudo apt-get update >&/dev/null ; sudo apt-get install -y apt-transport-https devscripts debianutils jq gridsite-clients &>/dev/null 
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
-curl -o /tmp/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+curl -s -o /tmp/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 chmod +x /tmp/jq
 sudo mv /tmp/jq /usr/bin/jq
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list 
 sudo apt-get update &>/dev/null
 cd /tmp
-#sudo apt-get download yoctu-client-scripts &>/dev/null
-#sudo dpkg  --ignore-depends=jq -i yoctu-client-scripts*
 
-sudo apt-get install yoctu-client-scripts
+sudo apt-get install yoctu-client-scripts &>/dev/null
 
+_notify "Finished installing dependecies"
+
+_notify "Fetch changelog"
 cd -
 
 filer-client.sh -U http://filer.test.flash-global.net -X get -u $fileuuid
 
-mv /tmp/yosh-changelog debian/changelog
-sudo curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
+mv /tmp/$project-changelog debian/changelog
+
+_notify "Fetched changelog"
+
+_notify "Setup Github"
+sudo -s curl -o /bin/git-to-deb -O -L https://ppa.yoctu.com/git-to-deb 
 sudo chmod +x /bin/git-to-deb
 
 git config --global user.email "git@yoctu.com"
 git config --global user.name "git"
+_notify "Setup done"
 
+_notify "Build package"
 git-to-deb -U build
 
-filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "yosh-changelog" -f debian/changelog -C "need=Changelog file for yosh" -m "text/plain" -X update -u $fileuuid
+filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "$project-changelog" -f debian/changelog -C "need=Changelog file for $project" -m "text/plain" -X update -u $fileuuid
+_notify "Build done"
 
-mv ../yosh*.deb ../yosh.deb
-export LC_FLASH_PROJECT_ID="yosh"
-export LC_FLASH_BRANCH=$CPHP_GIT_REF && scp -P2222 -o StrictHostKeyChecking=no -i ~/.ssh/automate.key ../yosh.deb automate@term.test.flash-global.net:/tmp/${LC_FLASH_PROJECT_ID}.deb
- 
+_notify "Rsync to ppa"
+mv ../$project*.deb ../$project.deb
+export LC_FLASH_PROJECT_ID="$project"
+export LC_FLASH_BRANCH=$CPHP_GIT_REF && scp -P2222 -o StrictHostKeyChecking=no -i ~/.ssh/automate.key ../$project.deb automate@term.test.flash-global.net:/tmp/${LC_FLASH_PROJECT_ID}.deb
+_notify "Rsync done"
 
 rm -rf debian
-
-#git log --first-parent --pretty="format:  * %s (%aN, %aI)"
 
