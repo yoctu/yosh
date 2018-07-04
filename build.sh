@@ -47,7 +47,7 @@ wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 curl -o /tmp/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 chmod +x /tmp/jq
-mv /tmp/jq /usr/bin/jq
+sudo mv /tmp/jq /usr/bin/jq
 
 echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list 
 sudo apt-get update &>/dev/null
