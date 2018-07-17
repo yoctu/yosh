@@ -84,7 +84,7 @@ git config --global user.name "git"
 _notify "Setup done"
 
 _notify "Build package"
-git-to-deb -U build -u $btanch >/dev/null
+git-to-deb -U build -u $branch >/dev/null
 
 filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "$project-changelog" -f debian/changelog -C "need=Changelog file for $project" -m "text/plain" -X update -u $fileuuid
 _notify "Build done"
