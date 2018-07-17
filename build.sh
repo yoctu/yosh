@@ -46,6 +46,7 @@ shift $((OPTIND - 1))
 
 fileuuid="bck8:6497ccd4-8df3-46bf-aa3e-cfd6e748da69"
 project="yosh"
+IFS=/ read refs heads branch <<<$CPHP_GIT_REF
 
 trap '_quit 2 "An Error occured while running script"' ERR
 
@@ -83,7 +84,7 @@ git config --global user.name "git"
 _notify "Setup done"
 
 _notify "Build package"
-git-to-deb -U build >/dev/null
+git-to-deb -U build -u $btanch >/dev/null
 
 filer-client.sh -U http://filer.test.flash-global.net -c MISCELLANEOUS -n "$project-changelog" -f debian/changelog -C "need=Changelog file for $project" -m "text/plain" -X update -u $fileuuid
 _notify "Build done"
