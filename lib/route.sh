@@ -48,7 +48,7 @@ function route::api::mode ()
     auths="$(route::get::auth)"
     auths=(${auths//,/ })
 
-    route::audit
+    (( route_auditing )) && @audit "$application_name"
 
     [[ -z "$auths" ]] && auths=("none")
 
@@ -82,7 +82,7 @@ function route::check ()
     uri="${uri#/}"
     uri="${uri:-/}"
 
-    route::audit    
+    (( route_auditing )) && @audit "$application_name"
 
     route::get::login
 
