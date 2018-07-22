@@ -1,59 +1,45 @@
-# logging lib
-# This lib does logging and auditing.
-# you can specify multiple commands
-# Like auditing, logging etc...
-# Everything is a different array
+declare -A LOG
 
-# Ex: 
-#       LOGGING['log':'module']=""
-#       LOGGING['log':'tag']=""
-#       LOGGING['audit':'module']=""
-#       LOGGING['audit':'tag']=""
-
-#        OPTIONS:
-#            -l  level
-#            -t  Tag
-#            -m  Method
+# Config should be like this
+# LOG['@log']="FUNCNAME"
+# LOG['@deprecated']="FUNCNAME"
+# LOG['@error']="FUNCNAME"
+# LOG['@audit']="FUNCNAME"
 #
-#            Message is all after 
+# The function's should be in the func dir
+# 
+# Default Logging
+LOG['@log']="rsyslog::log"
+LOG['@deprecated']="rsyslog::deprecated"
+LOG['@error']="rsyslog::error"
+LOG['@audit']="rsyslog::audit"
 
-for file in /usr/share/yosh/logging/*
-do
-    source $file
-done
+function @log ()
+{
+    # This function can be overwritten or create just an alias @log
+    local _msg="$*"
 
-# Source custom lib's
-if ls -A ${DOCUMENT_ROOT%/}/../logging/* &>/dev/null
-then
-    for file in ${DOCUMENT_ROOT%/}/../logging/*
-    do
-        source $file
-    done
-fi
+    ${LOG[$FUNCNAME]} "$_msg"
+}
 
-default_logging_method="${default_logging_method:-file}"
-default_auditing_method="${default_auditing_method:-file}"
-auditing="${auditing:-0}"
+function @deprecated () 
+{
+    local _name="$*"
+    
+    ${LOG[$FUNCNAME]} "YOSH Depcrecated: $_name will no longer be available in the next Release!"
+}
 
-function log ()
-{    
-    local _level _tag _message _method
+function @error ()
+{
+    local _msg="$*"
+    
+    ${LOG[$FUNCNAME]} "YOSH Error: $_msg"
+}
 
-    # Hmmmm Should we do it with a different way?
-    while getopts "l:m:" arg; do
-        case "${arg}" in
-            l) _level="${OPTARG}"               ;;
-            m) _method="${OPTARG}"              ;;
-        esac
-    done    
-    shift $((OPTIND - 1))
+function @audit ()
+{
+    local _msg="$*"
 
-    # shellcheck disable=SC2034
-    _message="$*"
-
-    [[ -z "$_level" || -z "$_method" || -z "$_message" ]] && return
-
-    _tag="${LOGGING[$_method:'tag']}"
-    ${LOGGING[$_method:'method']}::log
+    ${LOG[$FUNCNAME]} "YOSH Audit: $_msg"
 }
 
