@@ -19,27 +19,27 @@ function @log ()
     # This function can be overwritten or create just an alias @log
     local _msg="$*"
 
-    ${LOG[$FUNCNAME]} "$_msg"
+    ${LOG[$FUNCNAME]} "${application_name^^} Log: $_msg"
 }
 
 function @deprecated () 
 {
     local _name="$*"
     
-    ${LOG[$FUNCNAME]} "YOSH Depcrecated: $_name will no longer be available in the next Release!"
+    ${LOG[$FUNCNAME]} "${application_name^^} Depcrecated: $_name will no longer be available in the next Release!"
 }
 
 function @error ()
 {
     local _msg="$*"
     
-    ${LOG[$FUNCNAME]} "YOSH Error: $_msg"
+    ${LOG[$FUNCNAME]} "${application_name^^} Error: $_msg"
 }
 
 function @audit ()
 {
     local _msg="$*"
 
-    ${LOG[$FUNCNAME]} "YOSH Audit: $_msg"
+    ${LOG[$FUNCNAME]} "${application_name^^} Audit: $_msg"
 }
 
