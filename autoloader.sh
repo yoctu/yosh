@@ -1,3 +1,5 @@
+# Auto Load all
+
 for file in /usr/share/yosh/lib/*
 do
     source $file
