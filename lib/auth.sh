@@ -1,19 +1,3 @@
-function auth::source ()
-{
-    for auth_plugin in /usr/share/yosh/auth/*
-    do
-        source $auth_plugin
-    done
-
-    if ls -A ${DOCUMENT_ROOT%/}/../auth/*.sh &>/dev/null
-    then
-        for auth_plugin in ${DOCUMENT_ROOT%/}/../auth/*
-        do
-            source $auth_plugin
-        done
-    fi
-}
-
 function auth::check ()
 {
     local auth_method="${1,,}"
@@ -34,8 +18,6 @@ function auth::start ()
 
     [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
-    auth::source
-
     ${auth_method}::auth::start || return 1
 #    http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
@@ -47,8 +29,6 @@ function auth::check::rights ()
     local auth_method="${1,,}" auth_rights="${2,,}"
 
     [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && { rightsSuccessful="1"; return; }
-
-    auth::source
 
     if [[ ! "$auth_method" == "none" ]]
     then
@@ -138,7 +118,5 @@ function auth::saml::request ()
 function auth::api ()
 {
     local auth_method="$1"
-    auth::source
-   
     $auth_method::auth::start || return 1
 }
