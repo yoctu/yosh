@@ -14,5 +14,19 @@ else
     TMPDIR="/tmp"
 fi
 
+# Source all config from DOCUMENT_ROOT/config/
+for file in ${DOCUMENT_ROOT%/}/../config/*.sh
+do
+    source $file
+done
+
+if ls -A ${etc_conf_dir%/}/*.sh &>/dev/null
+then
+    for file in ${etc_conf_dir%/}/*.sh
+    do
+        source $file
+    done
+fi
+
 # Just remove final slach :p
 TMPDIR="${TMPDIR%/}"

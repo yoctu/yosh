@@ -2,7 +2,7 @@ function json::set::parent()
 {
     [[ -z "$1" ]] && return 1
 
-    typeset -n _json_array="$1"
+    _json_array="$1"
 
 }
 
@@ -12,18 +12,17 @@ function json::set::array()
 
     [[ -z "$1" ]] && return 1
     [[ -z "$2" ]] && return 1
-    [[ -z "$3" ]] && return 1
 
-    typeset -n _json_tmp_array="$3"
+    typeset -n _json_tmp_array="$2"
+    typeset -n _json_tmp_array_2="$1"
 
-    for key in "${_json_tmp_array}"
+    for key in "${_json_tmp_array[@]}"
     do
         _value+="\"$key\","
     done
 
-    eval ${1}[$2]="[${_value%,}]"
+    _json_tmp_array_2[$2]="[${_value%,}]"
 
-    unset _json_tmp_array
 }
 
 function json::set::child()
@@ -31,12 +30,14 @@ function json::set::child()
     [[ -z "$1" ]] && return 1
     [[ -z "$2" ]] && return 1
 
-    eval ${1}[${2}]="$(json::create "$2")"
+    typeset -n _json_tmp_array="$1"
+    _json_tmp_array[${2}]=$(json::create "$2")
+
 }
 
 function json::build::family()
 {
-    json::create "_json_array"
+    json::create "$_json_array"
 }
 
 function json::create()
@@ -57,3 +58,4 @@ function json::create()
 
     unset _json_tmp_array
 }
+
