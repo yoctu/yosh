@@ -1,4 +1,4 @@
-function json::set::parent() 
+function json::set::prev() 
 {
     [[ -z "$1" ]] && return 1
 
@@ -25,7 +25,7 @@ function json::set::array()
 
 }
 
-function json::set::child()
+function json::set::next()
 {
     [[ -z "$1" ]] && return 1
     [[ -z "$2" ]] && return 1
@@ -35,7 +35,7 @@ function json::set::child()
 
 }
 
-function json::build::family()
+function json::build::all()
 {
     json::create "$_json_array"
 }
