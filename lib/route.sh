@@ -32,7 +32,7 @@ function route::api::mode ()
 {
     local errorMsg='{ "msg": "No Route Found!" }' unauthorizedMsg='{ "msg": "No Authorization!" }' uri
 
-    uri="${REQUEST_URI%\?*}"
+    uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
     uri=(${uri//\// })
 
@@ -78,7 +78,7 @@ function route::check ()
     # route_method="route::check"
     local uri
 
-    uri="${REQUEST_URI%\?*}"
+    uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
     uri="${uri:-/}"
 
@@ -112,7 +112,7 @@ function route::check ()
     elif [[ -f "${html_dir}/${uri%.html}.html" ]]
     then
         html::print::out ${html_dir}/${uri%.html}.html
-    elif [[ "$uri" =~ ^(css|js|img|fonts)/.* ]]
+    elif [[ "$uri" =~ ^(css|js|img|fonts|player)/.* ]]
     then
         uri="${uri#*/}"
         ${BASH_REMATCH[1]}::print::out ${uri} || route::error
