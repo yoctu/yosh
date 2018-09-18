@@ -4,18 +4,13 @@ shopt -s nullglob
 
 # Auto Load all
 
-for file in ${etc_conf_dir%/}/*.sh
-do
-    source $file
-done
-
 for file in /usr/share/yosh/{lib,func,auth,config,session}/*.sh
 do
     source $file
 done
 
 # Source custom lib's
-for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,${etc_conf_dir%/},session}/*.sh
+for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,session}/*.sh
 do
     source $file
 done
@@ -28,3 +23,7 @@ do
     source $file
 done
 
+for file in ${etc_conf_dir%/}/*
+do
+    source $file
+done
