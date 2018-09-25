@@ -31,6 +31,7 @@ function http::read::post ()
     then
 
         # get data raw in json key
+        # Should we try to decode json to array?
         POST['json']="${raw}"
 
     else
