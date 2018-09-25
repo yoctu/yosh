@@ -1,29 +1,29 @@
+# setopt functions we need
+shopt -s extglob
+shopt -s nullglob
+
 # Auto Load all
 
-for file in /usr/share/yosh/lib/*
-do
-    source $file
-done
-
-for file in /usr/share/yosh/func/*
+for file in /usr/share/yosh/{lib,func,auth,config,session}/*.sh
 do
     source $file
 done
 
 # Source custom lib's
-if ls -A ${DOCUMENT_ROOT%/}/../lib/* &>/dev/null
-then
-    for file in ${DOCUMENT_ROOT%/}/../lib/*
-    do
-        source $file
-    done
-fi
+for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,session}/*.sh
+do
+    source $file
+done
 
-if ls -A ${DOCUMENT_ROOT%/}/../func/* &>/dev/null
-then
-    for file in ${DOCUMENT_ROOT%/}/../func/*
-    do
-        source $file
-    done
-fi
 
+# Packaging system
+# Lib Files for packaging system
+for file in ${DOCUMENT_ROOT%/}/../package/*/{lib,func,auth,config,session}/*.sh
+do
+    source $file
+done
+
+for file in ${etc_conf_dir%/}/*
+do
+    source $file
+done
