@@ -7,6 +7,8 @@ source /usr/share/yosh/autoloader.sh
 
 function _exit () {
     # Send header
+
+    http::send::header Access-Control-Allow-Origin "${access_control_allow_origin:-*}"
     http::send::out
 
     # send data from route
