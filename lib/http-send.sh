@@ -1,6 +1,7 @@
 #!/bin/bash
 
 declare -A HEADERS_TO_SENT
+HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
 
 function http::send::header ()
 {
@@ -78,6 +79,13 @@ function http::send::out ()
 
     # From HTTP RFC 2616 send newline before body
     echo 
+}
+
+function http::send::options ()
+{
+    local _methods="${HTTP_METHODS[@]}"
+    http::send::header Allow "${_methods// /,}"
+         
 }
 
 # set defaults
