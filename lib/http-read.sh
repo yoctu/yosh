@@ -16,10 +16,8 @@ function http::read::post ()
     then
 
         # Set IFS for array declaration
-
-        # get raw in array
-        raw=(${raw//&/ })
-
+        IFS='&' read -a raw <<< "$raw"       
+ 
         # Save data as POST[KEY]=VALUE
         for key in "${raw[@]}"
         do
@@ -58,7 +56,7 @@ function http::read::get ()
 
     [[ "$REQUEST_URI" =~ .*\?.* ]] && raw="${REQUEST_URI#*\?}"
 
-    raw=(${raw//&/ })
+    IFS='&' read -a raw <<< "$raw"
 
     # Save data as GET[KEY]=VALUE
     for key in "${raw[@]}"
@@ -76,9 +74,7 @@ function http::read::cookie ()
 
     declare -Ag COOKIE
 
-
-    # get raw in array
-    raw=(${HTTP_COOKIE//;/ })
+    IFS=';' read -a raw <<< "$HTTP_COOKIE"
 
     for key in "${raw[@]}"
     do
