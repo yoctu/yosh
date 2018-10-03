@@ -11,7 +11,7 @@ function Json::set::array()
     local _value
 
     [[ -z "$1" ]] && return 1
-    [[ -z "$2" ]] && return 1
+    [[ -z "$2" ]] && return 2
 
     typeset -n _json_tmp_array="$2"
     typeset -n _json_tmp_array_2="$1"
@@ -28,7 +28,7 @@ function Json::set::array()
 function Json::set::next()
 {
     [[ -z "$1" ]] && return 1
-    [[ -z "$2" ]] && return 1
+    [[ -z "$2" ]] && return 2
 
     typeset -n _json_tmp_array="$1"
     _json_tmp_array[${2}]=$(json::create "$2")
