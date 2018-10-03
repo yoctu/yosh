@@ -1,4 +1,4 @@
-function json::set::prev() 
+function Json::set::prev() 
 {
     [[ -z "$1" ]] && return 1
 
@@ -6,7 +6,7 @@ function json::set::prev()
 
 }
 
-function json::set::array()
+function Json::set::array()
 {
     local _value
 
@@ -25,7 +25,7 @@ function json::set::array()
 
 }
 
-function json::set::next()
+function Json::set::next()
 {
     [[ -z "$1" ]] && return 1
     [[ -z "$2" ]] && return 1
@@ -35,12 +35,12 @@ function json::set::next()
 
 }
 
-function json::build::all()
+function Json::build::all()
 {
-    json::create "$_json_array"
+    Json::create "$_json_array"
 }
 
-function json::create()
+function Json::create()
 {
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy

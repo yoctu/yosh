@@ -9,28 +9,10 @@
 # RewriteRule ^.*$ /main.sh [NC,L]
 
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
-function route::audit ()
-{
-    if (( route_auditing ))
-    then
-
-        for key in "${!GET[@]}"
-        do
-            _get_message+="| get_${key}=\"${GET[$key]}\" "
-        done
-
-        for key in "${!POST[@]}"
-        do
-            _post_message+="| post_${key}=\"${POST[$key]}\" "
-        done
-
-        log -m $default_auditing_method -l info "ROUTE=$uri $_get_message $_post_message"
-    fi
-}
 
 function route::api::mode ()
 {
-    local errorMsg='{ "msg": "No Route Found!" }' unauthorizedMsg='{ "msg": "No Authorization!" }' uri
+    local uri
 
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
@@ -41,7 +23,7 @@ function route::api::mode ()
     # Api Mode
     # route_method="route::api::mode"
     
-    [[ "${uri[0]}" == "api" ]] || { http::send::status 404; echo "$errorMsg"; return; }
+    [[ "${uri[0]}" == "api" ]] || api::send::not_found
 
     route::get::login
 
@@ -60,12 +42,12 @@ function route::api::mode ()
         break
     done
 
-    ! [[ "$authSuccessful" ]] && { http::send::status 401; echo "$unauthorizedMsg"; return; }
-    ! [[ "$rightsSuccessful" ]] && { http::send::status 401; echo "$unauthorizedMsg"; return; }
+    ! [[ "$authSuccessful" ]] && api::send::unauthorized
+    ! [[ "$rightsSuccessful" ]] && api::send::unauthorized
 
     if [[ -z "$api_command" ]]
     then
-        [[ -f "${api_dir%/}/${uri[1]}" ]] || { http::send::status 404; echo "$errorMsg"; return; }
+        [[ -f "${api_dir%/}/${uri[1]}" ]] || api::send::not_found
         source ${api_dir%/}/${uri[1]}
     else
         $api_command
