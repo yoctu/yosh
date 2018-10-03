@@ -101,3 +101,16 @@ function commandExist ()
     type $commandName &>/dev/null
 }
 
+function inArray ()
+{
+    local key="$1" array="2"
+
+    typeset -n array="$array"
+
+    for value in "${array[@]}"
+    do
+        [[ "$key" == "$value" ]] && return 0
+    done
+
+    return 1
+}

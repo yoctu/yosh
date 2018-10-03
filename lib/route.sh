@@ -103,6 +103,12 @@ function route::check ()
     # just be sure
     uri="${uri:-/}"
 
+    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]
+    then
+        http::send::options
+        return
+    fi
+
     if [[ ! -z "${ROUTE[/${uri#/}:$REQUEST_METHOD]}" ]]
     then
         eval ${ROUTE[/${uri#/}:$REQUEST_METHOD]}
