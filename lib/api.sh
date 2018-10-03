@@ -1,9 +1,9 @@
 # some useful api functions 
 
 declare -A API_MSG
-API_MSG['error']="An Error occured while running request...."
-API_MSG['not_found']="Request not found"
-API_MSG['unauthorized']="No Authorization!"
+API_MSG['500']="An Error occured while running request...."
+API_MSG['404']="Request not found"
+API_MSG['401']="No Authorization!"
 
 declare -A API_RESPONSE
 
@@ -24,7 +24,7 @@ function api::call::function ()
 function api::send::fail ()
 {
     http::send::status 500
-    API_RESPONSE['msg']="${API_MSG['error']}"
+    API_RESPONSE['msg']="${API_MSG['500']}"
 
     Json::create API_RESPONSE    
     exit
@@ -33,7 +33,7 @@ function api::send::fail ()
 function api::send::unauthorized ()
 {
     http::send::status 401
-    API_RESPONSE['msg']="${API_MSG['unauthorized']}"
+    API_RESPONSE['msg']="${API_MSG['401']}"
 
     Json::create API_RESPONSE
     exit
@@ -42,7 +42,7 @@ function api::send::unauthorized ()
 function api::send::not_found ()
 {
     http::send::status 404
-    API_RESPONSE['msg']="${API_MSG['not_found']}"
+    API_RESPONSE['msg']="${API_MSG['404']}"
 
     Json::create API_RESPONSE
     exit
