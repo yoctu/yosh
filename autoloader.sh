@@ -9,6 +9,11 @@ do
     source $file
 done
 
+for file in /usr/share/yosh/package/*/{lib,func,auth,config,session}/*.sh
+do
+    source $file
+done
+
 # Source custom lib's
 for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,session}/*.sh
 do
