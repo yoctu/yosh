@@ -158,3 +158,4 @@ function route::get::rights ()
     echo "${RIGHTS['/':$REQUEST_METHOD]:-none}"
 }
 
+router="route::check"

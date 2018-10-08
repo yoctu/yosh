@@ -59,3 +59,15 @@ function Json::create()
     unset _json_tmp_array
 }
 
+function Json::to::array()
+{
+    local arrayname="$1" json="${@:2}"
+
+    typeset -n array="$arrayname"
+
+    while read -r key
+    do
+        array[$key]="$(echo "$json" | jq -r .$key)"
+    done < <(echo "$json" | jq -r 'keys[]')
+}
+

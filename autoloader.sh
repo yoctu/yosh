@@ -4,18 +4,18 @@ shopt -s nullglob
 
 # Auto Load all
 
-for file in /usr/share/yosh/{lib,func,auth,config,session}/*.sh
+for file in /usr/share/yosh/{lib,func,auth,session,config}/*.sh
 do
     source $file
 done
 
-for file in /usr/share/yosh/package/*/{lib,func,auth,config,session}/*.sh
+for file in /usr/share/yosh/package/*/{lib,func,auth,session,config}/*.sh
 do
     source $file
 done
 
 # Source custom lib's
-for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,session}/*.sh
+for file in ${DOCUMENT_ROOT%/}/../{lib,func,auth,session,config}/*.sh
 do
     source $file
 done
@@ -23,7 +23,7 @@ done
 
 # Packaging system
 # Lib Files for packaging system
-for file in ${DOCUMENT_ROOT%/}/../package/*/{lib,func,auth,config,session}/*.sh
+for file in ${DOCUMENT_ROOT%/}/../package/*/{lib,func,auth,session,config}/*.sh
 do
     source $file
 done
