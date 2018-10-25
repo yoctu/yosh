@@ -12,7 +12,7 @@ function api::search::function ()
 
     isFunction "${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || api::send::not_found
 
-    ${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
+    api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
 }
 
 function api::call::function ()
