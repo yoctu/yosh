@@ -10,7 +10,7 @@ declare -A API_RESPONSE
 function api::search::function ()
 {
 
-    isFunction "${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || api::send::not_found
+    isFunction "api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || api::send::not_found
 
     api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
 }
