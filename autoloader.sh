@@ -28,7 +28,7 @@ do
     source $file
 done
 
-for file in ${etc_conf_dir%/}/*
+for file in ${etc_conf_dir%/}/*.sh
 do
     source $file
 done
