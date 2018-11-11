@@ -1,4 +1,4 @@
-function json::set::prev() 
+function Json::set::prev() 
 {
     [[ -z "$1" ]] && return 1
 
@@ -6,12 +6,12 @@ function json::set::prev()
 
 }
 
-function json::set::array()
+function Json::set::array()
 {
     local _value
 
     [[ -z "$1" ]] && return 1
-    [[ -z "$2" ]] && return 1
+    [[ -z "$2" ]] && return 2
 
     typeset -n _json_tmp_array="$2"
     typeset -n _json_tmp_array_2="$1"
@@ -25,22 +25,22 @@ function json::set::array()
 
 }
 
-function json::set::next()
+function Json::set::next()
 {
     [[ -z "$1" ]] && return 1
-    [[ -z "$2" ]] && return 1
+    [[ -z "$2" ]] && return 2
 
     typeset -n _json_tmp_array="$1"
     _json_tmp_array[${2}]=$(json::create "$2")
 
 }
 
-function json::build::all()
+function Json::build::all()
 {
-    json::create "$_json_array"
+    Json::create "$_json_array"
 }
 
-function json::create()
+function Json::create()
 {
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy
@@ -57,5 +57,17 @@ function json::create()
                 ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'    
 
     unset _json_tmp_array
+}
+
+function Json::to::array()
+{
+    local arrayname="$1" json="${@:2}"
+
+    typeset -n array="$arrayname"
+
+    while read -r key
+    do
+        array[$key]="$(echo "$json" | jq -r .$key)"
+    done < <(echo "$json" | jq -r 'keys[]')
 }
 

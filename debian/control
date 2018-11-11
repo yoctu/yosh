@@ -8,5 +8,5 @@ Package: yosh
 Architecture: all
 Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
 Priority: optional
-Depends: jq, ldap-utils, openssl, xmlsec1, xmlstarlet, gridsite-clients
+Depends: jq, ldap-utils, openssl, xmlsec1, xmlstarlet, gridsite-clients, uuid-runtime
 Description: yosh (yoctu shell) - Micro Web Framework lib
