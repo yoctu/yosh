@@ -1,13 +1,11 @@
-function Json::set::prev() 
-{
+Json::set::prev(){
     [[ -z "$1" ]] && return 1
 
     _json_array="$1"
 
 }
 
-function Json::set::array()
-{
+Json::set::array(){
     local _value
 
     [[ -z "$1" ]] && return 1
@@ -25,8 +23,7 @@ function Json::set::array()
 
 }
 
-function Json::set::next()
-{
+Json::set::next(){
     [[ -z "$1" ]] && return 1
     [[ -z "$2" ]] && return 2
 
@@ -35,13 +32,11 @@ function Json::set::next()
 
 }
 
-function Json::build::all()
-{
+Json::build::all(){
     Json::create "$_json_array"
 }
 
-function Json::create()
-{
+Json::create(){
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy
 
@@ -59,15 +54,33 @@ function Json::create()
     unset _json_tmp_array
 }
 
-function Json::to::array()
-{
-    local arrayname="$1" json="${@:2}"
+Json::to::array(){
+    local arrayname="$1" json="${*:2}"
 
-    typeset -n array="$arrayname"
+    local -n array="$arrayname"
 
     while read -r key
     do
-        array[$key]="$(echo "$json" | jq -r .$key)"
+        if ! echo "$json" | jq -r ".$key | keys[]" &>/dev/null
+        then
+            array["$key"]="$(echo "$json" | jq -r .$key)"
+        else
+            while read -r key2
+            do
+                if ! echo "$json" | jq -r ".$key.$key2 | keys[]" &>/dev/null
+                then
+                    array["$key":"$key2"]="$(echo "$json" | jq -r .$key.$key2)"
+                else
+                    while read -r key3
+                    do
+                        array["$key":"$key2":"$key3"]="$(echo "$json" | jq -r .$key.$key2.$key3)"
+                    done < <(echo "$json" | jq -r ".$key.$key2 | keys[]")
+                fi
+            done < <(echo "$json" | jq -r ".$key | keys[]")
+        fi
     done < <(echo "$json" | jq -r 'keys[]')
 }
 
+Json::to::array(){
+    until [[ 
+}
