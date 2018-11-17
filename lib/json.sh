@@ -59,7 +59,6 @@ Json::to::array(){
     local json="${*:2}"
 
     local tmpGlobKey
-    local tmpKey
 
     while read line; do
         line="${line/:/}"
@@ -70,18 +69,18 @@ Json::to::array(){
 }
 
 Json::to::array::recursive(){
-    local json="${1}" sub="${2:-keys[]}"
-    local tmpParKey="$tmpGlobKey"
+    local json="${1}" sub="${2:-keys_unsorted[]}"
+    local parsed_sub="${sub// | keys_unsorted\[\]/}"
+    local parsed_sub="${parsed_sub//keys_unsorted\[\]}"
 
     while read keys; do
-        tmpCurKey="$tmpParKey.$keys"
-        if echo "$json" | jq -r "$tmpCurKey | keys[]" &>/dev/null; then
-            tmpGlobKey+=".$keys"
-            Json::to::array::recursive "$json" "$tmpGlobKey | keys[]"
+        tmpCurKey="$parsed_sub.$keys"
+        if echo "$json" | jq -r "$tmpCurKey | keys_unsorted[]" &>/dev/null; then
+            Json::to::array::recursive "$json" "$parsed_sub.$keys | keys_unsorted[]"
         else
             tmpKey+="$keys"
-            echo "${tmpGlobKey//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
-            
+            echo "${parsed_sub//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
         fi
     done < <(echo "$json" | jq -r "$sub")
 }
+
