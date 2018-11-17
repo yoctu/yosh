@@ -55,32 +55,33 @@ Json::create(){
 }
 
 Json::to::array(){
-    local arrayname="$1" json="${*:2}"
+    local -n array="$1" 
+    local json="${*:2}"
 
-    local -n array="$arrayname"
+    local tmpGlobKey
+    local tmpKey
 
-    while read -r key
-    do
-        if ! echo "$json" | jq -r ".$key | keys[]" &>/dev/null
-        then
-            array["$key"]="$(echo "$json" | jq -r .$key)"
-        else
-            while read -r key2
-            do
-                if ! echo "$json" | jq -r ".$key.$key2 | keys[]" &>/dev/null
-                then
-                    array["$key":"$key2"]="$(echo "$json" | jq -r .$key.$key2)"
-                else
-                    while read -r key3
-                    do
-                        array["$key":"$key2":"$key3"]="$(echo "$json" | jq -r .$key.$key2.$key3)"
-                    done < <(echo "$json" | jq -r ".$key.$key2 | keys[]")
-                fi
-            done < <(echo "$json" | jq -r ".$key | keys[]")
-        fi
-    done < <(echo "$json" | jq -r 'keys[]')
+    while read line; do
+        line="${line/:/}"
+        array[${line%%=*}]="${line#*=}"
+    done < <(Json::to::array::recursive "$json")
+
+    #declare -p array
 }
 
-Json::to::array(){
-    until [[ 
+Json::to::array::recursive(){
+    local json="${1}" sub="${2:-keys[]}"
+    local tmpParKey="$tmpGlobKey"
+
+    while read keys; do
+        tmpCurKey="$tmpParKey.$keys"
+        if echo "$json" | jq -r "$tmpCurKey | keys[]" &>/dev/null; then
+            tmpGlobKey+=".$keys"
+            Json::to::array::recursive "$json" "$tmpGlobKey | keys[]"
+        else
+            tmpKey+="$keys"
+            echo "${tmpGlobKey//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
+            
+        fi
+    done < <(echo "$json" | jq -r "$sub")
 }
