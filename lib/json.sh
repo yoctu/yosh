@@ -58,14 +58,10 @@ Json::to::array(){
     local -n array="$1" 
     local json="${*:2}"
 
-    local tmpGlobKey
-
     while read line; do
         line="${line/:/}"
         array[${line%%=*}]="${line#*=}"
     done < <(Json::to::array::recursive "$json")
-
-    #declare -p array
 }
 
 Json::to::array::recursive(){
