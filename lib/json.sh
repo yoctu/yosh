@@ -1,4 +1,8 @@
 Json::create(){
+    # Argument should be an array
+    # to get a recursive json you can put in an array like this:
+    # array['key':'subkey']="value"
+
     local -n array="$1"
     
     local -a tmparray
@@ -40,6 +44,9 @@ Json::create(){
 }
 
 Json::to::array(){
+    # Argmuent should be an array name and a json
+    # the given array will contain the parsed json data
+    
     local -n array="$1" 
     local json="${*:2}"
 
