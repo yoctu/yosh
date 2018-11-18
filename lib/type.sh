@@ -38,5 +38,7 @@ type::variable::set(){
     for value in "$@"; do
         [[ -z "${!value}" ]] && return 1
     done
+
+    return 0
 }
 
