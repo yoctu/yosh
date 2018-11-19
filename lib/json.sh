@@ -1,3 +1,24 @@
+Json::create::simple (){
+    local array="$1"
+
+    [[ -z "$array" ]] && return
+
+    # redefine array name
+    typeset -n array="$array"
+
+    # this function generate an json from an array
+    # jq using from FAQ mentioned by CharlesDuffy
+
+    for key in "${!array[@]}"
+    do
+            printf '%s\0%s\0' "$key" "${array[$key]}"
+    done | jq -c -Rs -S '
+                split("\u0000")
+                | . as $a
+                | reduce range(0; length/2) as $i 
+                ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'
+}
+
 Json::create(){
     # Argument should be an array
     # to get a recursive json you can put in an array like this:
