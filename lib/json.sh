@@ -95,3 +95,9 @@ Json::to::array::recursive(){
     done < <(echo "$json" | jq -r "$sub")
 }
 
+# to be more simple
+alias json::to::array='Json::to::array'
+alias json::create='Json::create'
+alias json::create::simple='Json::create::simple'
+alias array::to::json='Json::create'
+
