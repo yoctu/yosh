@@ -32,6 +32,16 @@ type::array::contains(){
     return 1
 }
 
+type::array::is::assoc(){
+    if declare -p "$1" &>/dev/null; then
+        if [[ "$(declare -p "$1")" =~ "declare -A $1" ]]; then
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
 type::variable::set(){
     # Check if varaibles are set
 

@@ -3,6 +3,7 @@ Json::create(){
     # to get a recursive json you can put in an array like this:
     # array['key':'subkey']="value"
 
+    type::array::is::assoc "$1" || return 1
     local -n array="$1"
     
     local -a tmparray
@@ -27,20 +28,21 @@ Json::create(){
 
     local tmpFile="$(mktemp)"
     local tmpFile2="$(mktemp)"
-    count="0"
     for entry in "${tmparray[@]}"; do
-        if ! (( count )); then
+        if ! [[ -s "$tmpFile" ]]; then
             echo "$entry" >> $tmpFile
         else
             echo "$entry" > $tmpFile2
 
-            output="$(jq -s -r '.[0] * .[1]' $tmpFile $tmpFile2)"
+            output="$(jq -s -r '.[0] * .[1]' "$tmpFile" "$tmpFile2")"
             echo "$output" > $tmpFile
         fi
-        ((count++))
     done
 
     cat $tmpFile
+
+    # Cleanup tmpfiles
+    rm $tmpFile $tmpFile2
 }
 
 Json::to::array(){
@@ -58,16 +60,16 @@ Json::to::array(){
 
 Json::to::array::recursive(){
     local json="${1}" sub="${2:-keys_unsorted[]}"
-    local parsed_sub="${sub// | keys_unsorted\[\]/}"
-    local parsed_sub="${parsed_sub//keys_unsorted\[\]}"
+    local parsedSub="${sub// | keys_unsorted\[\]/}"
+    parsedSub="${parsedSub//keys_unsorted\[\]}"
 
     while read keys; do
-        tmpCurKey="$parsed_sub.$keys"
+        tmpCurKey="$parsedSub.$keys"
         if echo "$json" | jq -r "$tmpCurKey | keys_unsorted[]" &>/dev/null; then
-            Json::to::array::recursive "$json" "$parsed_sub.$keys | keys_unsorted[]"
+            Json::to::array::recursive "$json" "$parsedSub.$keys | keys_unsorted[]"
         else
             tmpKey+="$keys"
-            echo "${parsed_sub//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
+            echo "${parsedSub//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
         fi
     done < <(echo "$json" | jq -r "$sub")
 }
