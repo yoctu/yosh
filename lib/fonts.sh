@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function fonts::print::out ()
-{
+Fonts::print::out(){
     local fonts_file="$1" extension="${1##*.}"
     
     [[ -z "$fonts_file" ]] && return 1
@@ -17,3 +16,5 @@ function fonts::print::out ()
     cat ${fonts_dir}/$fonts_file
 
 }
+
+alias fonts::print::out='Fonts::print::out'

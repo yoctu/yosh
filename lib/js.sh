@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function js::print::out ()
-{
+Js::print::out(){
     local js_file="$1"
 
     [[ -z "$js_file" ]] && return
@@ -15,3 +14,5 @@ function js::print::out ()
     cat ${js_dir}/$js_file
 
 }
+
+alias js::print::out='Js::print::out'

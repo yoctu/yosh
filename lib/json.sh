@@ -1,5 +1,7 @@
-Json::create::simple (){
+Json::create::simple(){
     local array="$1"
+
+    type::array::is::assoc "$1" || return 1
 
     [[ -z "$array" ]] && return
 

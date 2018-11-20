@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function img::print::out ()
-{
+Img::print::out(){
     local img_file="$1"
     
     [[ -z "$img_file" ]] && return 1
@@ -15,3 +14,5 @@ function img::print::out ()
     cat ${img_dir}/$img_file
 
 }
+
+alias img::print::out='Img::print::out'

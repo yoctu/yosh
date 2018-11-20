@@ -1,43 +1,12 @@
 #!/bin/bash
 
 # convert array to json
-function array-to-json ()
-{
-    local array="$1"
-
-    [[ -z "$array" ]] && return
-
-    # redefine array name
-    typeset -n array="$array"
-
-    # this function generate an json from an array
-    # jq using from FAQ mentioned by CharlesDuffy
-
-    for key in "${!array[@]}"
-    do
-            printf '%s\0%s\0' "$key" "${array[$key]}"
-    done | jq -c -Rs -S '
-                split("\u0000")
-                | . as $a
-                | reduce range(0; length/2) as $i 
-                ({}; . + {($a[2*$i]): ($a[2*$i + 1]|fromjson? // .)})'
-
-}
-
-# Json to array
-function json-to-array ()
-{
-    local arrayname="$1" json="${@:2}"
-
-    while read -r key
-    do
-        declare -gA ${arrayname}[$key]="$(echo "$json" | jq -r .$key)"
-    done < <(echo "$json" | jq -r 'keys[]')
-}
+# keep old method... this is depcretated
+alias json-to-array='Json::to::array'
+alias array-to-json='array::to::json'
 
 # trim a variable
-function trim ()
-{
+trim(){
     local variable="$1" new_variable
 
     [[ -z "$variable" ]] && return
@@ -78,39 +47,3 @@ function trim ()
 #    done
 #}
 
-function isFunction ()
-{
-    local functionName="$1"
-
-    [[ -z "$functionName" ]] && return 1
-
-    if [[ $(type -t $functionName) == "function" ]]
-    then
-        return 0
-    else
-        return 1
-    fi
-}
-
-function commandExist ()
-{
-    local commandName="$1"
-
-    [[ -z "$commandName" ]] && return 1
-
-    type $commandName &>/dev/null
-}
-
-function inArray ()
-{
-    local key="$1" array="2"
-
-    typeset -n array="$array"
-
-    for value in "${array[@]}"
-    do
-        [[ "$key" == "$value" ]] && return 0
-    done
-
-    return 1
-}

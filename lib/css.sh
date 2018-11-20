@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function css::print::out ()
-{
+Css::print::out(){
     local css_file="$1"
 
     [[ -z "$css_file" ]] && return 1
@@ -15,3 +14,5 @@ function css::print::out ()
     cat ${css_dir}/$css_file
 
 }
+
+alias css::print::out='Css::print::out'

@@ -10,8 +10,7 @@
 
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 
-function route::api::mode ()
-{
+Route::api::mode(){
     local uri
 
     uri="${REQUEST_URI%%\?*}"
@@ -54,8 +53,7 @@ function route::api::mode ()
     fi
 }
 
-function route::check ()
-{
+Route::check(){
     # Default Mode
     # route_method="route::check"
     local uri
@@ -109,14 +107,12 @@ function route::check ()
     fi
 }
 
-function route::error ()
-{
+Route::error(){
     http::send::status 404
     echo "No Route Found!"
 }
 
-function route::get::auth ()
-{
+Route::get::auth(){
     for key in "${!AUTH[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -129,8 +125,7 @@ function route::get::auth ()
     echo "${AUTH['/':$REQUEST_METHOD]:-none}"
 }
 
-function route::get::login ()
-{
+Route::get::login(){
     for key in "${!LOGIN[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -144,8 +139,7 @@ function route::get::login ()
 
 }
 
-function route::get::rights ()
-{
+Route::get::rights(){
     for key in "${!RIGHTS[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -158,4 +152,10 @@ function route::get::rights ()
     echo "${RIGHTS['/':$REQUEST_METHOD]:-none}"
 }
 
+alias route::api::mode='Route::api::mode'
+alias route::check='Route::check'
+alias route::error='Route::error'
+alias route::get::auth='Route::get::auth'
+alias route::get::login='Route::get::login'
+alias route::get::rights='Route::get::rights'
 router="route::check"

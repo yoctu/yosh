@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function player::print::out ()
-{
+Player::print::out(){
     local player_file="$1"
     
     [[ -z "$player_file" ]] && return 1
@@ -15,3 +14,5 @@ function player::print::out ()
     cat ${player_dir}/$player_file
 
 }
+
+alias player::print::out='Player::print::out'

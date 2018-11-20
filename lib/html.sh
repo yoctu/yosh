@@ -1,21 +1,18 @@
 #!/bin/bash
 
-function html::print::header ()
-{
+Html::print::header(){
     html_header_file="${html_header_file:-${html_dir}/header.html}"
 
     cat $html_header_file
 }
 
-function html::print::footer ()
-{
+Html::print::footer(){
     html_footer_file="${html_footer_file:-${html_dir}/footer.html}"
 
     cat $html_footer_file
 }
 
-function html::print::out ()
-{
+Html::print::out(){
     local body_file="$1"
 
     [[ -z "$body_file" ]] && return
@@ -32,3 +29,7 @@ function html::print::out ()
     # Print footer
     html::print::footer
 }
+
+alias html::print::header='Html::print::header'
+alias html::print::footer='Html::print::footer'
+alias html::print::out='Html::print::out'

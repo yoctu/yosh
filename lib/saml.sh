@@ -1,39 +1,33 @@
 declare -A SAML
 
-function saml::idGen ()
-{
+Saml::idGen(){
     echo "$(uuidgen)"
 }
 
-function saml::request::id ()
-{
-    SAMLREQUEST['ID']="$(saml::idGen)"
+Saml::request::id(){
+    SAMLREQUEST['ID']="$(Saml::idGen)"
 }
 
-function saml::request::assertion ()
-{
+Saml::request::assertion(){
     ! [[ -z "$_saml_host_url" ]] && SAMLREQUEST['AssertionConsumerServiceURL']="${_saml_host_url%/}/acs"
 }
 
-function saml::request::issueinstant ()
-{
+Saml::request::issueinstant(){
     SAMLREQUEST['IssueInstant']="$(date +%Y-%m-%dT%H:%M:%SZ)"
 }
 
-function saml::request::destination ()
-{
+Saml::request::destination(){
     SAMLREQUEST['Destination']="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)"
 }
 
-function saml::buildXmlFile ()
-{
+Saml::buildXmlFile(){
     local _opts tmpFile="$(mktemp -d)"
     declare -A SAMLREQUEST
 
-    saml::request::id
-    saml::request::assertion
-    saml::request::issueinstant
-    saml::request::destination
+    Saml::request::id
+    Saml::request::assertion
+    Saml::request::issueinstant
+    Saml::request::destination
 
     for key in "${!SAMLREQUEST[@]}"
     do
@@ -47,25 +41,21 @@ function saml::buildXmlFile ()
     unset _opts
 }
 
-function saml::createRelayState ()
-{
-    SAML['RelayState']="$(saml::idGen)"
+Saml::createRelayState(){
+    SAML['RelayState']="$(Saml::idGen)"
 }
 
-function saml::createSamlRequest ()
-{
-    saml::buildXmlFile | phpdeflate.php -M deflate -s | base64 -w0
+Saml::createSamlRequest(){
+    Saml::buildXmlFile | phpdeflate.php -M deflate -s | base64 -w0
 }
 
-function saml::createSignature ()
-{   
+Saml::createSignature(){   
     local _query_string="$@" tmpQueryFile="$(mktemp)"
 
     echo -n "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" | base64 -w0
 }
 
-function saml::buildAuthnRequest ()
-{
+Saml::buildAuthnRequest(){
     local _query
 
     if session::check
@@ -74,8 +64,8 @@ function saml::buildAuthnRequest ()
         return
     fi
 
-    SAML['SAMLRequest']="$(saml::createSamlRequest)"
-    saml::createRelayState
+    SAML['SAMLRequest']="$(Saml::createSamlRequest)"
+    Saml::createRelayState
     SAML['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
     for key in "${!SAML[@]}"
@@ -83,7 +73,7 @@ function saml::buildAuthnRequest ()
         _query+="$key=$(url_encode ${SAML[$key]})&"
     done
 
-    _query="${_query%&}&Signature=$(url_encode "$(saml::createSignature "SAMLRequest=$( url_encode "${SAML['SAMLRequest']}")&RelayState=$(url_encode "${SAML['RelayState']}")&SigAlg=$(url_encode "${SAML['SigAlg']}")")")"
+    _query="${_query%&}&Signature=$(url_encode "$(Saml::createSignature "SAMLRequest=$( url_encode "${SAML['SAMLRequest']}")&RelayState=$(url_encode "${SAML['RelayState']}")&SigAlg=$(url_encode "${SAML['SigAlg']}")")")"
 
 
     http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
@@ -91,8 +81,7 @@ function saml::buildAuthnRequest ()
 }
 
 
-function saml::validate::Issuer ()
-{
+Saml::validate::Issuer(){
     local xmlResponse="$1" idpIssuer responseIssuer
 
     responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
@@ -102,13 +91,12 @@ function saml::validate::Issuer ()
     [[ "$responseIssuer" == "$idpIssuer" ]] || return 1
 }
 
-function saml::validate::Sign ()
-{
+Saml::validate::Sign(){
     local xmlResponse="$1" xmlCert xmlSigned xmltoCheck result tmpXmlFile="$(mktemp)" tmpCert="$(mktemp)"
 
     echo "$xmlResponse" > $tmpXmlFile
 
-   echo "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
+    echo "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
 
     xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null | return 1
 
@@ -117,23 +105,21 @@ function saml::validate::Sign ()
 
 }
 
-function saml::get::Assertion ()
-{
+Saml::get::Assertion(){
     local xmlResponse="$1"
 
     echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
 }
 
-function saml::retrieve::Identity ()
-{
+Saml::retrieve::Identity(){
     local xmlResponse username
 
     xmlResponse="$(urlencode -d "${POST['SAMLResponse']}" | base64 -d -w0)"
 
-    saml::validate::Issuer "$xmlResponse" || return 1
-    saml::validate::Sign "$xmlResponse" || return 1
+    Saml::validate::Issuer "$xmlResponse" || return 1
+    Saml::validate::Sign "$xmlResponse" || return 1
 
-    username="$(saml::get::Assertion "$xmlResponse")"
+    username="$(Saml::get::Assertion "$xmlResponse")"
 
     session::start
     session::set USERNAME $username
@@ -141,4 +127,19 @@ function saml::retrieve::Identity ()
 
     http::send::redirect temporary /
 }
+
+alias saml::idGen='Saml::idGen'
+alias saml::request::id='Saml::request::id'
+alias saml::request::assertion='Saml::request::assertion'
+alias saml::request::issueinstant='Saml::request::issueinstant'
+alias saml::request::destination='Saml::request::destination'
+alias saml::buildXmlFile='Saml::buildXmlFile'
+alias saml::createRelayState='Saml::createRelayState'
+alias saml::createSamlRequest='Saml::createSamlRequest'
+alias saml::createSignature='Saml::createSignature'
+alias saml::buildAuthnRequest='Saml::buildAuthnRequest'
+alias saml::validate::Issuer='Saml::validate::Issuer'
+alias saml::validate::Sign='Saml::validate::Sign'
+alias saml::get::Assertion='Saml::get::Assertion'
+alias saml::retrieve::Identity='Saml::retrieve::Identity'
 
