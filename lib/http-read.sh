@@ -30,7 +30,9 @@ function http::read::post ()
 
         # get data raw in json key
         # Should we try to decode json to array?
-        POST['json']="${raw}"
+        # Update 2018-11-18: json encode/decode is added
+        Json::to::array POST "${raw}"
+        #POST['json']="${raw}"
 
     else
 
