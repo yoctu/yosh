@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Img::print::out(){
     local img_file="$1"

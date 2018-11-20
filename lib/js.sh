@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Js::print::out(){
     local js_file="$1"

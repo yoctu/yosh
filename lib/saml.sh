@@ -58,9 +58,9 @@ Saml::createSignature(){
 Saml::buildAuthnRequest(){
     local _query
 
-    if session::check
+    if Session::check
     then
-        http::send::redirect temporary /
+        Http::send::redirect temporary /
         return
     fi
 
@@ -76,7 +76,7 @@ Saml::buildAuthnRequest(){
     _query="${_query%&}&Signature=$(url_encode "$(Saml::createSignature "SAMLRequest=$( url_encode "${SAML['SAMLRequest']}")&RelayState=$(url_encode "${SAML['RelayState']}")&SigAlg=$(url_encode "${SAML['SigAlg']}")")")"
 
 
-    http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
+    Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
 
 }
 
@@ -121,11 +121,11 @@ Saml::retrieve::Identity(){
 
     username="$(Saml::get::Assertion "$xmlResponse")"
 
-    session::start
-    session::set USERNAME $username
-    session::save
+    Session::start
+    Session::set USERNAME $username
+    Session::save
 
-    http::send::redirect temporary /
+    Http::send::redirect temporary /
 }
 
 alias saml::idGen='Saml::idGen'

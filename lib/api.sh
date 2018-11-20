@@ -9,19 +9,19 @@ declare -A API_RESPONSE
 
 Api::search::function(){
 
-    isFunction "api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || api::send::not_found
+    Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || Api::send::not_found
 
-    api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
+    Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
 }
 
 Api::call::function(){
-    isFunction $default_api_function || api::send::not_found
+    Type::function::exist $default_api_function || Api::send::not_found
 
     $default_api_function
 }
 
 Api::send::fail(){
-    http::send::status 500
+    Http::send::status 500
     API_RESPONSE['msg']="${API_MSG['500']}"
 
     Json::create API_RESPONSE    
@@ -29,7 +29,7 @@ Api::send::fail(){
 }
 
 Api::send::unauthorized(){
-    http::send::status 401
+    Http::send::status 401
     API_RESPONSE['msg']="${API_MSG['401']}"
 
     Json::create API_RESPONSE
@@ -37,7 +37,7 @@ Api::send::unauthorized(){
 }
 
 Api::send::not_found(){
-    http::send::status 404
+    Http::send::status 404
     API_RESPONSE['msg']="${API_MSG['404']}"
 
     Json::create API_RESPONSE
@@ -47,37 +47,37 @@ Api::send::not_found(){
 Api::send::post(){
     local array="$1"
 
-    [[ -z "$array" ]] && api::send::fail
+    [[ -z "$array" ]] && Api::send::fail
 
-    http::send::status 201 
+    Http::send::status 201 
 
     Json::create $array
 }
 
 Api::send::put(){
-    http::send::status 204    
+    Http::send::status 204    
 }
 
 Api::send::patch(){
     local array="$1"
 
-    [[ -z "$array" ]] && api::send::fail
+    [[ -z "$array" ]] && Api::send::fail
 
-    http::send::status 202
+    Http::send::status 202
 
     Json::create $array
 }
 
 Api::send::delete(){
-    http::send::status 200
+    Http::send::status 200
 }
 
 Api::send::get(){
     local array="$1"
 
-    [[ -z "$array" ]] && api::send::fail
+    [[ -z "$array" ]] && Api::send::fail
 
-    http::send::status 200
+    Http::send::status 200
 }
 
 # apply function names lowercase

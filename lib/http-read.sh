@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Parse POST Data
 Http::read::post(){
     local raw key oldIFS

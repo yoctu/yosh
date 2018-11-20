@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 # XXX: why not using typeset -p ? hmmm should be checked
 
@@ -16,7 +16,7 @@ Session::start(){
         $sessionPath::$FUNCNAME "$id"
 
         COOKIE[$default_session_name]="${id}"
-        http::send::cookie "${default_session_name}=${id}; Max-Age=$default_session_expiration"
+        Http::send::cookie "${default_session_name}=${id}; Max-Age=$default_session_expiration"
 
     else 
         Session::read 
@@ -31,7 +31,7 @@ Session::check(){
 }
 
 Session::destroy(){
-    http::send::cookie "${default_session_name}=delete; Max-Age=1"
+    Http::send::cookie "${default_session_name}=delete; Max-Age=1"
     
     # redirect stderr to dev null if there is a failure, just to be sure :p
     $sessionPath::$FUNCNAME

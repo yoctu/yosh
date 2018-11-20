@@ -16,7 +16,7 @@ App::find(){
 App::source(){
     local file
 
-    file="$(app::find)"
+    file="$(App::find)"
 
     [[ -z "$file" ]] && return 1
 

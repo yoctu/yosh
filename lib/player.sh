@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Player::print::out(){
     local player_file="$1"

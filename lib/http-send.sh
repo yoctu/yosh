@@ -1,5 +1,3 @@
-#!/bin/bash
-
 declare -A HEADERS_TO_SENT
 HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
 
@@ -51,7 +49,7 @@ Http::send::redirect(){
 
     [[ -z "$redirectMethod" || -z "$redirectLocation" ]] && return
 
-    http::send::status ${!redirectMethod}
+    Http::send::status ${!redirectMethod}
     HEADERS_TO_SENT["Location"]="$redirectLocation"
 }
 
@@ -77,7 +75,7 @@ Http::send::out(){
 
 Http::send::options(){
     local _methods="${HTTP_METHODS[@]}"
-    http::send::header Allow "${_methods// /,}"
+    Http::send::header Allow "${_methods// /,}"
          
 }
 

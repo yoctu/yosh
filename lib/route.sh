@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # To use this you should add the following rewrite rule in your vhost:
 # RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} -s [OR]
@@ -17,16 +15,16 @@ Route::api::mode(){
     uri="${uri#/}"
     uri=(${uri//\// })
 
-    http::send::content-type ${default_api_content_type:-application/json}
+    Http::send::content-type ${default_api_content_type:-application/json}
 
     # Api Mode
-    # route_method="route::api::mode"
+    # route_method="Route::api::mode"
     
     [[ "${uri[0]}" == "api" ]] || api::send::not_found
 
-    route::get::login
+    Route::get::login
 
-    auths="$(route::get::auth)"
+    auths="$(Route::get::auth)"
     auths=(${auths//,/ })
 
     (( route_auditing )) && @audit "$application_name"
@@ -35,9 +33,9 @@ Route::api::mode(){
 
     for auth in "${auths[@]}"
     do
-        auth::check "$auth" || continue
+        Auth::check "$auth" || continue
         # Does we really need this?
-        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        Auth::check::rights "$auth" "$(Route::get::rights)" || continue
         break
     done
 
@@ -55,7 +53,7 @@ Route::api::mode(){
 
 Route::check(){
     # Default Mode
-    # route_method="route::check"
+    # route_method="Route::check"
     local uri
 
     uri="${REQUEST_URI%%\?*}"
@@ -64,16 +62,16 @@ Route::check(){
 
     (( route_auditing )) && @audit "$application_name"
 
-    route::get::login
+    Route::get::login
 
-    auths="$(route::get::auth)"
+    auths="$(Route::get::auth)"
     auths=(${auths//,/ })
 
     for auth in "${auths[@]}"
     do
-        auth::check "$auth" || continue
+        Auth::check "$auth" || continue
         # Does we really need this?
-        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        Auth::check::rights "$auth" "$(Route::get::rights)" || continue
         break
     done
 
@@ -85,7 +83,7 @@ Route::check(){
 
     if [[ "$REQUEST_METHOD" == "OPTIONS" ]]
     then
-        http::send::options
+        Http::send::options
         return
     fi
 
@@ -101,14 +99,14 @@ Route::check(){
     elif [[ "$uri" =~ ^(css|js|img|fonts|player)/.* ]]
     then
         uri="${uri#*/}"
-        ${BASH_REMATCH[1]}::print::out ${uri} || route::error
+        ${BASH_REMATCH[1]}::print::out ${uri} || Route::error
     else        
-        route::error
+        Route::error
     fi
 }
 
 Route::error(){
-    http::send::status 404
+    Http::send::status 404
     echo "No Route Found!"
 }
 
@@ -135,7 +133,7 @@ Route::get::login(){
         fi
     done
 
-    login_method="${LOGIN['/':$REQUEST_METHOD]:-auth::request}"
+    login_method="${LOGIN['/':$REQUEST_METHOD]:-Auth::request}"
 
 }
 
@@ -158,4 +156,4 @@ alias route::error='Route::error'
 alias route::get::auth='Route::get::auth'
 alias route::get::login='Route::get::login'
 alias route::get::rights='Route::get::rights'
-router="route::check"
+router="Route::check"

@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Css::print::out(){
     local css_file="$1"

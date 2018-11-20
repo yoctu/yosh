@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Fonts::print::out(){
     local fonts_file="$1" extension="${1##*.}"

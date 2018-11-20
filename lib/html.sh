@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 Html::print::header(){
     html_header_file="${html_header_file:-${html_dir}/header.html}"
