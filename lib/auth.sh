@@ -16,7 +16,7 @@ Auth::start(){
 
     [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
-    ${auth_method}::Auth::start || return 1
+    ${auth_method}::auth::start || return 1
 #    Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
     authSuccessful="1"
@@ -29,7 +29,7 @@ Auth::check::rights(){
 
     if [[ ! "$auth_method" == "none" ]]
     then
-        ${auth_method}::Auth::check::rights || return 1
+        ${auth_method}::auth::check::rights || return 1
     fi
 
     rightsSuccessful="1"
