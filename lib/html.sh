@@ -18,16 +18,16 @@ Html::print::out(){
     [[ -z "$body_file" ]] && return
     
     # Set content-type
-    http::send::content-type text/html
+    Http::send::content-type text/html
 
     # Print header
-    html::print::header
+    Html::print::header
    
     # Print body
     cat $body_file
 
     # Print footer
-    html::print::footer
+    Html::print::footer
 }
 
 alias html::print::header='Html::print::header'

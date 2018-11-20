@@ -7,8 +7,8 @@ Js::print::out(){
     [[ -f "${js_dir}/$js_file" ]] || return 1
 
     # Set content-type
-    http::send::content-type application/javascript
-    http::send::header Cache-Control "max-age=3600, public"   
+    Http::send::content-type application/javascript
+    Http::send::header Cache-Control "max-age=3600, public"   
 
     # Print javascript file
     cat ${js_dir}/$js_file

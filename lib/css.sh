@@ -7,8 +7,8 @@ Css::print::out(){
     [[ -f "${css_dir}/$css_file" ]] || return 1
 
     # Set content-type
-    http::send::content-type text/css
-    http::send::header Cache-Control "max-age=3600, public"
+    Http::send::content-type text/css
+    Http::send::header Cache-Control "max-age=3600, public"
    
     # Print css file
     cat ${css_dir}/$css_file

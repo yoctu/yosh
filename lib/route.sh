@@ -39,12 +39,12 @@ Route::api::mode(){
         break
     done
 
-    ! [[ "$authSuccessful" ]] && api::send::unauthorized
-    ! [[ "$rightsSuccessful" ]] && api::send::unauthorized
+    ! [[ "$authSuccessful" ]] && Api::send::unauthorized
+    ! [[ "$rightsSuccessful" ]] && Api::send::unauthorized
 
     if [[ -z "$api_command" ]]
     then
-        [[ -f "${api_dir%/}/${uri[1]}" ]] || api::send::not_found
+        [[ -f "${api_dir%/}/${uri[1]}" ]] || Api::send::not_found
         source ${api_dir%/}/${uri[1]}
     else
         $api_command
@@ -90,16 +90,16 @@ Route::check(){
     if [[ ! -z "${ROUTE[/${uri#/}:$REQUEST_METHOD]}" ]]
     then
         eval ${ROUTE[/${uri#/}:$REQUEST_METHOD]}
-    elif app::find &>/dev/null
+    elif App::find &>/dev/null
     then
-        app::source
+        App::source
     elif [[ -f "${html_dir}/${uri%.html}.html" ]]
     then
-        html::print::out ${html_dir}/${uri%.html}.html
+        Html::print::out ${html_dir}/${uri%.html}.html
     elif [[ "$uri" =~ ^(css|js|img|fonts|player)/.* ]]
     then
         uri="${uri#*/}"
-        ${BASH_REMATCH[1]}::print::out ${uri} || Route::error
+        ${BASH_REMATCH[1]^}::print::out ${uri} || Route::error
     else        
         Route::error
     fi
