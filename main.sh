@@ -2,8 +2,6 @@
 
 # main file
 
-shopt -s expand_aliases
-
 # use autoloader
 source /usr/share/yosh/autoloader.sh
 
