@@ -7,7 +7,7 @@ Auth::check(){
         return
     fi
 
-    $login_method "$auth_method" && authSuccessful=1
+    ${login_method^} "$auth_method" && authSuccessful=1
     Auth::start $auth_method
 }
 

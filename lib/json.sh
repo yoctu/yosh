@@ -1,7 +1,7 @@
 Json::create::simple(){
     local array="$1"
 
-    type::array::is::assoc "$1" || return 1
+    Type::array::is::assoc "$1" || return 1
 
     [[ -z "$array" ]] && return
 
@@ -26,7 +26,7 @@ Json::create(){
     # to get a recursive json you can put in an array like this:
     # array['key':'subkey']="value"
 
-    type::array::is::assoc "$1" || return 1
+    Type::array::is::assoc "$1" || return 1
     local -n array="$1"
     
     local -a tmparray
