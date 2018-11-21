@@ -7,8 +7,8 @@ Img::print::out(){
     [[ -f "${img_dir}/$img_file" ]] || return 1
 
     # Set content-type
-    http::send::content-type "$(file -b --mime-type $img_dir/$img_file)"
-    http::send::header Cache-Control "max-age=3600, public"
+    Http::send::content-type "$(file -b --mime-type $img_dir/$img_file)"
+    Http::send::header Cache-Control "max-age=3600, public"
    
     # Print img file
     cat ${img_dir}/$img_file
