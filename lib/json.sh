@@ -40,7 +40,7 @@ Json::create(){
             ((count++))
         done
         i="0"
-        tmpvar+=" \"${array[$key]}\""
+        tmpvar+="\"${array[$key]//\\n/\\\\n}\""
         until (( i == count )); do
             tmpvar+="}"
             ((i++))
@@ -53,18 +53,18 @@ Json::create(){
     local tmpFile2="$(mktemp)"
     for entry in "${tmparray[@]}"; do
         if ! [[ -s "$tmpFile" ]]; then
-            echo "$entry" >> $tmpFile
+            echo "${entry//\\n/\\\\n}" >> $tmpFile
         else
-            echo "$entry" > $tmpFile2
-
-            output="$(jq -s -r '.[0] * .[1]' "$tmpFile" "$tmpFile2")"
-            echo "$output" > $tmpFile
+            echo "${entry//\\n/\\\\n}" > $tmpFile2
+            output="$(jq -c -Rs '(.[0]|fromjson) * (.[1]|fromjson)' "$tmpFile" "$tmpFile2")"
+            echo "${output//\\n/\\\\n}" > $tmpFile
         fi
     done
 
     cat $tmpFile
 
     # Cleanup tmpfiles
+#    echo "$tmpFile" "$tmpFile2"
     rm $tmpFile $tmpFile2
 }
 
