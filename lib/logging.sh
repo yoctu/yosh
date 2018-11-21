@@ -18,25 +18,25 @@ Log::print(){
     # This function can be overwritten or create just an alias @log
     local _msg="$*"
 
-    ${LOG[$FUNCNAME]} "${application_name^^} Log: $_msg"
+    ${LOG['@log']} "${application_name^^} Log: $_msg"
 }
 
 Log::print::deprecated(){
     local _name="$*"
     
-    ${LOG[$FUNCNAME]} "${application_name^^} Depcrecated: $_name will no longer be available in the next Release!"
+    ${LOG['@deprecated']} "${application_name^^} Depcrecated: $_name will no longer be available in the next Release!"
 }
 
 Log::print::error(){
     local _msg="$*"
     
-    ${LOG[$FUNCNAME]} "${application_name^^} Error: $_msg"
+    ${LOG['@error']} "${application_name^^} Error: $_msg"
 }
 
 Log::print::audit(){
     local _msg="$*"
 
-    ${LOG[$FUNCNAME]} "${application_name^^} Audit: $_msg"
+    ${LOG['@audit']} "${application_name^^} Audit: $_msg"
 }
 
 
