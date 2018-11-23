@@ -76,8 +76,7 @@ Json::to::array(){
     local json="${*:2}"
 
     while read line; do
-        line="${line/:/}"
-        array[${line%%=*}]="${line#*=}"
+        array[${line%%===*}]="${line#*===}"
     done < <(Json::to::array::recursive "$json")
 }
 
@@ -87,12 +86,15 @@ Json::to::array::recursive(){
     parsedSub="${parsedSub//keys_unsorted\[\]}"
 
     while read keys; do
-        tmpCurKey="$parsedSub.$keys"
+        tmpCurKey="$parsedSub.\"$keys\""
         if echo "$json" | jq -r "$tmpCurKey | keys_unsorted[]" &>/dev/null; then
-            Json::to::array::recursive "$json" "$parsedSub.$keys | keys_unsorted[]"
+            Json::to::array::recursive "$json" "$parsedSub.\"$keys\" | keys_unsorted[]"
         else
-            tmpKey+="$keys"
-            echo "${parsedSub//./:}:$keys=$(echo "$json" | jq -r "$tmpCurKey")"
+            local prettyKey="${parsedSub//\".\"/:}"
+            prettyKey="${prettyKey#.}"
+            prettyKey="${prettyKey//\"}"
+
+            echo "${prettyKey#:}:$keys===$(echo "$json" | jq -r "$tmpCurKey")"
         fi
     done < <(echo "$json" | jq -r "$sub")
 }
