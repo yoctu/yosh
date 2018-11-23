@@ -36,7 +36,7 @@ Json::create(){
         IFS=":" read -a tmparray2 <<<"$key"
         count="0"
         for key_2 in "${tmparray2[@]}"; do
-            tmpvar+="{ $key_2 : "
+            tmpvar+="{ \"$key_2\" : "
             ((count++))
         done
         i="0"
@@ -46,7 +46,7 @@ Json::create(){
             ((i++))
         done
         
-        tmparray+=("$(echo "${array[$key]}" | jq -c -R ". as \$b | $tmpvar")")
+        tmparray+=("$(echo "${array[$key]//[$'\t\r\n']}}" | jq -c -R ". as \$b | $tmpvar")")
         unset tmpvar
     done
 
