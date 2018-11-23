@@ -1,8 +1,5 @@
-#!/bin/bash
-
 # Parse POST Data
-function http::read::post ()
-{
+Http::read::post(){
     local raw key oldIFS
 
     [[ -t 0 ]] && return
@@ -45,8 +42,7 @@ function http::read::post ()
 }
 
 # Parse Get Data
-function http::read::get ()
-{
+Http::read::get(){
     local key raw oldIFS
     
     declare -Ag GET
@@ -70,8 +66,7 @@ function http::read::get ()
     unset key
 }
 
-function http::read::cookie ()
-{
+Http::read::cookie(){
     local key raw oldIFS
 
     declare -Ag COOKIE
@@ -87,3 +82,6 @@ function http::read::cookie ()
     unset key
 }
 
+alias http::read::post='Http::read::post'
+alias http::read::get='Http::read::get'
+alias http::read::cookie='Http::read::cookie'

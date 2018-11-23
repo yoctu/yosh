@@ -1,5 +1,5 @@
 # a litte lib of type checking and data checker
-type::function::exist(){
+Type::function::exist(){
     # multiple function are accepted
 
     for _function in "$@"; do
@@ -11,7 +11,7 @@ type::function::exist(){
     done
 }
 
-type::command::exist(){
+Type::command::exist(){
     # multiple commands are accepted
     
     for _command in "$@"; do
@@ -19,7 +19,7 @@ type::command::exist(){
     done
 }
 
-type::array::contains(){
+Type::array::contains(){
     # check if array contains value
     
     local key="$1"
@@ -32,7 +32,7 @@ type::array::contains(){
     return 1
 }
 
-type::array::is::assoc(){
+Type::array::is::assoc(){
     if declare -p "$1" &>/dev/null; then
         if [[ "$(declare -p "$1")" =~ "declare -A $1" ]]; then
             return 0
@@ -42,7 +42,7 @@ type::array::is::assoc(){
     fi
 }
 
-type::variable::set(){
+Type::variable::set(){
     # Check if varaibles are set
 
     for value in "$@"; do
@@ -51,4 +51,10 @@ type::variable::set(){
 
     return 0
 }
+
+alias type::function::exist='Type::function::exist'
+alias type::command::exist='Type::command::exist'
+alias type::array::contains='Type::array::contains'
+alias type::array::is::assoc='Type::array::is::assoc'
+alias type::variable::set='Type::variable::set'
 

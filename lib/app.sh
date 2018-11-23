@@ -1,5 +1,4 @@
-function app::find ()
-{
+App::find(){
     if [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}" ]]
     then
         echo "${DOCUMENT_ROOT%/}/../app/${uri}"
@@ -14,14 +13,16 @@ function app::find ()
     fi
 }
 
-function app::source ()
-{
+App::source(){
     local file
 
-    file="$(app::find)"
+    file="$(App::find)"
 
     [[ -z "$file" ]] && return 1
 
     source $file
 }
 
+# create alias to lower case
+alias app::find='App::find'
+alias app::source='App::source'

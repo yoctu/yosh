@@ -3,32 +3,32 @@
 
 function htpasswd::auth::start ()
 {
-    [[ -z "$htpasswd_file" ]] && route::error
+    [[ -z "$htpasswd_file" ]] && Route::error
 
-    if ! session::check
+    if ! Session::check
     then
             [[ -z "$HTTP_AUTHORIZATION" ]] && return 1
-            user_pass="$(auth::decode "${HTTP_AUTHORIZATION/Basic /}")"
+            user_pass="$(Auth::decode "${HTTP_AUTHORIZATION/Basic /}")"
             if grep -o "${user_pass%%:*}:$(openssl passwd -apr1 -salt r31.... ${user_pass#*:})" $htpasswd_file &>/dev/null
             then
-                session::start
-                session::set USERNAME "${user_pass%%:*}"
+                Session::start
+                Session::set USERNAME "${user_pass%%:*}"
                 group="$(grep "${user_pass%%:*}:$(openssl passwd -apr1 -salt r31.... ${user_pass#*:}):" $htpasswd_file)"
                 group=(${group//:/ })
-                session::set GROUPNAME "${group[2]}"
-                http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
+                Session::set GROUPNAME "${group[2]}"
+                Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
             else
                 return 1
             fi
     else
-        session::read
+        Session::read
     fi
 }
 
 function htpasswd::auth::check::rights ()
 {
 
-    session::read
+    Session::read
 
     ! [[ "$auth_rights" == "${SESSION['GROUPNAME']}" ]] && { $unauthorized; return 1; }
 

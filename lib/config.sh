@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 # you should not declare in a config, because we're good
 declare -A ROUTE

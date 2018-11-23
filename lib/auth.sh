@@ -1,5 +1,4 @@
-function auth::check ()
-{
+Auth::check(){
     local auth_method="${1,,}"
 
     if [[ ! "$uri" == "$login_page" ]] && [[ -z "$auth_method" || "$auth_method" == "none" ]] 
@@ -8,24 +7,22 @@ function auth::check ()
         return
     fi
 
-    $login_method "$auth_method" && authSuccessful=1
-    auth::start $auth_method
+    ${login_method^} "$auth_method" && authSuccessful=1
+    Auth::start $auth_method
 }
 
-function auth::start ()
-{
+Auth::start(){
     local auth_method="${1,,}"
 
     [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
     ${auth_method}::auth::start || return 1
-#    http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
+#    Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
     authSuccessful="1"
 }
 
-function auth::check::rights ()
-{
+Auth::check::rights(){
     local auth_method="${1,,}" auth_rights="${2,,}"
 
     [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && { rightsSuccessful="1"; return; }
@@ -38,22 +35,19 @@ function auth::check::rights ()
     rightsSuccessful="1"
 }
 
-function auth::request ()
-{
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! session::check
+Auth::request(){
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check
     then
-        http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
-        http::send::status 401
+        Http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
+        Http::send::status 401
     fi
 }
 
-function auth::unauthorized ()
-{
-    http::send::status 401
+Auth::unauthorized(){
+    Http::send::status 401
 }
 
-function auth::encode ()
-{
+Auth::encode(){
     [[ -z "$1" ]] && return
 
     if [[ ! -z "$auth_encode" ]]
@@ -64,8 +58,7 @@ function auth::encode ()
     fi
 }
 
-function auth::decode ()
-{
+Auth::decode(){
     [[ -z "$1" ]] && return
 
     if [[ ! -z "$auth_decode" ]] 
@@ -76,47 +69,56 @@ function auth::decode ()
     fi
 }
 
-function auth::custom::request ()
-{
+Auth::custom::request(){
     unset auth_method
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! session::check
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check
     then
         if [[ "$uri" != "$login_page" ]]
         then
             uri="${uri%/}"
-            http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
+            Http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
             return 1
         else
             if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
             then
                 return
             else
-                HTTP_AUTHORIZATION="$(auth::encode ${POST['username']}:${POST['password']})"
+                HTTP_AUTHORIZATION="$(Auth::encode ${POST['username']}:${POST['password']})"
                 # Get auth method from requesturi
                 # set uri
                 uri="${GET['requestUrl']:-home}"
                 REQUEST_METHOD="GET"
-                auth_method="$(route::get::auth)"
+                auth_method="$(Route::get::auth)"
 
-                auth::start $auth_method
-                http::send::redirect temporary "${GET['requestUrl']:-home}" 
+                Auth::start $auth_method
+                Http::send::redirect temporary "${GET['requestUrl']:-home}" 
             fi
         fi
-    elif ! session::check
+    elif ! Session::check
     then
         uri="${uri%/}"
-        http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
+        Http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
         return 1
     fi
 }
 
-function auth::saml::request ()
-{
-    auth::start $auth_method
+Auth::saml::request(){
+    Auth::start $auth_method
 }
 
-function auth::api ()
-{
+Auth::api(){
     local auth_method="$1"
-    $auth_method::auth::start || return 1
+    $auth_method::Auth::start || return 1
 }
+
+# create alias to lowercase
+alias auth::check='Auth::check'
+alias auth::start='Auth::start'
+alias auth::check::rights='Auth::check::rights'
+alias auth::request='Auth::request'
+alias auth::unauthorized='Auth::unauthorized'
+alias auth::encode='Auth::encode'
+alias auth::decode='Auth::decode'
+alias auth::custom::request='Auth::custom::request'
+alias auth::saml::request='Auth::saml::request'
+alias auth::api='Auth::api'

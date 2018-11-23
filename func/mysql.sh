@@ -1,7 +1,6 @@
 # Mysql connector
 
-function mysql-escape ()
-{
+mysql-escape(){
     local string="$@"
 
     string="${string%%;*}"
@@ -9,14 +8,13 @@ function mysql-escape ()
     printf "%q" "$string"
 }
 
-function mysql-connector ()
-{
+mysql-connector(){
     mysql -h ${mysql_host} -P ${mysql_port} -u ${mysql_user} --database=${mysql_dbname} -p${mysql_password} -e "$@" 2>/dev/null
     echo END
 }
 
-function mysql-to-json ()
-{
+mysql-to-json(){
+    # TODO: we should fully rewrite and create mysql::to::array
     typeset -A arr
     while read line
     do
