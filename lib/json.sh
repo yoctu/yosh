@@ -46,7 +46,7 @@ Json::create(){
             ((i++))
         done
         
-        tmparray+=("$(echo "${array[$key]//[$'\t\r\n']}}" | jq -c -R ". as \$b | $tmpvar")")
+        tmparray+=("$(echo "${array[$key]//[$'\t\r\n']}" | jq -c -R ". as \$b | $tmpvar")")
         unset tmpvar
     done
 
