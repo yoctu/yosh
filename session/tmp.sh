@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default is tmp 
-function tmp::session::start ()
+function tmp::Session::start ()
 {
 
     local id="$1"
@@ -9,7 +9,7 @@ function tmp::session::start ()
     touch $TMPDIR/${id}
 }
 
-function tmp::session::check ()
+function tmp::Session::check ()
 {
     [[ -z "${COOKIE[$default_session_name]}" ]] && return 1
     ! [[ -f "$TMPDIR/${COOKIE[$default_session_name]}" ]] && return 1
@@ -17,13 +17,13 @@ function tmp::session::check ()
     return 0
 }
 
-function tmp::session::destroy ()
+function tmp::Session::destroy ()
 {
     # redirect stderr to dev null if there is a failure, just to be sure :p
     rm "$TMPDIR/${COOKIE[$default_session_name]}" 2>/dev/null
 }
 
-function tmp::session::save ()
+function tmp::Session::save ()
 {
     local key
     # save session array to a file
@@ -35,32 +35,32 @@ function tmp::session::save ()
     done
 }
 
-function tmp::session::set ()
+function tmp::Session::set ()
 {
 
-    tmp::session::save
+    tmp::Session::save
 
 }
 
-function tmp::session::unset ()
+function tmp::Session::unset ()
 {
 
     sed -i "/SESSION\['$key'\]=.*/d" $TMPDIR/${COOKIE[$default_session_name]}
 
 }
 
-function tmp::session::read ()
+function tmp::Session::read ()
 {
     [[ -f "$TMPDIR/${COOKIE[$default_session_name]}" ]] && source $TMPDIR/${COOKIE[$default_session_name]}
 }
 
-function tmp::session::get ()
+function tmp::Session::get ()
 {
     local key="$1"
 
     [[ -z "$key" ]] && return
 
-    tmp::session::read
+    tmp::Session::read
 
     echo "${SESSION[$key]}"
 }

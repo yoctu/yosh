@@ -1,10 +1,7 @@
-#!/bin/bash
-
 declare -A HEADERS_TO_SENT
 HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
 
-function http::send::header ()
-{
+Http::send::header (){
     local value="$1" key="${@:2}"
 
     [[ -z "$value" || -z "$key" ]] && return
@@ -12,8 +9,7 @@ function http::send::header ()
     HEADERS_TO_SENT[$value]="$key"
 }
 
-function http::send::content-type ()
-{
+Http::send::content-type(){
     local content_type="$1"    
     
     default_content_type=${default_content_type:-text/plain}
@@ -21,8 +17,7 @@ function http::send::content-type ()
     HEADERS_TO_SENT["Content-type"]="${content_type:-$default_content_type}"
 }
 
-function http::send::status ()
-{
+Http::send::status(){
     local code="$1"
 
     default_code="${default_code:-200}"
@@ -42,13 +37,11 @@ function http::send::status ()
     HEADERS_TO_SENT["Status"]="${STATUS_CODES[${code:-$default_code}]}"
 }
 
-function http::send::cookie ()
-{
+Http::send::cookie(){
     cookies+=("$1")
 }
 
-function http::send::redirect ()
-{
+Http::send::redirect(){
     local redirectMethod="$1" redirectLocation="${@:2}" 
 
     permanent="301"
@@ -56,12 +49,11 @@ function http::send::redirect ()
 
     [[ -z "$redirectMethod" || -z "$redirectLocation" ]] && return
 
-    http::send::status ${!redirectMethod}
+    Http::send::status ${!redirectMethod}
     HEADERS_TO_SENT["Location"]="$redirectLocation"
 }
 
-function http::send::out ()
-{
+Http::send::out(){
     # XXX: Create lock to be sure, that the will not be sent twice
     local key
 
@@ -81,14 +73,21 @@ function http::send::out ()
     echo 
 }
 
-function http::send::options ()
-{
+Http::send::options(){
     local _methods="${HTTP_METHODS[@]}"
-    http::send::header Allow "${_methods// /,}"
+    Http::send::header Allow "${_methods// /,}"
          
 }
 
+alias http::send::header='Http::send::header'
+alias http::send::content_type='Http::send::content_type'
+alias http::send::status='Http::send::status'
+alias http::send::cookue='Http::send::cookie'
+alias http::send::redirect='Http::send::redirect'
+alias http::send::out='Http::send::out'
+alias http::send::options='Http::send::options'
+
 # set defaults
-http::send::status
-http::send::content-type
+Http::send::status
+Http::send::content-type
 

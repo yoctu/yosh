@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # To use this you should add the following rewrite rule in your vhost:
 # RewriteEngine On
 # RewriteCond %{REQUEST_FILENAME} -s [OR]
@@ -10,24 +8,23 @@
 
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 
-function route::api::mode ()
-{
+Route::api::mode(){
     local uri
 
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
     uri=(${uri//\// })
 
-    http::send::content-type ${default_api_content_type:-application/json}
+    Http::send::content-type ${default_api_content_type:-application/json}
 
     # Api Mode
-    # route_method="route::api::mode"
+    # route_method="Route::api::mode"
     
     [[ "${uri[0]}" == "api" ]] || api::send::not_found
 
-    route::get::login
+    Route::get::login
 
-    auths="$(route::get::auth)"
+    auths="$(Route::get::auth)"
     auths=(${auths//,/ })
 
     (( route_auditing )) && @audit "$application_name"
@@ -36,28 +33,27 @@ function route::api::mode ()
 
     for auth in "${auths[@]}"
     do
-        auth::check "$auth" || continue
+        Auth::check "$auth" || continue
         # Does we really need this?
-        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        Auth::check::rights "$auth" "$(Route::get::rights)" || continue
         break
     done
 
-    ! [[ "$authSuccessful" ]] && api::send::unauthorized
-    ! [[ "$rightsSuccessful" ]] && api::send::unauthorized
+    ! [[ "$authSuccessful" ]] && Api::send::unauthorized
+    ! [[ "$rightsSuccessful" ]] && Api::send::unauthorized
 
     if [[ -z "$api_command" ]]
     then
-        [[ -f "${api_dir%/}/${uri[1]}" ]] || api::send::not_found
+        [[ -f "${api_dir%/}/${uri[1]}" ]] || Api::send::not_found
         source ${api_dir%/}/${uri[1]}
     else
         $api_command
     fi
 }
 
-function route::check ()
-{
+Route::check(){
     # Default Mode
-    # route_method="route::check"
+    # route_method="Route::check"
     local uri
 
     uri="${REQUEST_URI%%\?*}"
@@ -66,16 +62,16 @@ function route::check ()
 
     (( route_auditing )) && @audit "$application_name"
 
-    route::get::login
+    Route::get::login
 
-    auths="$(route::get::auth)"
+    auths="$(Route::get::auth)"
     auths=(${auths//,/ })
 
     for auth in "${auths[@]}"
     do
-        auth::check "$auth" || continue
+        Auth::check "$auth" || continue
         # Does we really need this?
-        auth::check::rights "$auth" "$(route::get::rights)" || continue
+        Auth::check::rights "$auth" "$(Route::get::rights)" || continue
         break
     done
 
@@ -87,36 +83,34 @@ function route::check ()
 
     if [[ "$REQUEST_METHOD" == "OPTIONS" ]]
     then
-        http::send::options
+        Http::send::options
         return
     fi
 
     if [[ ! -z "${ROUTE[/${uri#/}:$REQUEST_METHOD]}" ]]
     then
         eval ${ROUTE[/${uri#/}:$REQUEST_METHOD]}
-    elif app::find &>/dev/null
+    elif App::find &>/dev/null
     then
-        app::source
+        App::source
     elif [[ -f "${html_dir}/${uri%.html}.html" ]]
     then
-        html::print::out ${html_dir}/${uri%.html}.html
+        Html::print::out ${html_dir}/${uri%.html}.html
     elif [[ "$uri" =~ ^(css|js|img|fonts|player)/.* ]]
     then
         uri="${uri#*/}"
-        ${BASH_REMATCH[1]}::print::out ${uri} || route::error
+        ${BASH_REMATCH[1]^}::print::out ${uri} || Route::error
     else        
-        route::error
+        Route::error
     fi
 }
 
-function route::error ()
-{
-    http::send::status 404
+Route::error(){
+    Http::send::status 404
     echo "No Route Found!"
 }
 
-function route::get::auth ()
-{
+Route::get::auth(){
     for key in "${!AUTH[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -129,8 +123,7 @@ function route::get::auth ()
     echo "${AUTH['/':$REQUEST_METHOD]:-none}"
 }
 
-function route::get::login ()
-{
+Route::get::login(){
     for key in "${!LOGIN[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -140,12 +133,11 @@ function route::get::login ()
         fi
     done
 
-    login_method="${LOGIN['/':$REQUEST_METHOD]:-auth::request}"
+    login_method="${LOGIN['/':$REQUEST_METHOD]:-Auth::request}"
 
 }
 
-function route::get::rights ()
-{
+Route::get::rights(){
     for key in "${!RIGHTS[@]}"
     do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
@@ -158,4 +150,10 @@ function route::get::rights ()
     echo "${RIGHTS['/':$REQUEST_METHOD]:-none}"
 }
 
-router="route::check"
+alias route::api::mode='Route::api::mode'
+alias route::check='Route::check'
+alias route::error='Route::error'
+alias route::get::auth='Route::get::auth'
+alias route::get::login='Route::get::login'
+alias route::get::rights='Route::get::rights'
+router="Route::check"

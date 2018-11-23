@@ -1,6 +1,7 @@
 # setopt functions we need
 shopt -s extglob
 shopt -s nullglob
+shopt -s expand_aliases
 
 # Auto Load all
 
