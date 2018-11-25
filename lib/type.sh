@@ -52,9 +52,26 @@ Type::variable::set(){
     return 0
 }
 
+Type::array::get::key(){
+    # $1 is the key level, it should be like=machines:list
+    # $2 is the array
+    local level="${1%:}:"
+    local -n array="$2"
+
+    Type::variable::set level || return 1
+
+    Type::array::is::assoc "$2" || return 1
+
+    for key in ${!array[@]};do
+        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; echo ${key%%:*}; }
+    done | sort | uniq
+
+}
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
 alias type::array::is::assoc='Type::array::is::assoc'
 alias type::variable::set='Type::variable::set'
+alias type::array::get::key='Type::array::get::key'
 
