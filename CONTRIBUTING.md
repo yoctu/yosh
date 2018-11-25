@@ -28,7 +28,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
 
 Start reading our code and you'll get the hang of it. We optimize for readability:
 
-  * We indent using two spaces (soft tabs)
+  * We indent using four spaces (soft tabs)
   * We use HAML for all views
   * We avoid logic in views, putting HTML generators into helpers
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`), around operators (`x += 1`, not `x+=1`), and around hash arrows.
