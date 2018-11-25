@@ -7,7 +7,7 @@ If you haven't already, come find us in IRC ([#yosh](irc://chat.freenode.net/yos
 Here are some important resources:
 
   * [Yosh for Developers](https://yoctu.github.io/yosh/developer) tells you where we are,
-  * [Our roadmap](http://https://yoctu.github.io/yosh/wish-list) is the 10k foot view of where we're going, and
+  * [Our roadmap](http://yoctu.github.io/yosh/wish-list) is the 10k foot view of where we're going, and
   * [Github](https://github.com/yoctu/yosh) is our day-to-day project management space.
 
 ## Testing
