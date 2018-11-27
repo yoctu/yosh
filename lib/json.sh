@@ -67,7 +67,7 @@ Json::create(){
 
         for key_2 in "${tmparray2[@]}"; do
             if [[ ! "$countingRun" == "1" ]] && [[ ! "$key_2" == "0" ]]; then
-                tmpvar+="{ $key_2 : "
+                tmpvar+="{ \"$key_2\" : "
                 ((count++))
             fi
         done
@@ -80,7 +80,7 @@ Json::create(){
             ((i++))
         done
 
-        tmparray+=("$(echo "${array[$key]}" | jq -c -R ". as \$b | $tmpvar")")
+        tmparray+=("$(echo "${array[$key]//[$'\t\r\n']}" | jq -c -R ". as \$b | $tmpvar")")
         count="0"
         tmpvar=""
         i="0"
