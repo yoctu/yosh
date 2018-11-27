@@ -1,3 +1,5 @@
+#TODO: Cleaup :)
+
 Json::create::simple(){
     local array="$1"
 
