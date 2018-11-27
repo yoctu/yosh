@@ -1,3 +1,5 @@
+#TODO: Cleaup :)
+
 Json::create::simple(){
     local array="$1"
 
@@ -28,26 +30,60 @@ Json::create(){
 
     Type::array::is::assoc "$1" || return 1
     local -n array="$1"
-    
+ 
     local -a tmparray
     local tmpvar
+    local jsonarray
+    local countingRun
+    local count="0"
+    local i="0"
+    local tmpArrayVar
 
-    for key in "${!array[@]}"; do
+    for key in "${!array[@]}" "END"; do
         IFS=":" read -a tmparray2 <<<"$key"
-        count="0"
+
+        if [[ "$key" =~ .*:0$ ]]; then
+            jsonarray=1
+            tmpArrayVar="${array[$key]},"
+        elif [[ "$jsonarray" == 1 && "$key" =~ .*:[1-9]+$ ]]; then
+            tmpArrayVar+="${array[$key]},"
+            countingRun="1"
+        elif [[ "$jsonarray" == "1" && ! "$key" =~ .*:[0-9]+$ && "$key" == "END" ]]; then
+            jsonarray="0"
+            tmpvar+=$'$b | split(",")'
+            until (( i == count )); do
+                tmpvar+=" }"
+                ((i++))
+            done
+            tmparray+=("$(jq -n -c -R --arg b "${tmpArrayVar%,}" " $tmpvar")")
+            countingRun="0"
+            tmpvar=""
+            i=""
+            count=""
+            tmpArrayVar=""
+        fi
+
+        [[ "$key" == END ]] && break
+
         for key_2 in "${tmparray2[@]}"; do
-            tmpvar+="{ \"$key_2\" : "
-            ((count++))
+            if [[ ! "$countingRun" == "1" ]] && [[ ! "$key_2" == "0" ]]; then
+                tmpvar+="{ \"$key_2\" : "
+                ((count++))
+            fi
         done
-        i="0"
+        
+        [[ "$jsonarray" == 1 ]] && continue
+
         tmpvar+='$b'
         until (( i == count )); do
             tmpvar+=" }"
             ((i++))
         done
-        
+
         tmparray+=("$(echo "${array[$key]//[$'\t\r\n']}" | jq -c -R ". as \$b | $tmpvar")")
-        unset tmpvar
+        count="0"
+        tmpvar=""
+        i="0"
     done
 
     local tmpFile="$(mktemp)"
