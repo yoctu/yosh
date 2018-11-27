@@ -39,6 +39,15 @@ Json::create(){
             tmpvar+="{ $key_2 : "
             ((count++))
         done
+        if [[ "$key" =~ .*:0$ ]]; then
+            jsonarray=1
+            tmpArrayVar="${array[$key]},"
+        elif [[ "$jsonarray" == 1 && "$key" =~ .*:[0-9]+$ ]]; then
+            tmpArrayVar+="${array[$key]},"
+        elif [[ "$jsonarray" == 1 && ! "$key" =~ .*:[0-9]+$ ]]; then
+            unset jsonarray
+            tmparray+=("$(echo "${tmpArrayVar%,}" | jq -c -R ".|split(',') as $b |")")
+        fi
         i="0"
         tmpvar+='$b'
         until (( i == count )); do
