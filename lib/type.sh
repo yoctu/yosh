@@ -71,7 +71,7 @@ Type::array::get::key(){
 Type::fusion::array::in::assoc(){
     local -n array="$1"
     local -n assoc="$2"
-    local string="$3"
+    local string="${3%:}"
 
     Type::variable::set string || return 1
 
