@@ -62,10 +62,26 @@ Type::array::get::key(){
 
     Type::array::is::assoc "$2" || return 1
 
-    for key in ${!array[@]};do
+    for key in "${!array[@]}";do
         [[ "$key" =~ ${level} ]] && { key="${key//$level}"; echo ${key%%:*}; }
     done | sort | uniq
 
+}
+
+Type::fusion::array::in::assoc(){
+    local -n array="$1"
+    local -n assoc="$2"
+    local string="$3"
+
+    Type::variable::set string || return 1
+
+    Type::array::is::assoc "$2" || return 1
+
+    local count="0"
+    for key in "${array[@]}"; do
+        assoc[$string:$count]="$key"
+        ((count++))
+    done
 }
 
 alias type::function::exist='Type::function::exist'
@@ -74,4 +90,5 @@ alias type::array::contains='Type::array::contains'
 alias type::array::is::assoc='Type::array::is::assoc'
 alias type::variable::set='Type::variable::set'
 alias type::array::get::key='Type::array::get::key'
+alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
 
