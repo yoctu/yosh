@@ -107,32 +107,17 @@ Json::create(){
 Json::to::array(){
     # Argmuent should be an array name and a json
     # the given array will contain the parsed json data
-    
+    # Dzove855 2018-11-30: Dancer you're a good young padawan, nice jq function :D
+
     local -n array="$1" 
     local json="${*:2}"
 
     while read line; do
-        array[${line%%===*}]="${line#*===}"
-    done < <(Json::to::array::recursive "$json")
-}
-
-Json::to::array::recursive(){
-    local json="${1}" sub="${2:-keys_unsorted[]}"
-    local parsedSub="${sub// | keys_unsorted\[\]/}"
-    parsedSub="${parsedSub//keys_unsorted\[\]}"
-
-    while read keys; do
-        tmpCurKey="$parsedSub.\"$keys\""
-        if echo "$json" | jq -r "$tmpCurKey | keys_unsorted[]" &>/dev/null; then
-            Json::to::array::recursive "$json" "$parsedSub.\"$keys\" | keys_unsorted[]"
-        else
-            local prettyKey="${parsedSub//\".\"/:}"
-            prettyKey="${prettyKey#.}"
-            prettyKey="${prettyKey//\"}"
-
-            echo "${prettyKey#:}:$keys===$(echo "$json" | jq -r "$tmpCurKey")"
-        fi
-    done < <(echo "$json" | jq -r "$sub")
+        [[ "$line" == @({|}) ]] && continue
+        [[ "$line" =~ ^\"(.*)\":.* ]] && key="${BASH_REMATCH[1]}"
+        [[ "$line" =~ .*:[[:space:]]\"(.*)\" ]] && value="${BASH_REMATCH[1]}"
+        array[${key}]="${value}"
+    done < <(echo "$json" | jq --arg delim ':' 'reduce (tostream|select(length==2)) as $i ({}; [$i[0][]|tostring] as $path_as_strings | ($path_as_strings|join($delim)) as $key | $i[1] as $value | .[$key] = $value )')
 }
 
 # to be more simple
