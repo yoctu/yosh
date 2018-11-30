@@ -50,12 +50,18 @@ Few applications use Yosh as Framework. There might be other but the following a
 
 ## Yoctu
 
-Yoctapi
-Esm
-Yoctible
+### Yoctapi
+Provide a simple API interface to database backend.
+
+### Yosm (ESM)
+Server Manager used for Yoctu Services.
+
+### Yoctible
+Web Portal to manage Machine creation for Yoctu.
 
 ## Other
 
-SlotMachine
+### SlotMachine
+Slot Machine developed for fun.
 
 
