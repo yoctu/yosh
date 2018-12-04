@@ -84,6 +84,19 @@ Type::fusion::array::in::assoc(){
     done
 }
 
+Type::array::fusion(){
+    local -n srcArray="$1"
+    local -n dstArray="$2"
+    local regex="${3:-.*}"
+
+    Type::array::is::assoc "$1" || return 1
+    Type::array::is::assoc "$2" || return 1
+
+    for key in "${!srcArray[@]}"; do
+        [[ "$key" =~ $regex ]] && dstArray[$key]="${srcArray[$key]}"
+    done
+}
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
