@@ -104,4 +104,5 @@ alias type::array::is::assoc='Type::array::is::assoc'
 alias type::variable::set='Type::variable::set'
 alias type::array::get::key='Type::array::get::key'
 alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
+alias type::array::fusion='Type::array::fusion'
 
