@@ -29,7 +29,7 @@ tmpStdout="$(mktemp -p $TMPDIR)"
 tmpStderr="$(mktemp -p $TMPDIR)"
 
 # check if application.sh exist
-[[ -f "${DOCUMENT_ROOT}/application.sh" ]] && source ${DOCUMENT_ROOT}/application.sh
+[[ -f "${DOCUMENT_ROOT%/}/../application.sh" ]] && source ${DOCUMENT_ROOT%/}/../application.sh
 
 # Clean TMP file on exit
 trap '_exit' EXIT
