@@ -3,7 +3,8 @@
 Json::create::simple(){
     local array="$1"
 
-    Type::array::is::assoc "$1" || return 1
+# Not need to be assoc
+#    Type::array::is::assoc "$1" || return 1
 
     [[ -z "$array" ]] && return
 
