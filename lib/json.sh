@@ -28,29 +28,25 @@ Json::create(){
 
     Type::array::is::assoc "$1"
 
+    local key subKey jsonArray end tmpArray
+    local -A subKey
+
     for key in "${!array[@]}"
     do
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
-            if [[ "$subKey" != "0" && "$jsonArray" != "1" ]]; then
+            if [[ ! "$subKey" =~ [0-9]+$ ]]; then
                 echo -n "{ \"$subKey\" :" 
                 end+=" }"
-            elif [[ "$subKey" == "0" ]]; then
-                jsonArray="1"
+            else 
                 echo -n "["
-                echo -n "\"${array[$key]}\","
-            elif [[ "$subKey" =~ ^.*:[0-9]+$ ]] && [[ "$jsonArray" == "1" ]]; then
-                echo -n "${${array[$key]}},"
-            elif [[ ! "$subKey" =~ ^.*:[0-9]+$ ]] && [[ "$jsonArray" == "1" ]]; then
-                unset jsonArray
-                echo -n "]"
-                echo "$end"
-                unset end
-                echo -n "{ \"$subKey\" :" 
+                end="]$end"
             fi
         done
-        [[ "$jsonArray" != "1" ]] && { echo -n "\"${array[$key]}\""; echo "$end"; unset end; }
-    done #| jq --slurp 'reduce .[] as $item ({}; . * $item)'
+        echo -n "\"${array[$key]}\""
+        echo "$end" 
+        unset end
+    done | jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
 }
 
 Json::to::array(){
