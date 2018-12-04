@@ -46,7 +46,7 @@ Json::create(){
         echo -n "\"${array[$key]}\""
         echo "$end" 
         unset end
-    done #| jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
+    done | jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
 }
 
 Json::to::array(){
