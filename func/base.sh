@@ -3,7 +3,7 @@
 # convert array to json
 # keep old method... this is depcretated
 alias json-to-array='Json::to::array'
-alias array-to-json='array::to::json'
+alias array-to-json='Json::create::simple'
 
 # trim a variable
 trim(){
