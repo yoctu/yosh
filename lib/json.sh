@@ -14,9 +14,8 @@ Json::create::simple(){
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy
 
-    for key in "${!array[@]}"
-    do
-            printf '%s\0%s\0' "$key" "${array[$key]}"
+    for key in "${!array[@]}"; do
+        printf '%s\0%s\0' "$key" "${array[$key]}"
     done | jq -c -Rs -S '
                 split("\u0000")
                 | . as $a
@@ -29,7 +28,7 @@ Json::create(){
 
     Type::array::is::assoc "$1"
 
-    local key subKey jsonArray end tmpArray
+    local key subKey jsonArray end tmpArray start
     local -A subKey
 
     for key in "${!array[@]}"
@@ -37,15 +36,15 @@ Json::create(){
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
             if [[ ! "$subKey" =~ [0-9]+$ ]]; then
-                echo -n "{ \"$subKey\" :" 
+                start+="{ \"$subKey\" :" 
                 end+=" }"
             else 
                 echo -n "["
                 end="]$end"
             fi
         done
-        echo -n "\"${array[$key]}\""
-        echo "$end" 
+        jq -n -c -R --arg b "${array[$key]}" " $start \$b $end"
+        unset start
         unset end
     done | jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
 }
