@@ -2,7 +2,10 @@
 
 Yosh Provide a bash framework for api and applications.
 It is fully written in bash and aims to be easy to use. It provides the required feature of a web framework.
-We recommend to use yoctu-starter-kit to build a new application.
+We recommend to use [yoctu-starter-kit](https://github.com/yoctu/yoctu-starter-kit) to build a new application.
+
+---
+
 
 # Install
 
@@ -22,6 +25,8 @@ sudo cp -r yosh /usr/share
 ```
 
 ---
+
+
 
 # Librairies
 
@@ -74,6 +79,7 @@ Ex:
 
 ---
 
+
 # Example
 
 Few applications use Yosh as Framework. There might be other but the following are known by us. 
@@ -100,6 +106,7 @@ Slot Machine developed for fun :
 [https://github.com/lvenier/slotmy](https://github.com/lvenier/slotmy "SlotMy Homepage")
 
 ---
+
 
 # Contributors
 
