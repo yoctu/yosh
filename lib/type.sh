@@ -52,9 +52,57 @@ Type::variable::set(){
     return 0
 }
 
+Type::array::get::key(){
+    # $1 is the key level, it should be like=machines:list
+    # $2 is the array
+    local level="${1%:}:"
+    local -n array="$2"
+
+    Type::variable::set level || return 1
+
+    Type::array::is::assoc "$2" || return 1
+
+    for key in "${!array[@]}";do
+        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; echo ${key%%:*}; }
+    done | sort | uniq
+
+}
+
+Type::fusion::array::in::assoc(){
+    local -n array="$1"
+    local -n assoc="$2"
+    local string="${3%:}"
+
+    Type::variable::set string || return 1
+
+    Type::array::is::assoc "$2" || return 1
+
+    local count="0"
+    for key in "${array[@]}"; do
+        assoc[$string:$count]="$key"
+        ((count++))
+    done
+}
+
+Type::array::fusion(){
+    local -n srcArray="$1"
+    local -n dstArray="$2"
+    local regex="${3:-.*}"
+
+    Type::array::is::assoc "$1" || return 1
+    Type::array::is::assoc "$2" || return 1
+
+    for key in "${!srcArray[@]}"; do
+        [[ "$key" =~ $regex ]] && dstArray[$key]="${srcArray[$key]}"
+    done
+}
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
 alias type::array::is::assoc='Type::array::is::assoc'
 alias type::variable::set='Type::variable::set'
+alias type::array::get::key='Type::array::get::key'
+alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
+alias type::array::fusion='Type::array::fusion'
 
