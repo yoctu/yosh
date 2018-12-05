@@ -35,12 +35,12 @@ Soon to come...
 
 #### Type::array 
 - type::array::fusion Array1 Array2 : merge 2 arrays into 1 array. Output Array is Array2.
-```Ex:
-
+```
+Ex:
 ```
 - type::array::get::key Array1 Array2 :
-```Ex:
-
+```
+Ex:
 ```
 
 #### Type::variable
@@ -56,12 +56,12 @@ Soon to come...
 
 ### Json
 - Json::create Array1 : output a json based on a Array input
-```Ex:
-
+```
+Ex:
 ```
 - Json::to::array Array JsonData : create an associative Array from json format data 
-```Ex:
-
+```
+Ex:
 ```
 
 ### Db
