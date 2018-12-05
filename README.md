@@ -34,17 +34,20 @@ Soon to come...
 ### Type
 
 #### Type::array 
-- type::array::fusion Array1 Array2 : merge 2 arrays into 1 array. Output Array is Array2.
+- **type::array::fusion Array1 Array2** : merge 2 arrays into 1 array. Output Array is Array2.
 ```
 Ex:
 ```
-- type::array::get::key Array1 Array2 :
+- **type::array::get::key Array1 Array2** :
 ```
 Ex:
 ```
 
 #### Type::variable
-- type::variable::set Variable Value
+- **type::variable::set Variable Value** : 
+```
+Ex:
+```
 
 ### Config
 
@@ -55,11 +58,11 @@ Ex:
 ### Log
 
 ### Json
-- Json::create Array1 : output a json based on a Array input
+- **Json::create Array1** : output a json based on a Array input
 ```
 Ex:
 ```
-- Json::to::array Array JsonData : create an associative Array from json format data 
+- **Json::to::array Array JsonData** : create an associative Array from json format data 
 ```
 Ex:
 ```
