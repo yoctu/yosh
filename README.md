@@ -94,4 +94,8 @@ Web Portal to manage Machine creation for Yoctu :
 Slot Machine developed for fun :
 [https://github.com/lvenier/slotmy](https://github.com/lvenier/slotmy "SlotMy Homepage")
 
+# Contributors
 
+- [Dzove855] (https://github.com/dzove855 "Dzove855 Homepage") : Main (and unique) Developer...
+
+- [LaV] (https://github.com/lvenier "LaV Homepage") : Maine developer Bottom Kicker...
