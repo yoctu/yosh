@@ -20,6 +20,9 @@ You can git clone the repository and shoot few commands to have it running :
 git clone https://github.com/yoctu/yosh.git
 sudo cp -r yosh /usr/share
 ```
+
+---
+
 # Librairies
 
 Yosh provide libraries to manage a couple of external tools : databases, authentications, files..
@@ -69,6 +72,8 @@ Ex:
 
 ### Db
 
+---
+
 # Example
 
 Few applications use Yosh as Framework. There might be other but the following are known by us. 
@@ -93,6 +98,8 @@ Web Portal to manage Machine creation for Yoctu :
 ### SlotMy
 Slot Machine developed for fun :
 [https://github.com/lvenier/slotmy](https://github.com/lvenier/slotmy "SlotMy Homepage")
+
+---
 
 # Contributors
 
