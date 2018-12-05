@@ -112,3 +112,6 @@ Slot Machine developed for fun :
 - [Dzove855] (https://github.com/dzove855 "Dzove855 Homepage") : Main (and unique) Developer...
 
 - [LaV] (https://github.com/lvenier "LaV Homepage") : Maine developer Bottom Kicker...
+
+
+![Yoctu](https://www.yoctu.com/wp-content/themes/yoctu/images/logo.svg "Yoctu")
