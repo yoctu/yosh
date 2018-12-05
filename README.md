@@ -78,20 +78,20 @@ Few applications use Yosh as Framework. There might be other but the following a
 
 ### Yoctapi
 Provide a simple API interface to database backend :
-[I'm an inline-style link with title](https://github.com/yoctu/yoctapi "Yoctapi Homepage")
+[https://github.com/yoctu/yoctapi](https://github.com/yoctu/yoctapi "Yoctapi Homepage")
 
 ### Yosm (ESM)
 Server Manager used for Yoctu Services :
-[I'm an inline-style link with title](https://github.com/yoctu/yosm "Yosm Homepage")
+[https://github.com/yoctu/yosm](https://github.com/yoctu/yosm "Yosm Homepage")
 
 ### Yoctible
 Web Portal to manage Machine creation for Yoctu :
-[I'm an inline-style link with title](https://github.com/yoctu/yoctible "Yoctible Homepage")
+[https://github.com/yoctu/yoctible](https://github.com/yoctu/yoctible "Yoctible Homepage")
 
 ## Other
 
 ### SlotMy
 Slot Machine developed for fun :
-[I'm an inline-style link with title](https://github.com/lvenier/slotmy "SlotMy Homepage")
+[https://github.com/lvenier/slotmy](https://github.com/lvenier/slotmy "SlotMy Homepage")
 
 
