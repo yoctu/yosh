@@ -28,25 +28,20 @@ Json::create(){
 
     Type::array::is::assoc "$1"
 
-    local key subKey jsonArray end tmpArray
+    local key subKey jsonArray end
     local -A subKey
 
     for key in "${!array[@]}"
     do
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
-            if [[ ! "$subKey" =~ [0-9]+$ ]]; then
-                echo -n "{ \"$subKey\" :" 
-                end+=" }"
-            else 
-                echo -n "["
-                end="]$end"
-            fi
+            echo -n "{ \"$subKey\" :" 
+            end+=" }"
         done
         echo -n "\"${array[$key]//\"/\\\"}\""
         echo "$end"
         unset end
-    done | jq --slurp --compact-output 'reduce .[] as $item ({}; if $item[]|type == "array" then .[$item|keys[]] |= ([.,$item[]]|add) else . * $item end)'
+    done | jq --slurp 'reduce .[] as $item ({}; . * $item)' | sed '/\"[0-9]\"\:.*\"$/{n;s/},/],/g}' | sed -zE 's/\{([^\n]*\n[^\n]*\"[0-9]\"\:)/[\1/g' | sed 's/\"[0-9]\"\://g'    
 }
 
 Json::to::array(){
