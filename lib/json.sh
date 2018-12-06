@@ -43,10 +43,10 @@ Json::create(){
                 end="]$end"
             fi
         done
-        echo -n "\"${array[$key]}\""
+        echo -n "\"${array[$key]//\"/\\\"}\""
         echo "$end"
         unset end
-    done | jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
+    done | jq --slurp --compact-output 'reduce .[] as $item ({}; if $item[]|type == "array" then .[$item|keys[]] |= ([.,$item[]]|add) else . * $item end)'
 }
 
 Json::to::array(){
