@@ -41,7 +41,7 @@ Json::create(){
         echo -n "\"${array[$key]//\"/\\\"}\""
         echo "$end"
         unset end
-    done | jq --slurp 'reduce .[] as $item ({}; . * $item)' | sed '/"[0-9]*":.*"$/{n;s/}/]/g}' | sed -zE 's/\{([^\n]*\n[^\n]*\"[0-9]\"\:)/[\1/g' | sed 's/\"[0-9]\"\://g'    
+    done | jq --slurp 'reduce .[] as $item ({}; . * $item)' | sed '/"[0-9]*":.*"$/{n;s/}/]/g}' | sed -zE 's/\{([^\n]*\n[^\n]*\"[0-9]\"\:)/[\1/g' | sed 's/\"[0-9]\"\://g' | jq -c -r .
 }
 
 Json::to::array(){
