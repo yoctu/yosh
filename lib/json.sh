@@ -54,8 +54,10 @@ Json::to::array(){
 
     while read line; do
         [[ "$line" == @({|}) ]] && continue
-        [[ "$line" =~ ^\"(.*)\":[[:space:]]\"(.*)\" ]] && { key="${BASH_REMATCH[1]}"; value="${BASH_REMATCH[2]}"; }
-        array[${key}]="${value}"
+        [[ "$line" =~ ^\"(.*)\":[[:space:]](.*)? ]] && { key="${BASH_REMATCH[1]}"; value="${BASH_REMATCH[2]}"; }
+        value="${value%,}"
+        value="${value%\"}"
+        array[${key}]="${value#\"}"
     done < <(echo "$json" | jq --arg delim ':' 'reduce (tostream|select(length==2)) as $i ({}; [$i[0][]|tostring] as $path_as_strings | ($path_as_strings|join($delim)) as $key | $i[1] as $value | .[$key] = $value )')
 }
 
