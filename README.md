@@ -47,39 +47,55 @@ Example without regex:
 ```
 Type::array::fusion array1 array2
 ```
+
+Ex with regex, the regex will only fusion the matching keys: 
 ```
-Ex with regex, the regex will only fusion the matching keys: Type::array::fusion array1 array2 "testkeys::.*"
+Type::array::fusion array1 array2 "testkeys::.*"
 ```
 - **Type::array::get::key Array Regex** : list all matching keys
+
+Example:
 ```
-Ex: Type::array::get::key array1 "testkeys::.*"
+Type::array::get::key array1 "testkeys::.*"
 ```
 - **Type::array::contains array string** : Check if array contains a matching value
+
+Example:
 ```
-Ex: Type::array::contains array testing
+Type::array::contains array testing
 ```
 - **Type::array::is::assoc array** : check if array is associative
+
+Example:
 ```
-Ex: Type::array::is::assoc array
+Type::array::is::assoc array
 ```
 - **Type::fusion::array::in::assoc array assoc** : Fusion an array in associative array
+
+Example:
 ```
-Ex: Type::fusion::array::in::assoc array assoc
+Type::fusion::array::in::assoc array assoc
 ```
 #### Type::variable
 - **Type::variable::set variable ** : check if the following variables are set 
+
+Example:
 ```
-Ex: Type::variable::set variable1 variable2
+Type::variable::set variable1 variable2
 ```
 #### Type::function
 - **Type::function::exist function** : Check if a function exist
+
+Example:
 ```
-Ex: Type::function::exist function1 function2
+Type::function::exist function1 function2
 ```
 #### Type::command
 - **Type::command::exist command** : Check if command exist
+
+Example:
 ```
-Ex: Type::command::exist command1 command2
+Type::command::exist command1 command2
 ```
 ### Config
 
@@ -91,12 +107,16 @@ Ex: Type::command::exist command1 command2
 
 ### Json
 - **Json::create Array** : output a json based on a Array input
+
+Example:
 ```
-Ex: Json::create Array
+Json::create Array
 ```
 - **Json::to::array Array JsonData** : create an associative Array from json format data 
+
+Example:
 ```
-Ex: Json::to::array array "Json"
+Json::to::array array "Json"
 ```
 
 ### Db
