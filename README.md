@@ -53,7 +53,8 @@ Ex with regex, the regex will only fusion the matching keys:
 Type::array::fusion array1 array2 "testkeys::.*"
 ```
 - **Type::array::get::key Array Regex** : list all matching keys
-Example:```
+Example:
+```
 Type::array::get::key array1 "testkeys::.*"
 ```
 - **Type::array::contains array string** : Check if array contains a matching value
