@@ -42,7 +42,7 @@ Soon to come...
 
 #### Type::array
 - **Type::array::fusion srcArray dstArray Regex(Optional)** : merge 2 associative arrays into 1 array. Output Array is Array2.
-<br>Example without regex:
+<br><br>Example without regex:
 ```
 Type::array::fusion array1 array2
 ```
@@ -51,46 +51,40 @@ Type::array::fusion array1 array2
 Type::array::fusion array1 array2 "testkeys::.*"
 ```
 - **Type::array::get::key Array Regex** : list all matching keys
-<br>Example:
+<br><br>Example:
 ```
 Type::array::get::key array1 "testkeys::.*"
 ```
 - **Type::array::contains array string** : Check if array contains a matching value
-
-Example:
+<br><br>Example:
 ```
 Type::array::contains array testing
 ```
 - **Type::array::is::assoc array** : check if array is associative
-
-Example:
+<br><br>Example:
 ```
 Type::array::is::assoc array
 ```
 - **Type::fusion::array::in::assoc array assoc** : Fusion an array in associative array
-
-Example:
+<br><br>Example:
 ```
 Type::fusion::array::in::assoc array assoc
 ```
 #### Type::variable
 - **Type::variable::set variable ** : check if the following variables are set 
-
-Example:
+<br><br>Example:
 ```
 Type::variable::set variable1 variable2
 ```
 #### Type::function
 - **Type::function::exist function** : Check if a function exist
-
-Example:
+<br><br>Example:
 ```
 Type::function::exist function1 function2
 ```
 #### Type::command
 - **Type::command::exist command** : Check if command exist
-
-Example:
+<br><br>Example:
 ```
 Type::command::exist command1 command2
 ```
@@ -104,14 +98,12 @@ Type::command::exist command1 command2
 
 ### Json
 - **Json::create Array** : output a json based on a Array input
-
-Example:
+<br><br>Example:
 ```
 Json::create Array
 ```
 - **Json::to::array Array JsonData** : create an associative Array from json format data 
-
-Example:
+<br><br>Example:
 ```
 Json::to::array array "Json"
 ```
