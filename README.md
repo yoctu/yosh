@@ -42,8 +42,9 @@ Soon to come...
 
 #### Type::array
 - **Type::array::fusion srcArray dstArray Regex(Optional)** : merge 2 associative arrays into 1 array. Output Array is Array2.
+Example without regex:
 ```
-Ex without regex: Type::array::fusion array1 array2
+Type::array::fusion array1 array2
 ```
 ```
 Ex with regex, the regex will only fusion the matching keys: Type::array::fusion array1 array2 "testkeys::.*"
