@@ -14,9 +14,8 @@ Json::create::simple(){
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy
 
-    for key in "${!array[@]}"
-    do
-            printf '%s\0%s\0' "$key" "${array[$key]}"
+    for key in "${!array[@]}"; do
+        printf '%s\0%s\0' "$key" "${array[$key]}"
     done | jq -c -Rs -S '
                 split("\u0000")
                 | . as $a
@@ -29,25 +28,20 @@ Json::create(){
 
     Type::array::is::assoc "$1"
 
-    local key subKey jsonArray end tmpArray
+    local key subKey jsonArray end
     local -A subKey
 
     for key in "${!array[@]}"
     do
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
-            if [[ ! "$subKey" =~ [0-9]+$ ]]; then
-                echo -n "{ \"$subKey\" :" 
-                end+=" }"
-            else 
-                echo -n "["
-                end="]$end"
-            fi
+            echo -n "{ \"$subKey\" :" 
+            end+=" }"
         done
-        echo -n "\"${array[$key]}\""
-        echo "$end" 
+        echo -n "\"${array[$key]//\"/\\\"}\""
+        echo "$end"
         unset end
-    done | jq -c --slurp 'reduce .[] as $item ({}; . * $item)'
+    done | jq --slurp 'reduce .[] as $item ({}; . * $item)' | sed '/"[0-9]*":.*"$/{n;s/}/]/g}' | sed -zE 's/\{([^\n]*\n[^\n]*\"[0-9]\"\:)/[\1/g' | sed 's/\"[0-9]\"\://g' | jq -c -r .
 }
 
 Json::to::array(){
@@ -60,8 +54,10 @@ Json::to::array(){
 
     while read line; do
         [[ "$line" == @({|}) ]] && continue
-        [[ "$line" =~ ^\"(.*)\":[[:space:]]\"(.*)\" ]] && { key="${BASH_REMATCH[1]}"; value="${BASH_REMATCH[2]}"; }
-        array[${key}]="${value}"
+        [[ "$line" =~ ^\"(.*)\":[[:space:]](.*)? ]] && { key="${BASH_REMATCH[1]}"; value="${BASH_REMATCH[2]}"; }
+        value="${value%,}"
+        value="${value%\"}"
+        array[${key}]="${value#\"}"
     done < <(echo "$json" | jq --arg delim ':' 'reduce (tostream|select(length==2)) as $i ({}; [$i[0][]|tostring] as $path_as_strings | ($path_as_strings|join($delim)) as $key | $i[1] as $value | .[$key] = $value )')
 }
 
