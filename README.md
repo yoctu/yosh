@@ -40,22 +40,45 @@ Soon to come...
 
 ### Type
 
-#### Type::array 
-- **type::array::fusion Array1 Array2** : merge 2 arrays into 1 array. Output Array is Array2.
+#### Type::array
+- **Type::array::fusion srcArray dstArray Regex(Optional)** : merge 2 associative arrays into 1 array. Output Array is Array2.
 ```
-Ex:
+Ex without regex: Type::array::fusion array1 array2
 ```
-- **type::array::get::key Array1 Array2** :
 ```
-Ex:
+Ex with regex, the regex will only fusion the matching keys: Type::array::fusion array1 array2 "testkeys::.*"
 ```
-
+- **Type::array::get::key Array Regex** : list all matching keys
+```
+Ex: Type::array::get::key array1 "testkeys::.*"
+```
+- **Type::array::contains array string** : Check if array contains a matching value
+```
+Ex: Type::array::contains array testing
+```
+- **Type::array::is::assoc array** : check if array is associative
+```
+Ex: Type::array::is::assoc array
+```
+- **Type::fusion::array::in::assoc array assoc** : Fusion an array in associative array
+```
+Ex: Type::fusion::array::in::assoc array assoc
+```
 #### Type::variable
-- **type::variable::set Variable Value** : 
+- **Type::variable::set variable ** : check if the following variables are set 
 ```
-Ex:
+Ex: Type::variable::set variable1 variable2
 ```
-
+#### Type::function
+- **Type::function::exist function** : Check if a function exist
+```
+Ex: Type::function::exist function1 function2
+```
+#### Type::command
+- **Type::command::exist command** : Check if command exist
+```
+Ex: Type::command::exist command1 command2
+```
 ### Config
 
 ### Routes
@@ -65,13 +88,13 @@ Ex:
 ### Log
 
 ### Json
-- **Json::create Array1** : output a json based on a Array input
+- **Json::create Array** : output a json based on a Array input
 ```
-Ex:
+Ex: Json::create Array
 ```
 - **Json::to::array Array JsonData** : create an associative Array from json format data 
 ```
-Ex:
+Ex: Json::to::array array "Json"
 ```
 
 ### Db
