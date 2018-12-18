@@ -70,10 +70,10 @@ Saml::buildAuthnRequest(){
 
     for key in "${!SAML[@]}"
     do
-        _query+="$key=$(url_encode ${SAML[$key]})&"
+        _query+="$key=$(urlencode -d ${SAML[$key]})&"
     done
 
-    _query="${_query%&}&Signature=$(url_encode "$(Saml::createSignature "SAMLRequest=$( url_encode "${SAML['SAMLRequest']}")&RelayState=$(url_encode "${SAML['RelayState']}")&SigAlg=$(url_encode "${SAML['SigAlg']}")")")"
+    _query="${_query%&}&Signature=$(urlencode -d "$(Saml::createSignature "SAMLRequest=$( urlencode -d "${SAML['SAMLRequest']}")&RelayState=$(urlencode -d "${SAML['RelayState']}")&SigAlg=$(urlencode -d "${SAML['SigAlg']}")")")"
 
 
     Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
