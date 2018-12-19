@@ -21,7 +21,7 @@ Saml::request::destination(){
 }
 
 Saml::buildXmlFile(){
-    local _opts tmpFile="$(mktemp -d)"
+    local _opts 
     declare -A SAMLREQUEST
 
     Saml::request::id
@@ -29,16 +29,15 @@ Saml::buildXmlFile(){
     Saml::request::issueinstant
     Saml::request::destination
 
-    for key in "${!SAMLREQUEST[@]}"
-    do
+    for key in "${!SAMLREQUEST[@]}"; do
         _opts+=" -u '//*[name()=\"AuthnRequest\"]/@$key' -v \"${SAMLREQUEST[$key]}\""
     done
     
-    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${_saml_host_url%/}\""
+    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${_saml_host_url}\""
 
-    eval xmlstarlet ed $_opts $_saml_xml_template
+    eval "xmlstarlet ed $_opts $_saml_xml_template"
 
-    unset _opts
+#    unset _opts
 }
 
 Saml::createRelayState(){
@@ -50,7 +49,7 @@ Saml::createSamlRequest(){
 }
 
 Saml::createSignature(){   
-    local _query_string="$@" tmpQueryFile="$(mktemp)"
+    local _query_string="$*"
 
     echo -n "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" | base64 -w0
 }
@@ -70,11 +69,10 @@ Saml::buildAuthnRequest(){
 
     for key in "${!SAML[@]}"
     do
-        _query+="$key=$(urlencode -d ${SAML[$key]})&"
+        _query+="$key=$(urlencode "${SAML[$key]}")&"
     done
 
-    _query="${_query%&}&Signature=$(urlencode -d "$(Saml::createSignature "SAMLRequest=$( urlencode -d "${SAML['SAMLRequest']}")&RelayState=$(urlencode -d "${SAML['RelayState']}")&SigAlg=$(urlencode -d "${SAML['SigAlg']}")")")"
-
+    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${SAML['SAMLRequest']}")&RelayState=$(urlencode "${SAML['RelayState']}")&SigAlg=$(urlencode "${SAML['SigAlg']}")")")"
 
     Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
 
@@ -114,7 +112,7 @@ Saml::get::Assertion(){
 Saml::retrieve::Identity(){
     local xmlResponse username
 
-    xmlResponse="$(urlencode -d "${POST['SAMLResponse']}" | base64 -d -w0)"
+    xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
 
     Saml::validate::Issuer "$xmlResponse" || return 1
     Saml::validate::Sign "$xmlResponse" || return 1
