@@ -1,7 +1,7 @@
 
 
 Fonts::print::out(){
-    local fonts_file="$1" extension="${1##*.}"
+    local fonts_file="${1#fonts/}" extension="${1##*.}"
     
     [[ -z "$fonts_file" ]] && return 1
     [[ -f "${fonts_dir}/$fonts_file" ]] || return 1
@@ -18,3 +18,4 @@ Fonts::print::out(){
 }
 
 alias fonts::print::out='Fonts::print::out'
+ROUTERS+=("Fonts::print::out")

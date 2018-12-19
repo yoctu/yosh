@@ -15,7 +15,7 @@ Html::print::footer(){
 Html::print::out(){
     local body_file="$1"
 
-    [[ -z "$body_file" ]] && return
+    [[ ! -f "$html_dir/$body_file"]] && return
     
     # Set content-type
     Http::send::content-type text/html
@@ -33,3 +33,5 @@ Html::print::out(){
 alias html::print::header='Html::print::header'
 alias html::print::footer='Html::print::footer'
 alias html::print::out='Html::print::out'
+
+ROUTERS+=("Html::print::out")

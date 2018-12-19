@@ -7,6 +7,16 @@ API_MSG['401']="No Authorization!"
 
 declare -A API_RESPONSE
 
+Api::router(){
+    Http::send::content_type "Application/json"
+
+    if [[ -z "$default_api_function" ]]; then
+        Api::search::function
+    else
+        Api::search::function
+    fi
+}
+
 Api::search::function(){
 
     Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || Api::send::not_found
@@ -91,3 +101,5 @@ alias api::send::put='Api::send::put'
 alias api::send::patch='Api::send::patch'
 alias api::send::delete='Api::send::delete'
 alias api::send::get='Api::send::get'
+
+ROUTERS+=("Api::router")
