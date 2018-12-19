@@ -37,7 +37,7 @@ Saml::buildXmlFile(){
 
     eval "xmlstarlet ed $_opts $_saml_xml_template"
 
-#    unset _opts
+    unset _opts
 }
 
 Saml::createRelayState(){
@@ -111,8 +111,13 @@ Saml::get::Assertion(){
 
 Saml::retrieve::Identity(){
     local xmlResponse username
+    local xmlTmpFile="$(mktemp)"
 
     xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
+
+    echo "$xmlResponse" > $xmlTmpFile
+
+    xmlsec1 --decrypt --privkey-pem /etc/esm/priv.key
 
     Saml::validate::Issuer "$xmlResponse" || return 1
     Saml::validate::Sign "$xmlResponse" || return 1
