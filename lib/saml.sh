@@ -62,8 +62,7 @@ Saml::buildAuthnRequest(){
     local _query
     local -A tmpSaml
 
-    if Session::check
-    then
+    if Session::check; then
         Http::send::redirect temporary /
         return
     fi
@@ -72,8 +71,7 @@ Saml::buildAuthnRequest(){
     Saml::createRelayState
     tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
-    for key in "${!tmpSaml[@]}"
-    do
+    for key in "${!tmpSaml[@]}"; do
         _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
     done
 
@@ -116,7 +114,7 @@ Saml::retrieve::Identity(){
 
     echo "$xmlResponse" > $xmlTmpFile
 
-    decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']})"
+    decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']} $xmlTmpFile)"
 
     Saml::validate::Issuer "$xmlResponse" || return 1
     Saml::validate::Sign "$xmlResponse" || return 1
@@ -127,6 +125,8 @@ Saml::retrieve::Identity(){
 
     Session::set USERNAME ${SESSION['user_name']}
     Session::save
+
+    Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
     Http::send::redirect temporary /
 }
