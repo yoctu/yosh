@@ -1,4 +1,8 @@
 declare -A SAML
+SAML['spurl']=""
+SAML['xmltemplate']=""
+SAML['idpxml']=""
+SAML['privkey']=""
 
 Saml::idGen(){
     echo "$(uuidgen)"
@@ -9,7 +13,7 @@ Saml::request::id(){
 }
 
 Saml::request::assertion(){
-    ! [[ -z "$_saml_host_url" ]] && SAMLREQUEST['AssertionConsumerServiceURL']="${_saml_host_url%/}/acs"
+    ! [[ -z "${SAML['spurl']}" ]] && SAMLREQUEST['AssertionConsumerServiceURL']="${SAML['spurl']%/}/acs"
 }
 
 Saml::request::issueinstant(){
@@ -17,7 +21,7 @@ Saml::request::issueinstant(){
 }
 
 Saml::request::destination(){
-    SAMLREQUEST['Destination']="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)"
+    SAMLREQUEST['Destination']="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})"
 }
 
 Saml::buildXmlFile(){
@@ -33,15 +37,15 @@ Saml::buildXmlFile(){
         _opts+=" -u '//*[name()=\"AuthnRequest\"]/@$key' -v \"${SAMLREQUEST[$key]}\""
     done
     
-    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${_saml_host_url}\""
+    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${SAML['spurl']}\""
 
-    eval "xmlstarlet ed $_opts $_saml_xml_template"
+    eval "xmlstarlet ed $_opts ${SAML['xmltemplate']}"
 
     unset _opts
 }
 
 Saml::createRelayState(){
-    SAML['RelayState']="$(Saml::idGen)"
+    tmpSaml['RelayState']="$(Saml::idGen)"
 }
 
 Saml::createSamlRequest(){
@@ -51,11 +55,12 @@ Saml::createSamlRequest(){
 Saml::createSignature(){   
     local _query_string="$*"
 
-    echo -n "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" | base64 -w0
+    echo -n "$_query_string" | openssl dgst -sha1 -sign "${SAML['privkey']}" | base64 -w0
 }
 
 Saml::buildAuthnRequest(){
     local _query
+    local -A tmpSaml
 
     if Session::check
     then
@@ -63,18 +68,18 @@ Saml::buildAuthnRequest(){
         return
     fi
 
-    SAML['SAMLRequest']="$(Saml::createSamlRequest)"
+    tmpSaml['SAMLRequest']="$(Saml::createSamlRequest)"
     Saml::createRelayState
-    SAML['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+    tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
-    for key in "${!SAML[@]}"
+    for key in "${!tmpSaml[@]}"
     do
-        _query+="$key=$(urlencode "${SAML[$key]}")&"
+        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
     done
 
-    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${SAML['SAMLRequest']}")&RelayState=$(urlencode "${SAML['RelayState']}")&SigAlg=$(urlencode "${SAML['SigAlg']}")")")"
+    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
-    Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)?${_query%&}"
+    Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})?${_query%&}"
 
 }
 
@@ -83,7 +88,7 @@ Saml::validate::Issuer(){
     local xmlResponse="$1" idpIssuer responseIssuer
 
     responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
-    idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)"
+    idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})"
     idpIssuer="${idpIssuer//\/sso/}"
 
     [[ "$responseIssuer" == "$idpIssuer" ]] || return 1
@@ -103,29 +108,24 @@ Saml::validate::Sign(){
 
 }
 
-Saml::get::Assertion(){
-    local xmlResponse="$1"
-
-    echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
-}
-
 Saml::retrieve::Identity(){
-    local xmlResponse username
+    local xmlResponse username decodedXmlResponse
     local xmlTmpFile="$(mktemp)"
 
     xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
 
     echo "$xmlResponse" > $xmlTmpFile
 
-    xmlsec1 --decrypt --privkey-pem /etc/esm/priv.key
+    decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']})"
 
     Saml::validate::Issuer "$xmlResponse" || return 1
     Saml::validate::Sign "$xmlResponse" || return 1
 
-    username="$(Saml::get::Assertion "$xmlResponse")"
-
     Session::start
-    Session::set USERNAME $username
+
+    Json::to::array SESSION "$(echo "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
+
+    Session::set USERNAME ${SESSION['user_name']}
     Session::save
 
     Http::send::redirect temporary /
