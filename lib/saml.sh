@@ -110,14 +110,16 @@ Saml::retrieve::Identity(){
     local xmlResponse username decodedXmlResponse
     local xmlTmpFile="$(mktemp)"
 
+    [[ -z "${POST['SAMLResponse']}" ]] && Saml::buildAuthnRequest
+
     xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
 
     echo "$xmlResponse" > $xmlTmpFile
 
     decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']} $xmlTmpFile)"
 
-    Saml::validate::Issuer "$xmlResponse" || return 1
-    Saml::validate::Sign "$xmlResponse" || return 1
+    Saml::validate::Issuer "$xmlResponse" || Saml::buildAuthnRequest
+    Saml::validate::Sign "$xmlResponse" || Saml::buildAuthnRequest
 
     Session::start
 
