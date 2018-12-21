@@ -8,17 +8,22 @@ API_MSG['401']="No Authorization!"
 declare -A API_RESPONSE
 
 Api::router(){
-    Http::send::content_type "Application/json"
+    local url="$1"
+    local -a uri
+    IFS='/' read -a uri <<<$url
+
+    [[ "$url" =~ ^api.* ]] || return
+
+    Http::send::content-type "Application/json"
 
     if [[ -z "$default_api_function" ]]; then
         Api::search::function
     else
-        Api::search::function
+        Api::call::function
     fi
 }
 
 Api::search::function(){
-
     Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || Api::send::not_found
 
     Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}

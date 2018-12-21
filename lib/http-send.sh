@@ -80,7 +80,7 @@ Http::send::options(){
 }
 
 alias http::send::header='Http::send::header'
-alias http::send::content_type='Http::send::content_type'
+alias http::send::content-type='Http::send::content-type'
 alias http::send::status='Http::send::status'
 alias http::send::cookue='Http::send::cookie'
 alias http::send::redirect='Http::send::redirect'

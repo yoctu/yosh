@@ -1,7 +1,9 @@
 
 
 Css::print::out(){
-    local css_file="${1#css/}"
+    local css_file="${1#css/}" uri="$1"
+
+    [[ "$uri" =~ ^css.* ]] || return
 
     [[ -z "$css_file" ]] && return 1
     [[ -f "${css_dir}/$css_file" ]] || return 1

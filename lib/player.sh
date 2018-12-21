@@ -15,4 +15,6 @@ Player::print::out(){
 
 }
 
+ROUTERS+=( "Player::print::out" )
+
 alias player::print::out='Player::print::out'

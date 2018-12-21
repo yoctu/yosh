@@ -1,7 +1,7 @@
 
 
 Js::print::out(){
-    local js_file="$1"
+    local js_file="${1#js/}"
 
     [[ -z "$js_file" ]] && return
     [[ -f "${js_dir}/$js_file" ]] || return 1
@@ -14,5 +14,7 @@ Js::print::out(){
     cat ${js_dir}/$js_file
 
 }
+
+ROUTERS+=("Js::print::out")
 
 alias js::print::out='Js::print::out'

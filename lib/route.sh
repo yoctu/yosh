@@ -52,8 +52,7 @@ Route::check(){
 
 Route::simple(){
     local uri="$1"
-
-    [[ -z "${ROUTE["/$uri"]}" ]] || ${ROUTE["/$uri"]}
+    [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]] || ${ROUTE["/$uri":"$REQUEST_METHOD"]}
 }
 
 Route::error(){
