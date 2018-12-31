@@ -97,6 +97,25 @@ Type::array::fusion(){
     done
 }
 
+Type::variable::int(){
+    local string="$1"
+    [[ "${string#*=}" =~ ^[0-9]+$ ]] && { declare -gi ${string%%=*}=${string#*=}; return; }
+
+    return 1
+}
+
+# TODO: 
+#       - [int]
+#       - [string]
+#       - [array]
+#       - [public]
+#       - [private]
+#       - [map]
+
+Type::variable::private(){
+    echo private    
+}
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
@@ -105,4 +124,5 @@ alias type::variable::set='Type::variable::set'
 alias type::array::get::key='Type::array::get::key'
 alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
 alias type::array::fusion='Type::array::fusion'
+alias [int]='Type::variable::int'
 
