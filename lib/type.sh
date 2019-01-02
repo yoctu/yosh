@@ -126,4 +126,4 @@ alias [public:map]="declare -gn"
 alias [private:map]="local -n"
 alias [public:array]="declare -gA"
 alias [private:array]="local -A"
-
+alias [const]="local -r"
