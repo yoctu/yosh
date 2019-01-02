@@ -1,7 +1,8 @@
 
 
 Fonts::print::out(){
-    local fonts_file="${1#fonts/}" extension="${1##*.}"
+    [private] fonts_file="${1#fonts/}" 
+    [private] extension="${1##*.}"
     
     [[ -z "$fonts_file" ]] && return 1
     [[ -f "${fonts_dir}/$fonts_file" ]] || return 1

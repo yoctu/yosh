@@ -1,15 +1,15 @@
 # some useful api functions 
 
-declare -A API_MSG
+[public:assoc] API_MSG
 API_MSG['500']="An Error occured while running request...."
 API_MSG['404']="Request not found"
 API_MSG['401']="No Authorization!"
 
-declare -A API_RESPONSE
+[public:assoc] API_RESPONSE
 
 Api::router(){
-    local url="$1"
-    local -a uri
+    [private] url="$1"
+    [private:array] uri
     IFS='/' read -a uri <<<$url
 
     [[ "$url" =~ ^api.* ]] || return
@@ -60,7 +60,7 @@ Api::send::not_found(){
 }
 
 Api::send::post(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 
@@ -74,7 +74,7 @@ Api::send::put(){
 }
 
 Api::send::patch(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 
@@ -88,7 +88,7 @@ Api::send::delete(){
 }
 
 Api::send::get(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 

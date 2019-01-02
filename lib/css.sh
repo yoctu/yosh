@@ -1,7 +1,7 @@
 
 
 Css::print::out(){
-    local css_file="${1#css/}" uri="$1"
+    [private] css_file="${1#css/}" uri="$1"
 
     [[ "$uri" =~ ^css.* ]] || return
 

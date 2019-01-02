@@ -13,7 +13,7 @@ Html::print::footer(){
 }
 
 Html::print::out(){
-    local body_file="${html_dir%/}/${1%.html}.html"
+    [private] body_file="${html_dir%/}/${1%.html}.html"
 
     [[ ! -f "$body_file" ]] && return 1
     # Set content-type

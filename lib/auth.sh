@@ -1,5 +1,5 @@
 Auth::check(){
-    local auth_method="${1,,}"
+    [private] auth_method="${1,,}"
 
     if [[ ! "$uri" == "$login_page" ]] && [[ -z "$auth_method" || "$auth_method" == "none" ]]; then
         authSuccessful="1" 
@@ -11,7 +11,7 @@ Auth::check(){
 }
 
 Auth::start(){
-    local auth_method="${1,,}"
+    [private] auth_method="${1,,}"
 
     [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
@@ -22,7 +22,7 @@ Auth::start(){
 }
 
 Auth::check::rights(){
-    local auth_method="${1,,}" auth_rights="${2,,}"
+    [private] auth_method="${1,,}" auth_rights="${2,,}"
 
     [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && { rightsSuccessful="1"; return; }
 
@@ -98,7 +98,7 @@ Auth::saml::request(){
 }
 
 Auth::api(){
-    local auth_method="$1"
+    [private] auth_method="$1"
     $auth_method::Auth::start || return 1
 }
 

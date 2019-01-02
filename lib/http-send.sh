@@ -1,8 +1,9 @@
-declare -A HEADERS_TO_SENT
-HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
+[public:assoc] HEADERS_TO_SENT
+[public:array] HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
 
 Http::send::header (){
-    local value="$1" key="${@:2}"
+    [protected] value="$1" 
+    [protected] key="${*:2}"
 
     [[ -z "$value" || -z "$key" ]] && return
 
@@ -18,11 +19,11 @@ Http::send::content-type(){
 }
 
 Http::send::status(){
-    local code="$1"
+    [private] code="$1"
 
     default_code="${default_code:-200}"
 
-    declare -a STATUS_CODES
+    [private:array] STATUS_CODES
         STATUS_CODES[200]="200 OK"
         STATUS_CODES[201]="201 Created"
         STATUS_CODES[301]="301 Moved Permanently"
@@ -42,7 +43,8 @@ Http::send::cookie(){
 }
 
 Http::send::redirect(){
-    local redirectMethod="$1" redirectLocation="${@:2}" 
+    [private] redirectMethod="$1" 
+    [private] redirectLocation="${@:2}" 
 
     permanent="301"
     temporary="302"
@@ -55,17 +57,14 @@ Http::send::redirect(){
 
 Http::send::out(){
     # XXX: Create lock to be sure, that the will not be sent twice
-    local key
 
     # Send cookies
-    for value in "${cookies[@]}"
-    do
+    for value in "${cookies[@]}"; do
         echo "Set-Cookie: $value"
     done
 
     # Print out headers
-    for key in "${!HEADERS_TO_SENT[@]}"
-    do
+    for key in "${!HEADERS_TO_SENT[@]}"; do
         echo "$key: ${HEADERS_TO_SENT[$key]}"
     done
 
@@ -74,7 +73,7 @@ Http::send::out(){
 }
 
 Http::send::options(){
-    local _methods="${HTTP_METHODS[@]}"
+    [private] _methods="${HTTP_METHODS[@]}"
     Http::send::header Allow "${_methods// /,}"
          
 }

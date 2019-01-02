@@ -1,5 +1,7 @@
 Cli::args(){
-    echo ha
+    for key in "${!ARGS[@]}"; do
+        
+    done
 }
 
 Cli::colorize(){

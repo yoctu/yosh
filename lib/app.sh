@@ -14,7 +14,7 @@ App::find(){
 }
 
 App::source(){
-    local file
+    [private] file
 
     file="$(App::find)"
 
