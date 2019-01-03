@@ -1,26 +1,52 @@
+[public:assoc] CLI
+
+Cli::router(){
+    [private] route="$1"
+    
+    if Type::function::exist "${CLI["$route":'main']}"; then
+        Cli::args $@
+        ${CLI["$route":'main']}
+    else
+        Cli::error "No command line found with $router"
+    fi
+
+}
+
 Cli::args(){
-    for key in "${!ARGS[@]}"; do
-        
-    done
+    [private] route="$1"
+
+    Type::function::exist ${CLI["$route":"args"]} && ${CLI["$route":'args']} ${@:2}
+}
+
+Cli::help(){
+    [private] route="$1"
+
+    Type::function::exist ${CLI["$route":'help']} && { ${CLI["$route":'help']} ${@:2}; return; }
+
+    echo "$HELP" 
 }
 
 Cli::colorize(){
-    local -A COLORS=(
-        [FBLACK]="\[\033[30m\]"
-        [FRED]="\[\033[31m\]"
-        [FGREEN]="\[\033[32m\]"
-        [FYELLOW]="\[\033[33m\]"
-        [FBLUE]="\[\033[34m\]"
-        [FMAGENTA]="\[\033[35m\]"
-        [FCYAN]="\[\033[36m\]"
-        [FWHITE]="\[\033[37m\]"
-        [BBALCK]="\[\033[40m\]"
-        [BRED]="\[\033[41m\]"
-        [BGREEN]="\[\033[42m\]"
-        [BYELLOW]="\[\033[43m\]"
-        [BBLUE]="\[\033[44m\]"
-        [BMAGENTA]="\[\033[45m\]"
-        [BCYAN]="\[\033[46m\]"
-        [BWHITE]="\[\033[47m\]"
+    [private:assoc] COLORS=(
+        [BLACK]='\033[0;30m'
+        [RED]='\033[0;31m'
+        [GREEN]='\033[0;32m'
+        [YELLOW]='\033[0;33m'
+        [BLUE]='\033[0;34m'
+        [MAGENTA]='\033[0;35m'
+        [CYAN]='\033[0;36m'
+        [WHITE]='\033[0;37m'
     )
+    
+    printf "%s" "${COLORS[${1^^}]:-${COLORS[BLACK]}}"
+}
+
+Cli::list(){
+    Type::array::get::key ".*" CLI
+}
+
+Cli::error(){
+    [private] msg="$*"
+
+    echo -e "$(Cli::colorize red)$msg$(Cli::colorize white)" #>&2
 }

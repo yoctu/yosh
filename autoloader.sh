@@ -4,7 +4,6 @@ shopt -s nullglob
 shopt -s expand_aliases
 
 # Auto Load all
-
 for file in /usr/share/yosh/{lib,func,auth,session,config}/*.sh; do
     source $file
 done

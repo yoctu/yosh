@@ -22,8 +22,8 @@ Type::command::exist(){
 Type::array::contains(){
     # check if array contains value
     
-    [private] key="$1"
-    [private:map] array="$2"
+    local key="$1"
+    local -n array="$2"
 
     for value in "${array[@]}"; do
         [[ "$key" == "$value" ]] && return 0
@@ -55,8 +55,8 @@ Type::variable::set(){
 Type::array::get::key(){
     # $1 is the key level, it should be like=machines:list
     # $2 is the array
-    [private] level="${1%:}:"
-    [private:map] array="$2"
+    local level="${1%:}:"
+    local -n array="$2"
 
     Type::variable::set level || return 1
 
@@ -69,15 +69,15 @@ Type::array::get::key(){
 }
 
 Type::fusion::array::in::assoc(){
-    [private:map] array="$1"
-    [private:map] assoc="$2"
-    [private] string="${3%:}"
+    local -n array="$1"
+    local -n assoc="$2"
+    local string="${3%:}"
 
     Type::variable::set string || return 1
 
     Type::array::is::assoc "$2" || return 1
 
-    [private:int] count="0"
+    local -i count="0"
     for key in "${array[@]}"; do
         assoc[$string:$count]="$key"
         ((count++))
@@ -85,9 +85,9 @@ Type::fusion::array::in::assoc(){
 }
 
 Type::array::fusion(){
-    [private:map] srcArray="$1"
-    [private:map] dstArray="$2"
-    [private] regex="${3:-.*}"
+    local -n srcArray="$1"
+    local -n dstArray="$2"
+    local regex="${3:-.*}"
 
     Type::array::is::assoc "$1" || return 1
     Type::array::is::assoc "$2" || return 1
@@ -98,7 +98,7 @@ Type::array::fusion(){
 }
 
 Type::variable::int(){
-    [private] string="$1"
+    local string="$1"
     [[ "${string#*=}" =~ ^[0-9]+$ ]] && return
 
     return 1
@@ -116,24 +116,22 @@ alias type::variable::set='Type::variable::set'
 alias type::array::get::key='Type::array::get::key'
 alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
 alias type::array::fusion='Type::array::fusion'
-alias [int]='local -i'
-alias [private]="local"
-alias [public]="declare -g"
-alias [map]="local -n"
-alias [array]="declare -a"
-alias [assoc]="declare -A"
-alias [string]="declare"
-alias [public:int]="Type::variable::int"
-alias [private:int]="local -i"
-alias [public:string]="declare -g"
-alias [private:string]="local"
-alias [public:map]="declare -gn"
-alias [private:map]="local -n"
-alias [public:array]="declare -a"
-alias [private:array]="local -a"
-alias [protected:array]="declare -ra"
-alias [protected:assoc]="declare -rA"
-alias [public:assoc]="declare -gA"
-alias [private:assoc]="local -A"
-alias [const]="declare -r"
+alias \[int\]='local -i'
+alias \[private\]='local'
+alias \[public\]='declare -g'
+alias \[map\]='local -n'
+alias \[array\]='declare -a'
+alias \[assoc\]='declare -A'
+alias \[string\]='declare'
+alias \[public:int\]='declare -i'
+alias \[private:int\]='local -i'
+alias \[public:string\]='declare -g'
+alias \[private:string\]='local'
+alias \[public:map\]='declare -gn'
+alias \[private:map\]='local -n'
+alias \[public:array\]='declare -a'
+alias \[private:array\]='local -a'
+alias \[public:assoc\]='declare -gA'
+alias \[private:assoc\]='local -A'
+alias \[const\]='declare -r'
 

@@ -1,9 +1,9 @@
 # some useful api functions 
 
 [public:assoc] API_MSG
-API_MSG['500']="An Error occured while running request...."
-API_MSG['404']="Request not found"
-API_MSG['401']="No Authorization!"
+    API_MSG['500']="An Error occured while running request...."
+    API_MSG['404']="Request not found"
+    API_MSG['401']="No Authorization!"
 
 [public:assoc] API_RESPONSE
 
@@ -108,3 +108,4 @@ alias api::send::delete='Api::send::delete'
 alias api::send::get='Api::send::get'
 
 ROUTERS+=("Api::router")
+
