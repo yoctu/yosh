@@ -1,4 +1,4 @@
-declare -A SAML
+[public:assoc] SAML
 
 Saml::idGen(){
     echo "$(uuidgen)"
@@ -21,8 +21,8 @@ Saml::request::destination(){
 }
 
 Saml::buildXmlFile(){
-    local _opts 
-    declare -A SAMLREQUEST
+    [private] _opts 
+    [public:assoc] SAMLREQUEST
 
     Saml::request::id
     Saml::request::assertion
@@ -37,7 +37,7 @@ Saml::buildXmlFile(){
 
     eval "xmlstarlet ed $_opts $_saml_xml_template"
 
-#    unset _opts
+    unset _opts
 }
 
 Saml::createRelayState(){
@@ -49,16 +49,15 @@ Saml::createSamlRequest(){
 }
 
 Saml::createSignature(){   
-    local _query_string="$*"
+    [private] _query_string="$*"
 
     echo -n "$_query_string" | openssl dgst -sha1 -sign "$_saml_priv_key" | base64 -w0
 }
 
 Saml::buildAuthnRequest(){
-    local _query
+    [private] _query
 
-    if Session::check
-    then
+    if Session::check; then
         Http::send::redirect temporary /
         return
     fi
@@ -67,8 +66,7 @@ Saml::buildAuthnRequest(){
     Saml::createRelayState
     SAML['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
-    for key in "${!SAML[@]}"
-    do
+    for key in "${!SAML[@]}"; do
         _query+="$key=$(urlencode "${SAML[$key]}")&"
     done
 
@@ -80,7 +78,9 @@ Saml::buildAuthnRequest(){
 
 
 Saml::validate::Issuer(){
-    local xmlResponse="$1" idpIssuer responseIssuer
+    [private] xmlResponse="$1" 
+    [private] idpIssuer 
+    [private] responseIssuer
 
     responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
     idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' $_saml_idp_xml)"
@@ -90,7 +90,13 @@ Saml::validate::Issuer(){
 }
 
 Saml::validate::Sign(){
-    local xmlResponse="$1" xmlCert xmlSigned xmltoCheck result tmpXmlFile="$(mktemp)" tmpCert="$(mktemp)"
+    [private] xmlResponse="$1" 
+    [private] xmlCert 
+    [private] xmlSigned 
+    [private] xmltoCheck 
+    [private] result 
+    [private] tmpXmlFile="$(mktemp)" 
+    [private] tmpCert="$(mktemp)"
 
     echo "$xmlResponse" > $tmpXmlFile
 
@@ -104,13 +110,14 @@ Saml::validate::Sign(){
 }
 
 Saml::get::Assertion(){
-    local xmlResponse="$1"
+    [private]  xmlResponse="$1"
 
     echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
 }
 
 Saml::retrieve::Identity(){
-    local xmlResponse username
+    [private] xmlResponse 
+    [private] username
 
     xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
 

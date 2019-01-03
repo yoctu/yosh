@@ -1,7 +1,7 @@
 #TODO: Cleaup :)
 
 Json::create::simple(){
-    local array="$1"
+    [private] array="$1"
 
 # Not need to be assoc
 #    Type::array::is::assoc "$1" || return 1
@@ -9,7 +9,7 @@ Json::create::simple(){
     [[ -z "$array" ]] && return
 
     # redefine array name
-    typeset -n array="$array"
+    [private:map] array="$array"
 
     # this function generate an json from an array
     # jq using from FAQ mentioned by CharlesDuffy
@@ -24,15 +24,17 @@ Json::create::simple(){
 }
 
 Json::create(){
-    local -n array="$1"
+    [private:map] array="$1"
 
     Type::array::is::assoc "$1"
 
-    local key subKey jsonArray end
-    local -A subKey
+    [private] key 
+    [private] subKey 
+    [private] jsonArray 
+    [private] end
+    [private:assoc] subKey
 
-    for key in "${!array[@]}"
-    do
+    for key in "${!array[@]}"; do
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
             echo -n "{ \"$subKey\" :" 
@@ -49,8 +51,8 @@ Json::to::array(){
     # the given array will contain the parsed json data
     # Dzove855 2018-11-30: Dancer you're a good young padawan, nice jq function :D
 
-    local -n array="$1" 
-    local json="${*:2}"
+    [private:map] array="$1" 
+    [private] json="${*:2}"
 
     while read line; do
         [[ "$line" == @({|}) ]] && continue

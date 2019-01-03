@@ -65,7 +65,7 @@ Http::read::get(){
 Http::read::cookie(){
     [private] key raw
 
-    [public:assoc] -Ag COOKIE
+    [public:assoc] COOKIE
 
     IFS=';' read -a raw <<< "$HTTP_COOKIE"
 

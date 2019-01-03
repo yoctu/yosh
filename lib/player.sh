@@ -1,7 +1,7 @@
 
 
 Player::print::out(){
-    local player_file="$1"
+    [private] player_file="$1"
     
     [[ -z "$player_file" ]] && return 1
     [[ -f "${player_dir}/$player_file" ]] || return 1

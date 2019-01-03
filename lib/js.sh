@@ -1,7 +1,7 @@
 
 
 Js::print::out(){
-    local js_file="${1#js/}"
+    [private] js_file="${1#js/}"
 
     [[ -z "$js_file" ]] && return
     [[ -f "${js_dir}/$js_file" ]] || return 1

@@ -9,9 +9,9 @@
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 
 Route::check(){
-    local uri
-    local -a authArr
-    local auths
+    [privte] uri
+    [private:array] authArr
+    [private] auths
 
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
@@ -51,7 +51,7 @@ Route::check(){
 }
 
 Route::simple(){
-    local uri="$1"
+    [private] uri="$1"
     [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]] || ${ROUTE["/$uri":"$REQUEST_METHOD"]}
 }
 
@@ -61,10 +61,8 @@ Route::error(){
 }
 
 Route::get::auth(){
-    for key in "${!AUTH[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!AUTH[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             echo "${AUTH[$key]}"
             return
         fi
@@ -74,10 +72,8 @@ Route::get::auth(){
 }
 
 Route::get::login(){
-    for key in "${!LOGIN[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!LOGIN[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             login_method="${LOGIN[$key]}"
             return
         fi
@@ -88,10 +84,8 @@ Route::get::login(){
 }
 
 Route::get::rights(){
-    for key in "${!RIGHTS[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!RIGHTS[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             echo "${RIGHTS[$key]}"
             return
         fi
