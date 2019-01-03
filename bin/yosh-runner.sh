@@ -3,7 +3,7 @@
 SELF="${BASH_SOURCE[0]##*/}"
 NAME="${SELF%.sh}"
 
-OPTS="c:g:svxEh"
+OPTS="c:svxEh"
 USAGE="Usage: $SELF [$OPTS]"
 
 HELP="
