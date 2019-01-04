@@ -1,14 +1,29 @@
 # some useful api functions 
 
-declare -A API_MSG
-API_MSG['500']="An Error occured while running request...."
-API_MSG['404']="Request not found"
-API_MSG['401']="No Authorization!"
+[public:assoc] API_MSG
+    API_MSG['500']="An Error occured while running request...."
+    API_MSG['404']="Request not found"
+    API_MSG['401']="No Authorization!"
 
-declare -A API_RESPONSE
+[public:assoc] API_RESPONSE
+
+Api::router(){
+    [private] url="$1"
+    [private:array] uri
+    IFS='/' read -a uri <<<$url
+
+    [[ "$url" =~ ^api.* ]] || return
+
+    Http::send::content-type "Application/json"
+
+    if [[ -z "$default_api_function" ]]; then
+        Api::search::function
+    else
+        Api::call::function
+    fi
+}
 
 Api::search::function(){
-
     Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || Api::send::not_found
 
     Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
@@ -45,7 +60,7 @@ Api::send::not_found(){
 }
 
 Api::send::post(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 
@@ -59,7 +74,7 @@ Api::send::put(){
 }
 
 Api::send::patch(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 
@@ -73,7 +88,7 @@ Api::send::delete(){
 }
 
 Api::send::get(){
-    local array="$1"
+    [private] array="$1"
 
     [[ -z "$array" ]] && Api::send::fail
 
@@ -91,3 +106,6 @@ alias api::send::put='Api::send::put'
 alias api::send::patch='Api::send::patch'
 alias api::send::delete='Api::send::delete'
 alias api::send::get='Api::send::get'
+
+ROUTERS+=("Api::router")
+

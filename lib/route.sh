@@ -8,53 +8,10 @@
 
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 
-Route::api::mode(){
-    local uri
-
-    uri="${REQUEST_URI%%\?*}"
-    uri="${uri#/}"
-    uri=(${uri//\// })
-
-    Http::send::content-type ${default_api_content_type:-application/json}
-
-    # Api Mode
-    # route_method="Route::api::mode"
-    
-    [[ "${uri[0]}" == "api" ]] || api::send::not_found
-
-    Route::get::login
-
-    auths="$(Route::get::auth)"
-    auths=(${auths//,/ })
-
-    (( route_auditing )) && @audit "$application_name"
-
-    [[ -z "$auths" ]] && auths=("none")
-
-    for auth in "${auths[@]}"
-    do
-        Auth::check "$auth" || continue
-        # Does we really need this?
-        Auth::check::rights "$auth" "$(Route::get::rights)" || continue
-        break
-    done
-
-    ! [[ "$authSuccessful" ]] && Api::send::unauthorized
-    ! [[ "$rightsSuccessful" ]] && Api::send::unauthorized
-
-    if [[ -z "$api_command" ]]
-    then
-        [[ -f "${api_dir%/}/${uri[1]}" ]] || Api::send::not_found
-        source ${api_dir%/}/${uri[1]}
-    else
-        $api_command
-    fi
-}
-
 Route::check(){
-    # Default Mode
-    # route_method="Route::check"
-    local uri
+    [privte] uri
+    [private:array] authArr
+    [private] auths
 
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
@@ -65,10 +22,10 @@ Route::check(){
     Route::get::login
 
     auths="$(Route::get::auth)"
-    auths=(${auths//,/ })
 
-    for auth in "${auths[@]}"
-    do
+    IFS=',' read -r authArr <<<$auths
+
+    for auth in "${auths[@]}"; do
         Auth::check "$auth" || continue
         # Does we really need this?
         Auth::check::rights "$auth" "$(Route::get::rights)" || continue
@@ -81,28 +38,21 @@ Route::check(){
     # just be sure
     uri="${uri:-/}"
 
-    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]
-    then
+    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]; then
         Http::send::options
         return
     fi
 
-    if [[ ! -z "${ROUTE[/${uri#/}:$REQUEST_METHOD]}" ]]
-    then
-        eval ${ROUTE[/${uri#/}:$REQUEST_METHOD]}
-    elif App::find &>/dev/null
-    then
-        App::source
-    elif [[ -f "${html_dir}/${uri%.html}.html" ]]
-    then
-        Html::print::out ${html_dir}/${uri%.html}.html
-    elif [[ "$uri" =~ ^(css|js|img|fonts|player)/.* ]]
-    then
-        uri="${uri#*/}"
-        ${BASH_REMATCH[1]^}::print::out ${uri} || Route::error
-    else        
-        Route::error
-    fi
+    # Try a centrelized way of doing this
+    for router in ${ROUTERS[@]}; do
+        $router "$uri" && break
+    done
+
+}
+
+Route::simple(){
+    [private] uri="$1"
+    [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]] || ${ROUTE["/$uri":"$REQUEST_METHOD"]}
 }
 
 Route::error(){
@@ -111,10 +61,8 @@ Route::error(){
 }
 
 Route::get::auth(){
-    for key in "${!AUTH[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!AUTH[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             echo "${AUTH[$key]}"
             return
         fi
@@ -124,10 +72,8 @@ Route::get::auth(){
 }
 
 Route::get::login(){
-    for key in "${!LOGIN[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!LOGIN[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             login_method="${LOGIN[$key]}"
             return
         fi
@@ -138,10 +84,8 @@ Route::get::login(){
 }
 
 Route::get::rights(){
-    for key in "${!RIGHTS[@]}"
-    do
-        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]
-        then
+    for key in "${!RIGHTS[@]}"; do
+        if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
             echo "${RIGHTS[$key]}"
             return
         fi
@@ -156,4 +100,5 @@ alias route::error='Route::error'
 alias route::get::auth='Route::get::auth'
 alias route::get::login='Route::get::login'
 alias route::get::rights='Route::get::rights'
-router="Route::check"
+
+ROUTERS+=("Route::simple")

@@ -1,7 +1,7 @@
-declare -A SAML
-SAML['spurl']=""
+[public:assoc] SAML
 SAML['xmltemplate']=""
 SAML['idpxml']=""
+SAML['spurl']=""
 SAML['privkey']=""
 
 Saml::idGen(){
@@ -25,8 +25,8 @@ Saml::request::destination(){
 }
 
 Saml::buildXmlFile(){
-    local _opts 
-    declare -A SAMLREQUEST
+    [private] _opts 
+    [public:assoc] SAMLREQUEST
 
     Saml::request::id
     Saml::request::assertion
@@ -53,14 +53,14 @@ Saml::createSamlRequest(){
 }
 
 Saml::createSignature(){   
-    local _query_string="$*"
+    [private] _query_string="$*"
 
     echo -n "$_query_string" | openssl dgst -sha1 -sign "${SAML['privkey']}" | base64 -w0
 }
 
 Saml::buildAuthnRequest(){
-    local _query
-    local -A tmpSaml
+    [private] _query
+    [private:assoc] tmpSaml
 
     if Session::check; then
         Http::send::redirect temporary /
@@ -70,6 +70,7 @@ Saml::buildAuthnRequest(){
     tmpSaml['SAMLRequest']="$(Saml::createSamlRequest)"
     Saml::createRelayState
     tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+
 
     for key in "${!tmpSaml[@]}"; do
         _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
@@ -83,7 +84,9 @@ Saml::buildAuthnRequest(){
 
 
 Saml::validate::Issuer(){
-    local xmlResponse="$1" idpIssuer responseIssuer
+    [private] xmlResponse="$1" 
+    [private] idpIssuer 
+    [private] responseIssuer
 
     responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
     idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})"
@@ -93,7 +96,13 @@ Saml::validate::Issuer(){
 }
 
 Saml::validate::Sign(){
-    local xmlResponse="$1" xmlCert xmlSigned xmltoCheck result tmpXmlFile="$(mktemp)" tmpCert="$(mktemp)"
+    [private] xmlResponse="$1" 
+    [private] xmlCert 
+    [private] xmlSigned 
+    [private] xmltoCheck 
+    [private] result 
+    [private] tmpXmlFile="$(mktemp)" 
+    [private] tmpCert="$(mktemp)"
 
     echo "$xmlResponse" > $tmpXmlFile
 
@@ -106,10 +115,18 @@ Saml::validate::Sign(){
 
 }
 
-Saml::retrieve::Identity(){
-    local xmlResponse username decodedXmlResponse
-    local xmlTmpFile="$(mktemp)"
+Saml::get::Assertion(){
+    [private]  xmlResponse="$1"
 
+    echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
+}
+
+Saml::retrieve::Identity(){
+    [private] xmlResponse
+    [private] username
+    [private] decodedXmlResponse
+    [private] username
+    
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
     xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"

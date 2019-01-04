@@ -1,7 +1,7 @@
 
 
 Player::print::out(){
-    local player_file="$1"
+    [private] player_file="$1"
     
     [[ -z "$player_file" ]] && return 1
     [[ -f "${player_dir}/$player_file" ]] || return 1
@@ -14,5 +14,7 @@ Player::print::out(){
     cat ${player_dir}/$player_file
 
 }
+
+ROUTERS+=( "Player::print::out" )
 
 alias player::print::out='Player::print::out'

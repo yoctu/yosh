@@ -77,7 +77,7 @@ Type::fusion::array::in::assoc(){
 
     Type::array::is::assoc "$2" || return 1
 
-    local count="0"
+    local -i count="0"
     for key in "${array[@]}"; do
         assoc[$string:$count]="$key"
         ((count++))
@@ -97,6 +97,17 @@ Type::array::fusion(){
     done
 }
 
+Type::variable::int(){
+    local string="$1"
+    [[ "${string#*=}" =~ ^[0-9]+$ ]] && return
+
+    return 1
+}
+
+Type::array::to::case(){
+    echo not ready yet    
+}
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
@@ -105,4 +116,22 @@ alias type::variable::set='Type::variable::set'
 alias type::array::get::key='Type::array::get::key'
 alias type::fusion::array::in::assoc='Type::fusion::array::in::assoc'
 alias type::array::fusion='Type::array::fusion'
+alias \[int\]='local -i'
+alias \[private\]='local'
+alias \[public\]='declare -g'
+alias \[map\]='local -n'
+alias \[array\]='declare -a'
+alias \[assoc\]='declare -A'
+alias \[string\]='declare'
+alias \[public:int\]='declare -i'
+alias \[private:int\]='local -i'
+alias \[public:string\]='declare -g'
+alias \[private:string\]='local'
+alias \[public:map\]='declare -gn'
+alias \[private:map\]='local -n'
+alias \[public:array\]='declare -a'
+alias \[private:array\]='local -a'
+alias \[public:assoc\]='declare -gA'
+alias \[private:assoc\]='local -A'
+alias \[const\]='declare -r'
 
