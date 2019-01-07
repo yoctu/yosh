@@ -31,7 +31,7 @@ function tmp::Session::save ()
     # echo "SESSION['$key']=\"${SESSION[$key]}\"" >> $TMPDIR/${COOKIE[$default_session_name]}
     # We should juste serialize the array
     declare -p SESSION > $TMPDIR/${COOKIE[$default_session_name]}
-    sed -i 's/declare -A//g' $TMPDIR/${COOKIE[$default_session_name]}
+    sed -i "s/declare -A//g;s/'//;s/\(.*\)'/\1/" $TMPDIR/${COOKIE[$default_session_name]}
 }
 
 function tmp::Session::set ()
