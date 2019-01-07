@@ -70,7 +70,7 @@ Session::get(){
 
     [[ -z "$key" ]] && return
 
-    Session::get "$key"
+    $sessionPath::$FUNCNAME "$key"
 }
 
 alias session::start='Session::start'
