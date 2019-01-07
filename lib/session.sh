@@ -70,9 +70,7 @@ Session::get(){
 
     [[ -z "$key" ]] && return
 
-    Session::read
-
-    echo "${SESSION[$key]}"
+    Session::get "$key"
 }
 
 alias session::start='Session::start'
