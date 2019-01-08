@@ -2,16 +2,15 @@
 
 # XXX: why not using typeset -p ? hmmm should be checked
 
-declare -A SESSION
+[public:assoc] SESSION
 
 default_session_name="${default_session_name:-BASHSESSID}"
 default_session_expiration="${default_session_expiration:-21600}"
 
 Session::start(){
-    local id="$(uuidgen)"
+    [private] id="$(uuidgen)"
 
-    if ! Session::check
-    then
+    if ! Session::check; then
 
         $sessionPath::$FUNCNAME "$id"
 
@@ -42,7 +41,8 @@ Session::save(){
 }
 
 Session::set(){
-    local key="$1" value="${@:2}"
+    [private] key="$1" 
+    [private] value="${*:2}"
 
     [[ -z "$key" || -z "$value" ]] && return
 
@@ -52,7 +52,7 @@ Session::set(){
 }
 
 Session::unset(){
-    local key="$1"
+    [private] key="$1"
 
     [[ -z "$key" ]] && return
 
@@ -66,13 +66,11 @@ Session::read(){
 }
 
 Session::get(){
-    local key="$1"
+    [private] key="$1"
 
     [[ -z "$key" ]] && return
 
-    Session::read
-
-    echo "${SESSION[$key]}"
+    $sessionPath::$FUNCNAME "$key"
 }
 
 alias session::start='Session::start'

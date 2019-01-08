@@ -1,7 +1,7 @@
 
 
 Img::print::out(){
-    local img_file="$1"
+    [private] img_file="${1#img/}"
     
     [[ -z "$img_file" ]] && return 1
     [[ -f "${img_dir}/$img_file" ]] || return 1
@@ -14,5 +14,7 @@ Img::print::out(){
     cat ${img_dir}/$img_file
 
 }
+
+ROUTERS+=( "Img::print::out" )
 
 alias img::print::out='Img::print::out'

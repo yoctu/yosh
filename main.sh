@@ -19,6 +19,10 @@ function _exit () {
     rm $tmpStderr
 }
 
+# Clean TMP file on exit
+trap '_exit' EXIT
+
+
 # get GET and POST and COOKIE variable
 Http::read::get
 Http::read::post
@@ -31,20 +35,9 @@ tmpStderr="$(mktemp -p $TMPDIR)"
 # check if application.sh exist
 [[ -f "${DOCUMENT_ROOT%/}/../application.sh" ]] && source ${DOCUMENT_ROOT%/}/../application.sh
 
-# Clean TMP file on exit
-trap '_exit' EXIT
-
-alias router="$router"
 # Save stdout and stderr to a file, to print out the both
 # route::check 1>$tmpStdout 2>$tmpStderr
-if type timeout &>/dev/null
-then
-#    timeout ${time_to_live:-30} $router 1>$tmpStdout 2>$tmpStderr
-    router 1>$tmpStdout 2>$tmpStderr
-#    route::check 1>$tmpStdout 2>$tmpStderr
-else
-    router 1>$tmpStdout 2>$tmpStderr
-fi
+Route::check 1>$tmpStdout 2>$tmpStderr
 
 # exit like a pro
 # TRAP will now do the job

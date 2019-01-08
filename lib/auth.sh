@@ -1,8 +1,7 @@
 Auth::check(){
-    local auth_method="${1,,}"
+    [private] auth_method="${1,,}"
 
-    if [[ ! "$uri" == "$login_page" ]] && [[ -z "$auth_method" || "$auth_method" == "none" ]] 
-    then
+    if [[ ! "$uri" == "$login_page" ]] && [[ -z "$auth_method" || "$auth_method" == "none" ]]; then
         authSuccessful="1" 
         return
     fi
@@ -12,7 +11,7 @@ Auth::check(){
 }
 
 Auth::start(){
-    local auth_method="${1,,}"
+    [private] auth_method="${1,,}"
 
     [[ -z "$auth_method" || "$auth_method" == "none" ]] && { authSuccesful=1; return; }
 
@@ -23,12 +22,11 @@ Auth::start(){
 }
 
 Auth::check::rights(){
-    local auth_method="${1,,}" auth_rights="${2,,}"
+    [private] auth_method="${1,,}" auth_rights="${2,,}"
 
     [[ -z "$auth_rights" || "$auth_rights" == "none" ]] && { rightsSuccessful="1"; return; }
 
-    if [[ ! "$auth_method" == "none" ]]
-    then
+    if [[ ! "$auth_method" == "none" ]]; then
         ${auth_method}::auth::check::rights || return 1
     fi
 
@@ -36,8 +34,7 @@ Auth::check::rights(){
 }
 
 Auth::request(){
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check
-    then
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check; then
         Http::send::header 'WWW-Authenticate' "Basic realm='$application_name'"
         Http::send::status 401
     fi
@@ -50,20 +47,18 @@ Auth::unauthorized(){
 Auth::encode(){
     [[ -z "$1" ]] && return
 
-    if [[ ! -z "$auth_encode" ]]
-    then
-        $auth_encode $@
+    if [[ ! -z "$auth_encode" ]]; then
+        $auth_encode "$*"
     else
-        echo "$@"
+        echo "$*"
     fi
 }
 
 Auth::decode(){
     [[ -z "$1" ]] && return
 
-    if [[ ! -z "$auth_decode" ]] 
-    then
-        $auth_decode $@
+    if [[ ! -z "$auth_decode" ]]; then
+        $auth_decode "$*"
     else
         echo "$@"  
     fi
@@ -71,16 +66,13 @@ Auth::decode(){
 
 Auth::custom::request(){
     unset auth_method
-    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check
-    then
-        if [[ "$uri" != "$login_page" ]]
-        then
+    if [[ -z "$HTTP_AUTHORIZATION" ]] && ! Session::check; then
+        if [[ "$uri" != "$login_page" ]]; then
             uri="${uri%/}"
             Http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
             return 1
         else
-            if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]
-            then
+            if [[ -z "${POST['username']}" || -z "${POST['password']}" ]]; then
                 return
             else
                 HTTP_AUTHORIZATION="$(Auth::encode ${POST['username']}:${POST['password']})"
@@ -94,8 +86,7 @@ Auth::custom::request(){
                 Http::send::redirect temporary "${GET['requestUrl']:-home}" 
             fi
         fi
-    elif ! Session::check
-    then
+    elif ! Session::check; then
         uri="${uri%/}"
         Http::send::redirect temporary "${login_page}?requestUrl=${uri:-home}"
         return 1
@@ -107,7 +98,7 @@ Auth::saml::request(){
 }
 
 Auth::api(){
-    local auth_method="$1"
+    [private] auth_method="$1"
     $auth_method::Auth::start || return 1
 }
 
