@@ -39,29 +39,33 @@ Mapping::check::check_match() {
 
     string="$1"
     template="$2"
-    declare -A arrayTmp
 
-    if [[ "$template" =~ (.*)\{(.+)\}(.*) ]]
+    if [[ "$template" =~ (.+)\{(.*)\}(.*) ]]
     then
 	route="${BASH_REMATCH[1]}"
 	id="${BASH_REMATCH[2]}"
 	end="${BASH_REMATCH[3]}"
-#	declare -p arrayTmp BASH_REMATCH
+	
+	echo "check_match == array tmp"
+	declare -p arrayTmp BASH_REMATCH
+	echo "TEMPLATE check_match id == ${BASH_REMATCH[2]} && end == ${end}"
+	echo "TEMPLATE check_match == after bash_rematch"
     else
-	echo "bas template" && return
+	echo "bad template" && return
     fi
     if [[ "$string" =~ $route(.+)$end ]]
     then
-	declare -p arrayTmp BASH_REMATCH
-	arrayTmp["$id"]="${BASH_REMATCH[1]}"
-	echo "test id ${BASH_REMATCH[2]}"
+	echo "STRING route == ${route} && id == ${id} && end == ${end}"
+	arrayTmp["${id}"]="${BASH_REMATCH[1]}"
+	echo "STRING id == ${BASH_REMATCH[1]}"
+	echo "STRING id after arrayTmp stk == ${id} && arraytmp[id] == ${arrayTmp["$id"]}"
 	#arrayTmp["$route"]="${BASH_REMATCH[2]}"
     else
 	arrayTmp["$id"]=""
 	#arrayTmp["$route"]=""
-	echo "bad string"
+	echo "bad string" && exit
     fi
-    declare -p arrayTmp
+#    declare -p arrayTmp
 }
 
 Mapping::parsing::parse_route() {
@@ -70,26 +74,29 @@ Mapping::parsing::parse_route() {
     
     string="$1"
     template="$2"
+
+    #SSS : copy the array in arg in a local array and merge in the array in arg
+    #SSS : delete {} with the regex
+    
     declare -A arrayTmp
 
     if Mapping::check::check_match $string $template;
     then
 	arrayTmp[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
 
-	echo "key main BASH === ${BASH_REMATCH[1]}"
-	echo "id main BASH  === ${BASH_REMATCH[2]}"
-	printf '%s\n' "key ==  yoctu -> ${arrayTmp['yoctu']}"
+#	echo "parsing route == key main BASH === ${BASH_REMATCH[1]}"
+#	echo "parsing route == id main BASH  === ${BASH_REMATCH[2]}"
+#	printf '%s\n' "key ==  yoctu -> ${arrayTmp['yoctu']}"
     else
 	arrayTmp['BASH_REMATCH[1]']=""
-	echo "array[yoctu] = empty"
+	echo "parsing route == array[yoctu] = empty"
     fi
+#    declare -p arrayTmp
 }
 
 declare -A array['yoctu']="124"
-declare -A route['yoctu']="/api/yoctu/{2345}"
 
-
-Mapping::parsing::parse_route "/api/yoctu/{2345}" "/api/yoctu/{2345}" $array
+Mapping::parsing::parse_route "/api/yoctu/{2345}/" "/api/yoctu/{2345}/foo" $array
 
 alias mapping::get_key='Mapping::get::get_key'
 alias mapping::get_id='Mapping::get::get_id'
@@ -100,9 +107,7 @@ alias mapping::parse_route='Mapping::parsing::parse_route'
 #rematchKeys="${BASH_REMATCH[1]} == KEY"
 #rematchIDs="${BASH_REMATCH[2]} == ID"
 
-
-# SSS : add a fourth arg ? it would be a regex if the user want use a special string and template for example 
+# SSS : add a fourth arg ? it would be a regex
 # SSS : If nothing is found it doesn't match
 # SSS : Match all the integer in the string between {}
 # SSS : Regex *1 match 2345 && yoctu
-# SSS : The template would be /api/yoctu/23 without {}
