@@ -2,8 +2,8 @@
 [public:array] HTTP_METHODS=( "POST" "GET" "DELETE" "PUT" "OPTIONS" )
 
 Http::send::header (){
-    [protected] value="$1" 
-    [protected] key="${*:2}"
+    [private] value="$1" 
+    [private] key="${*:2}"
 
     [[ -z "$value" || -z "$key" ]] && return
 

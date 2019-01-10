@@ -9,7 +9,7 @@
 # shellcheck source=/var/tmp/yosh/tests/set_variables.sh
 
 Route::check(){
-    [privte] uri
+    [private] uri
     [private:array] authArr
     [private] auths
 
