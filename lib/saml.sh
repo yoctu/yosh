@@ -126,6 +126,7 @@ Saml::retrieve::Identity(){
     [private] username
     [private] decodedXmlResponse
     [private] username
+    [private] xmlTmpFile="$(mktemp)"
     
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
@@ -143,9 +144,12 @@ Saml::retrieve::Identity(){
     Json::to::array SESSION "$(echo "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
 
     Session::set USERNAME ${SESSION['user_name']}
+    
     Session::save
 
     Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
+
+    rm $xmlTmpFile
 
     Http::send::redirect temporary /
 }
