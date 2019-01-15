@@ -51,7 +51,7 @@ Route::check(){
 }
 
 Route::simple(){
-    [private] uri="$1"
+    [private] uri="${1%/}"
     if [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]]; then
         return 1
     else
