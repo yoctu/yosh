@@ -2,8 +2,8 @@
 #source ./json.sh just a memo
 #bash array parse the value in alphabet order (ascii)
 
-Mapping::get::get_key() {
-    string="$1"
+Mapping::get::getKey() {
+    [private] string="$1"
     
     if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
     then
@@ -14,8 +14,8 @@ Mapping::get::get_key() {
     fi
 }
 
-Mapping::get::get_id() {
-    string="$1"
+Mapping::get::getId() {
+    [private] string="$1"
 
     if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
     then
@@ -26,8 +26,8 @@ Mapping::get::get_id() {
     fi 
 }
 
-Mapping::get::get_rematch() {
-    string="$1"
+Mapping::get::getRematch() {
+    [private] string="$1"
 
     if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
     then
@@ -39,9 +39,10 @@ Mapping::get::get_rematch() {
 }
 
 
-Mapping::check::check_template() {
+Mapping::check::checkTemplate() {
 
-    string="$1"
+    [private] string="$1"
+    [private] templat="$2"
     
     if [[ "$template" =~ (.+)\{(.*)\}(.*) ]]
     then
@@ -54,7 +55,7 @@ Mapping::check::check_template() {
     fi 
 }
 
-Mapping::check::check_string() {
+Mapping::check::checkString() {
     if [[ "$string" =~ $route(.+)$end ]]
     then
 	return
@@ -68,11 +69,11 @@ Mapping::check::check_string() {
 #string = value
 #}
 
-Mapping::check::check_match() {    
+Mapping::check::checkMatch() {    
     [[ -z "$1" && -z "$2" ]] && echo "arg empty or null" && exit
 
-    string="$1"
-    template="$2"
+    [private] string="$1"
+    [private] template="$2"
 
     if Mapping::check::check_template $template $string;
     then
@@ -82,42 +83,40 @@ Mapping::check::check_match() {
     fi
 }
 
-Mapping::parsing::parse_route() {
+Mapping::parsing::parseRoute() {
 
     [[ -z "$1" && -z "$2"  && -z "$3" ]] && echo "error arg is missing parse_route" && exit
     
-    string="$1"
-    template="$2"
-    testArr=($3)
+    [private] string="$1"
+    [private] template="$2"
     
-    #    local -n refArray=$3
+    #local -n refArray=$3
     eval "declare -A arrayFinal"="${3#*=}"
     
-    declare -A assoArraytest
-#    assoArrayTest="${!3}"
+    #assoArrayTest="${!3}"
     
     declare -A arrayTmp
-    echo "arrayFinal key ===== ${!arrayFinal[@]}"
-    echo "arrayFinal value ===== ${arrayFinal[@]}"
+   # echo "arrayFinal key ===== ${!arrayFinal[@]}"
+   # echo "arrayFinal value ===== ${arrayFinal[@]}"
     echo "arrayFinal value yoctu ===== ${arrayFinal['yoctu']}"
-    echo "arrayFinal value sofian ===== ${arrayFinal['sofian']}"
+   # echo "arrayFinal value sofian ===== ${arrayFinal['sofian']}"
 
     #SSS : Vehbo tell me doesn't use eval, but i don't know how to do without, or the array need to be a global
     
     echo "******************************************************"
-    echo "test print lenght from third arg ${#testArr[@]}"
+    echo "test print lenght from third arg ${#arrayFinal[@]}"
 
     #SSS : delete {} with the regex #memo
-
-    for lenght in "${#finalArray[@]}"; do
     
     if Mapping::check::check_match $string $template;
     then
 	arrayTmp[${rematchKey}]=${id}
 	#arrayTmp[${id}]=${id}
-
+	
 	for key in "${!arrayTmp[@]}"; do
 	    echo "before modif value in arrayFinal ${arrayFinal[@]}"
+	    
+	    echo "before if key == key && tmp *** ${arrayTmp[${key}]} && final ${arrayFinal[${key}]}"
 	    if [[ "${!arrayTmp[${key}]}" == "${!arrayFinal[${key}]}" ]]
 	    then
 		echo "before modif value in arrayFinal ${arrayFinal[${rematchKey}]}"
@@ -139,12 +138,11 @@ Mapping::parsing::parse_route() {
 	#SSS : idk if the key is yoctu and i update de value ($id) related to yoctu
 	#or if the key is the $id(2345) and i just update the key with the value from the $string 
     fi
-    done
 }
 
 declare -A arrayAsso
 
-arrayAsso=(['yoctu']='123' ['sofian']='456')
+arrayAsso=(['yoctu']='123')
 
 echo "first place arrayAsso ${!arrayAsso[@]}"
 
