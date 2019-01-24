@@ -48,5 +48,6 @@ Cli::list(){
 Cli::error(){
     [private] msg="$*"
 
-    echo -e "$(Cli::colorize red)$msg$(Cli::colorize white)" #>&2
+    echo -e "$(Cli::colorize red)$msg$(Cli::colorize white)" >&2
 }
+
