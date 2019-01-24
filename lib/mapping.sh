@@ -1,157 +1,80 @@
+
 #!/bin/bash
-#source ./json.sh just a memo
-#bash array parse the value in alphabet order (ascii)
 
-Mapping::get::getKey() {
+Mapping::get::key() {
     [private] string="$1"
+    [private] rematchKey
+
+    Type::variable::set $string $template || return 1
     
-    if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
-    then
+    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
 	rematchKey="${BASH_REMATCH[1]}"
-	echo "rematchKey -- getKey == ${rematchKey}"
+	Type::variable::set $rematchKey || return 1
+	echo "$rematchKey"
+	return 0
     else
-	echo "no match key"
-    fi
+	return 1
 }
 
-Mapping::get::getId() {
+Mapping::get::id() {
     [private] string="$1"
+    [private:string] rematchId
 
-    if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
-    then
-	rematchID="${BASH_REMATCH[2]}"
-	echo "rematchID -- getId == ${rematchID}"
-    else
-	echo "no match id"
-    fi 
-}
-
-Mapping::get::getRematch() {
-    [private] string="$1"
-
-    if [[ "$string" =~ ([a-zA-Z]*.)/\{(.+)\} ]]
-    then
-	rematch="${BASH_REMATCH[0]}"
-	echo "rematchRematch -- getRematch == ${rematch}"
-    else
-	echo "no match rematch"
-    fi 
-}
-
-
-Mapping::check::checkTemplate() {
-
-    [private] string="$1"
-    [private] templat="$2"
+    Type::variable::set $string || return 1
     
-    if [[ "$template" =~ (.+)\{(.*)\}(.*) ]]
-    then
-	route="${BASH_REMATCH[1]}"
-	id="${BASH_REMATCH[2]}"
-	end="${BASH_REMATCH[3]}"
-	Mapping::get::get_key $string
+    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
+	rematchId="${BASH_REMATCH[2]}"
+	Type::variable::set $rematchId || return 1
+	echo "$rematchId"
+	return 0
     else
-        echo "bad template" && exit
-    fi 
+	return 1
 }
 
-Mapping::check::checkString() {
-    if [[ "$string" =~ $route(.+)$end ]]
-    then
-	return
+Mapping::get::rematch() {
+    [private] string="$1"
+    [string] rematch
+
+    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
+        rematch="${BASH_REMATCH[0]}"
+	Type::variable::set $rematch || return 1
+	echo "$rematch"
+        return 0
     else
-	echo "bad string" && exit
-    fi
+        return 1
 }
 
-#Mapping::update::update_array() {
-#array
-#string = value
-#}
-
-Mapping::check::checkMatch() {    
-    [[ -z "$1" && -z "$2" ]] && echo "arg empty or null" && exit
-
+Mapping::check::match() {
     [private] string="$1"
     [private] template="$2"
+    [private] wayTo
+    [private] id
+    [private] end
+    [private:assoc] array="$3"
 
-    if Mapping::check::check_template $template $string;
-    then
-	Mapping::check::check_string $string
+    Type::variable::set $string $template || return 1
+    Type::array::is::assoc "$3" || return 1
+    
+    if [[ "$template" =~ (.+)\{(.*)\}(.*) ]]; then #regex template in work
+	wayTo="${BASH_REMATCH[1]}"
+        id="${BASH_REMATCH[2]}"
+        end="${BASH_REMATCH[3]}"
+	Type::variable::set $wayTo $id $end || return 1
+	if [[ "$string" =~ $wayTo(.+)$end ]]; then
+	    array["$id"]="${BASH_REMATCH[1]}"
+	    echo "$array"
+	    return 0
+	else
+	    return 1
+	fi
     else
-	echo "error bad template or bad string" && exit
+	return 1
     fi
 }
 
-Mapping::parsing::parseRoute() {
-
-    [[ -z "$1" && -z "$2"  && -z "$3" ]] && echo "error arg is missing parse_route" && exit
-    
-    [private] string="$1"
-    [private] template="$2"
-    
-    #local -n refArray=$3
-    eval "declare -A arrayFinal"="${3#*=}"
-    
-    #assoArrayTest="${!3}"
-    
-    declare -A arrayTmp
-   # echo "arrayFinal key ===== ${!arrayFinal[@]}"
-   # echo "arrayFinal value ===== ${arrayFinal[@]}"
-    echo "arrayFinal value yoctu ===== ${arrayFinal['yoctu']}"
-   # echo "arrayFinal value sofian ===== ${arrayFinal['sofian']}"
-
-    #SSS : Vehbo tell me doesn't use eval, but i don't know how to do without, or the array need to be a global
-    
-    echo "******************************************************"
-    echo "test print lenght from third arg ${#arrayFinal[@]}"
-
-    #SSS : delete {} with the regex #memo
-    
-    if Mapping::check::check_match $string $template;
-    then
-	arrayTmp[${rematchKey}]=${id}
-	#arrayTmp[${id}]=${id}
-	
-	for key in "${!arrayTmp[@]}"; do
-	    echo "before modif value in arrayFinal ${arrayFinal[@]}"
-	    
-	    echo "before if key == key && tmp *** ${arrayTmp[${key}]} && final ${arrayFinal[${key}]}"
-	    if [[ "${!arrayTmp[${key}]}" == "${!arrayFinal[${key}]}" ]]
-	    then
-		echo "before modif value in arrayFinal ${arrayFinal[${rematchKey}]}"
-		arrayFinal[${rematchKey}]="${arrayTmp[${rematchKey}]}"
-		echo "after modif value in arrayFinal ${arrayFinal[${rematchKey}]}"
-		echo "value of yoctu in arrayFinal ${arrayFinal['yoctu']}"
-	    else
-		echo "error parse_route *** if * * *"
-	    fi
-	done
-    else
-	arrayTmp[${key}]=""
-	#arrayTmp[${id}]=""
-	echo "bad string" && exit
-	echo "parsing route == array[yoctu] = empty"
-	arrayTmp[${key}]="${id}"
-	#arrayTmp[${id}]="${id}"	
-
-	#SSS : idk if the key is yoctu and i update de value ($id) related to yoctu
-	#or if the key is the $id(2345) and i just update the key with the value from the $string 
-    fi
-}
-
-declare -A arrayAsso
-
-arrayAsso=(['yoctu']='123')
-
-echo "first place arrayAsso ${!arrayAsso[@]}"
-
-Mapping::parsing::parse_route "/api/yoctu/{12000}/foo" "/api/yoctu/{12000}/foo" "$(declare -p arrayAsso)"
-
-alias mapping::get_key='Mapping::get::get_key'
-alias mapping::get_id='Mapping::get::get_id'
-alias mapping::get_rematch='Mapping::get::get_rematch'
-alias mapping::check_match='Mapping::check::check_match'
-alias mapping::parse_route='Mapping::parsing::parse_route'
-alias mapping::check_template='Mapping::check::check_template'
-alias mapping::check_string='Mapping::check::check_string'
+#template="apiyoctu{12000}45foo"
+#string="apiyoctu1300045foo"
+alias mapping::key='Mapping::get::key'
+alias mapping::id='Mapping::get::id'
+alias mapping::rematch='Mapping::get::rematch'
+alias mapping::match='Mapping::check::match'
