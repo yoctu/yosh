@@ -1,46 +1,3 @@
-Mapping::get::route() {
-    [private] string="$1"
-    [private] rematchRoute
-
-    Type::variable::set $string $template || return 1
-    
-    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
-	rematchRoute="${BASH_REMATCH[1]}"
-	Type::variable::set $rematchRoute || return 1
-	echo "$rematchKey"
-	return 0
-    else
-	return 1
-}
-
-Mapping::get::id() {
-    [private] string="$1"
-    [private:string] rematchId
-
-    Type::variable::set $string || return 1
-    
-    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
-	rematchId="${BASH_REMATCH[2]}"
-	Type::variable::set $rematchId || return 1
-	echo "$rematchId"
-	return 0
-    else
-	return 1
-}
-
-Mapping::get::rematch() {
-    [private] string="$1"
-    [string] rematch
-
-    if [[ "$string" =~ (.+)\{(.*)\}(.*) ]]; then
-        rematch="${BASH_REMATCH[0]}"
-	Type::variable::set $rematch || return 1
-	echo "$rematch"
-        return 0
-    else
-        return 1
-}
-
 Mapping::check::match() {
     [private] string="$1"
     [private] template="$2"
@@ -71,9 +28,6 @@ Mapping::check::match() {
     fi
 }
 
-alias mapping::route='Mapping::get::route'
-alias mapping::id='Mapping::get::id'
-alias mapping::rematch='Mapping::get::rematch'
 alias mapping::match='Mapping::check::match'
 
 #Lib Mapping; Take three arguments => string, template, associative array
