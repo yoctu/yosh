@@ -47,7 +47,6 @@ Route::check(){
     for router in ${ROUTERS[@]}; do
         $router "$uri" && break
     done
-
 }
 
 Route::simple(){
@@ -84,7 +83,6 @@ Route::get::login(){
     done
 
     login_method="${LOGIN['/':$REQUEST_METHOD]:-Auth::request}"
-
 }
 
 Route::get::rights(){
