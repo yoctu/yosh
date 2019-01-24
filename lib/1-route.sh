@@ -47,12 +47,15 @@ Route::check(){
     for router in ${ROUTERS[@]}; do
         $router "$uri" && break
     done
-
 }
 
 Route::simple(){
-    [private] uri="$1"
-    [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]] || ${ROUTE["/$uri":"$REQUEST_METHOD"]}
+    [private] uri="${1%/}"
+    if [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]]; then
+        return 1
+    else
+        ${ROUTE["/$uri":"$REQUEST_METHOD"]}
+    fi
 }
 
 Route::error(){
@@ -80,7 +83,6 @@ Route::get::login(){
     done
 
     login_method="${LOGIN['/':$REQUEST_METHOD]:-Auth::request}"
-
 }
 
 Route::get::rights(){

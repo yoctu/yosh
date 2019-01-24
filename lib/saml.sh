@@ -126,6 +126,7 @@ Saml::retrieve::Identity(){
     [private] username
     [private] decodedXmlResponse
     [private] username
+    [private] xmlTmpFile="$(mktemp)"
     
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
@@ -143,11 +144,39 @@ Saml::retrieve::Identity(){
     Json::to::array SESSION "$(echo "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
 
     Session::set USERNAME ${SESSION['user_name']}
+    
     Session::save
 
     Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
 
+    rm $xmlTmpFile
+
     Http::send::redirect temporary /
+}
+
+Saml::validate::NameId(){
+    [private] xmlResponse="$1"
+
+    if [[ "$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:NameID"]')" == "$(Session::get USERNAME)" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+Saml::validate::LogoutRequest(){
+    [private] xmlData="$(echo "${POST['SAMLRequest']}" | base64 -d)"
+
+    Session::check || { Http::send::redirection "/"; return 1; }
+
+    echo "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' || return 1
+
+    Saml::validate::Issuer "$xmlData" || return 1
+    Saml::validate::NameId "$xmlData" || return 1
+    Saml::validate::Sign "$xmlData" || return 1
+
+    
+
 }
 
 alias saml::idGen='Saml::idGen'
