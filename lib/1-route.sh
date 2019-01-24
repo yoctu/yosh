@@ -42,6 +42,7 @@ Route::check(){
         Http::send::options
         return
     fi
+
     # Try a centrelized way of doing this
     for router in ${ROUTERS[@]}; do
         $router "$uri" && break
