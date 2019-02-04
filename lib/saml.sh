@@ -222,6 +222,7 @@ Saml::build::LogoutRequest(){
     _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
     Session::destroy
+    Http::send::cookie "USERNAME=delete; Max-Age=1"
 
     Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleLogoutService"]/@Location' ${SAML['idpxml']})?${_query%&}"
 }
@@ -280,6 +281,7 @@ Saml::build::LogoutResponse(){
     _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
     Session::destroy
+    Http::send::cookie "USERNAME=delete; Max-Age=1"
 
     Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleLogoutService"]/@Location' ${SAML['idpxml']})?${_query%&}"
 }
