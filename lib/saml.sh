@@ -1,7 +1,10 @@
 [public:assoc] SAML
-SAML['xmltemplate']=""
+SAML['authtemplate']=""
 SAML['idpxml']=""
 SAML['spurl']=""
+SAML['spxml']=""
+SAML['logoutresponsexml']=""
+SAML['logoutrequestxml']=""
 SAML['privkey']=""
 
 Saml::idGen(){
@@ -39,7 +42,7 @@ Saml::buildXmlFile(){
     
     _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${SAML['spurl']}\""
 
-    eval "xmlstarlet ed $_opts ${SAML['xmltemplate']}"
+    eval "xmlstarlet ed $_opts ${SAML['authtemplate']}"
 
     unset _opts
 }
@@ -164,19 +167,121 @@ Saml::validate::NameId(){
     fi
 }
 
+Saml::Logout(){
+
+    if [[ -z "${POST['SAMLRequest']}" ]]; then
+        if Session::check; then
+            Saml::build::LogoutRequest
+        else
+            Http::send::redirect temporary /
+            exit
+        fi
+    else
+        Saml::validate::LogoutRequest
+    fi
+
+}
+
+Saml::build::LogoutRequestXml(){
+    [private] _opts
+    [public:assoc] SAMLREQUEST
+
+    Saml::request::id
+    Saml::request::issueinstant
+    Saml::request::destination
+
+    for key in "${!SAMLREQUEST[@]}"; do
+        _opts+=" -u '//*[name()=\"LogoutRequest\"]/@$key' -v \"${SAMLREQUEST[$key]}\""
+    done
+
+    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${SAML['spurl']}\""
+    _opts+=" -u '//*[name()=\"saml:NameID\"]/@SPNameQualifier' -v \"${SAML['spurl']}\""
+    _opts+=" -u '//*[name()=\"saml:NameID\"]' -v \"$(Session::get USERNAME)\""
+
+    eval "xmlstarlet ed $_opts ${SAML['logoutrequestxml']}"
+
+    unset _opts
+}
+
+Saml::createLogoutRequest(){
+    Saml::build::LogoutRequestXml | phpdeflate.php -M deflate -s | base64 -w0
+}
+
+Saml::build::LogoutRequest(){
+    [private] _query
+    [private:assoc] tmpSaml
+
+    tmpSaml['SAMLRequest']="$(Saml::createLogoutRequest)"
+    Saml::createRelayState
+    tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+
+    for key in "${!tmpSaml[@]}"; do
+        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
+    done
+
+    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
+
+    Session::destroy
+
+    Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleLogoutService"]/@Location' ${SAML['idpxml']})?${_query%&}"
+}
+
 Saml::validate::LogoutRequest(){
     [private] xmlData="$(echo "${POST['SAMLRequest']}" | base64 -d)"
 
-    Session::check || { Http::send::redirection "/"; return 1; }
+    Session::check || { Http::send::redirect temporary "/"; return 1; }
 
-    echo "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' || return 1
+    echo "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' &>/dev/null || return 1
 
     Saml::validate::Issuer "$xmlData" || return 1
     Saml::validate::NameId "$xmlData" || return 1
     Saml::validate::Sign "$xmlData" || return 1
 
-    
+    Saml::build::LogoutResponse
 
+}
+
+Saml::build::LogoutXml(){
+    [private] _opts
+    [public:assoc] SAMLREQUEST
+
+    Saml::request::id
+    Saml::request::issueinstant
+    Saml::request::destination
+
+    for key in "${!SAMLREQUEST[@]}"; do
+        _opts+=" -u '//*[name()=\"LogoutResponse\"]/@$key' -v \"${SAMLREQUEST[$key]}\""
+    done
+
+    _opts+=" -u '//*[name()=\"saml:Issuer\"]' -v \"${SAML['spurl']}\""
+
+    eval "xmlstarlet ed $_opts ${SAML['logoutresponsexml']}"
+
+    unset _opts
+
+}
+
+Saml::createLogoutResponse(){
+    Saml::build::LogoutXml | phpdeflate.php -M deflate -s | base64 -w0
+}
+
+Saml::build::LogoutResponse(){
+    [private] _query
+    [private:assoc] tmpSaml
+
+    tmpSaml['SAMLRequest']="$(Saml::createLogoutResponse)"
+    Saml::createRelayState
+    tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+
+    for key in "${!tmpSaml[@]}"; do
+        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
+    done
+
+    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
+
+    Session::destroy
+
+    Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleLogoutService"]/@Location' ${SAML['idpxml']})?${_query%&}"
 }
 
 alias saml::idGen='Saml::idGen'
