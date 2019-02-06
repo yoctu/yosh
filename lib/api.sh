@@ -70,7 +70,11 @@ Api::send::post(){
 }
 
 Api::send::put(){
-    Http::send::status 204    
+    [private] array="$1"
+
+    Http::send::status 204
+
+    Json::create $array
 }
 
 Api::send::patch(){
@@ -84,7 +88,10 @@ Api::send::patch(){
 }
 
 Api::send::delete(){
+    [private] array="$1"
     Http::send::status 200
+
+    Json::create $array
 }
 
 Api::send::get(){
@@ -93,6 +100,7 @@ Api::send::get(){
     [[ -z "$array" ]] && Api::send::fail
 
     Http::send::status 200
+    Json::create $array
 }
 
 # apply function names lowercase
