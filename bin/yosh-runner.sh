@@ -20,21 +20,25 @@ $USAGE
 
 "
 
-source /usr/share/yosh/autoloader.sh
-
 while getopts "${OPTS}" arg; do
     case "${arg}" in
+        d) export DOCUMENT_ROOT="$OPTARG"                               ;;
         c) _config_file="${OPTARG}"                                     ;;
         s) _run="echo"                                                  ;;
         v) set -v                                                       ;;
         x) set -x                                                       ;;
         e) set -ve                                                      ;;
-        h) Cli::help                                                    ;;
-        ?) Cli::error "Invalid Argument: $USAGE"                        ;;
-        *) Cli::error "$USAGE"                                          ;;
+        h) help="1"                                                     ;;
+        ?) errorMSG="Invalid Argument: $USAGE"                          ;;
+        *) errorMSG="$USAGE"                                            ;;
     esac
 done
 shift $((OPTIND - 1))
+
+source /usr/share/yosh/autoloader.sh
+
+(( help )) && Cli::help
+[[ -z "$errorMSG" ]] && Cli::error "$errorMSG"
 
 [[ -z "$1" ]] && Cli::help
 REQUEST_URI="$1"
