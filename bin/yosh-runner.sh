@@ -3,13 +3,14 @@
 SELF="${BASH_SOURCE[0]##*/}"
 NAME="${SELF%.sh}"
 
-OPTS="c:svxEh"
+OPTS="d:c:svxEh"
 USAGE="Usage: $SELF [$OPTS]"
 
 HELP="
 $USAGE
 
     Options:
+        -d      Document root
         -c      Config File, should contain for example the POST Data for the request url
         -s      simulate
         -v      set -v
