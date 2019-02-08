@@ -2,9 +2,9 @@
 
 Cli::router(){
     [private] route="$1"
-    
+
     if Type::function::exist "${CLI["$route":'main']}"; then
-        Cli::args $@
+        Cli::args "$route" "${argsArr[@]}"
         ${CLI["$route":'main']}
     else
         Cli::error "No command line found with $router"
@@ -15,7 +15,7 @@ Cli::router(){
 Cli::args(){
     [private] route="$1"
 
-    Type::function::exist ${CLI["$route":"args"]} && ${CLI["$route":'args']} ${@:2}
+    Type::function::exist ${CLI["$route":"args"]} && ${CLI["$route":'args']} "${argsArr[@]}"
 }
 
 Cli::help(){

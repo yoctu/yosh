@@ -60,11 +60,17 @@ tmpStderr="$(mktemp)"
 # Clean TMP file on exit
 trap "rm $tmpStdout; rm $tmpStderr" EXIT
 
+for key in "${@:2}"; do
+    argsArr+=("${key}")
+done
+
+export argsArr
+
 if [[ "$REQUEST_URI" == "help" ]]; then
     Cli::help ${*:2}
 elif [[ "$REQUEST_URI" == "list" ]];then
     Cli::list
 else
-    Cli::router $* 
+    Cli::router $*
 fi
 
