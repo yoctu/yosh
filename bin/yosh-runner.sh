@@ -39,7 +39,7 @@ shift $((OPTIND - 1))
 source /usr/share/yosh/autoloader.sh
 
 (( help )) && Cli::help
-[[ -z "$errorMSG" ]] && Cli::error "$errorMSG"
+[[ -z "$errorMSG" ]] || Cli::error "$errorMSG"
 
 [[ -z "$1" ]] && Cli::help
 REQUEST_URI="$1"

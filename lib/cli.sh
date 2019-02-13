@@ -42,7 +42,7 @@ Cli::colorize(){
 }
 
 Cli::list(){
-    Type::array::get::key ".*" CLI
+    echo -e "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)"
 }
 
 Cli::error(){
