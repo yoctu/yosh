@@ -60,6 +60,9 @@ tmpStderr="$(mktemp)"
 # Clean TMP file on exit
 trap "rm $tmpStdout; rm $tmpStderr" EXIT
 
+trap 'Cli::error:stacktrace' ERR
+set -o errtrace
+
 for key in "${@:2}"; do
     argsArr+=("${key}")
 done
