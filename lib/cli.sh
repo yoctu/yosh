@@ -21,9 +21,13 @@ Cli::args(){
 Cli::help(){
     [private] route="$1"
 
-    Type::function::exist ${CLI["$route":'help']} && { ${CLI["$route":'help']} ${@:2}; return; }
-
-    echo "$HELP" 
+    if Type::function::exist ${CLI["$route":'help']};then
+        ${CLI["$route":'help']} ${@:2}
+        return
+    else
+        echo "$HELP"
+        exit
+    fi
 }
 
 Cli::colorize(){
@@ -51,7 +55,7 @@ Cli::error(){
     echo -e "$(Cli::colorize red)$msg$(Cli::colorize white)" >&2
 }
 
-Cli::error:stacktrace(){
+Cli::error::stacktrace(){
   [private:int] err=$?
 
   set +o xtrace

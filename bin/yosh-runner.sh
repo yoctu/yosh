@@ -41,7 +41,7 @@ source /usr/share/yosh/autoloader.sh
 (( help )) && Cli::help
 [[ -z "$errorMSG" ]] || Cli::error "$errorMSG"
 
-[[ -z "$1" ]] && Cli::help
+[[ -z "$1" || "$1" == "help" ]] && Cli::help
 REQUEST_URI="$1"
 
 [[ -z "$REQUEST_URI" ]] && Cli::help
@@ -60,7 +60,7 @@ tmpStderr="$(mktemp)"
 # Clean TMP file on exit
 trap "rm $tmpStdout; rm $tmpStderr" EXIT
 
-trap 'Cli::error:stacktrace' ERR
+trap 'Cli::error::stacktrace' ERR
 set -o errtrace
 
 for key in "${@:2}"; do
