@@ -5,7 +5,7 @@
 # use autoloader
 source /usr/share/yosh/autoloader.sh
 
-function _exit () {
+_exit() {
     # Send header
 
     ! [[ -z "$access_control_allow_origin" ]] && Http::send::header Access-Control-Allow-Origin "${access_control_allow_origin:-*}"
@@ -13,24 +13,25 @@ function _exit () {
 
     # send data from route
     [[ -s "$tmpStdout" ]] && cat $tmpStdout
-    [[ -s "$tmpStderr" ]] && @error "$(cat $tmpStderr)"
+    [[ -s "$tmpStderr" ]] && @error "$(<$tmpStderr)"
 
-    rm $tmpStdout
-    rm $tmpStderr
+    Mktemp::remove::public::all
 }
+
+trap 'Log::stack::trace' ERR
+set -o errtrace
 
 # Clean TMP file on exit
 trap '_exit' EXIT
 
+# redirect stdout and stderr of function to file, to print after
+tmpStdout="$(Mktemp::create)"
+tmpStderr="$(Mktemp::create)"
 
 # get GET and POST and COOKIE variable
 Http::read::get
 Http::read::post
 Http::read::cookie
-
-# redirect stdout and stderr of function to file, to print after
-tmpStdout="$(mktemp -p $TMPDIR)"
-tmpStderr="$(mktemp -p $TMPDIR)"
 
 # check if application.sh exist
 [[ -f "${DOCUMENT_ROOT%/}/../application.sh" ]] && source ${DOCUMENT_ROOT%/}/../application.sh
@@ -42,3 +43,4 @@ Route::check 1>$tmpStdout 2>$tmpStderr
 # exit like a pro
 # TRAP will now do the job
 exit
+
