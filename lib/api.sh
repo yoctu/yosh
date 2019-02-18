@@ -4,8 +4,11 @@
     API_MSG['500']="An Error occured while running request...."
     API_MSG['404']="Request not found"
     API_MSG['401']="No Authorization!"
+    API_MSG['400']="Server could not handle the request"
 
 [public:assoc] API_RESPONSE
+[public:assoc] API
+    API['content-type']="Application/json"
 
 Api::router(){
     [private] url="$1"
@@ -14,7 +17,7 @@ Api::router(){
 
     [[ "$url" =~ ^api.* ]] || return
 
-    Http::send::content-type "Application/json"
+    Http::send::content-type "${API['content-type']}"
 
     if [[ -z "$default_api_function" ]]; then
         Api::search::function
@@ -33,6 +36,16 @@ Api::call::function(){
     Type::function::exist $default_api_function || Api::send::not_found
 
     $default_api_function
+}
+
+Api::check::content_type(){
+    if [[ "$CONTENT_TYPE" != "${API['content-type']}" ]]; then
+        Http::send::status 400
+        API_RESPONSE['msg']="${API_MSG['400']} : Content-type should be ${API['content-type']}"
+        
+        Json::create API_RESPONSE
+        exit
+    fi
 }
 
 Api::send::fail(){
