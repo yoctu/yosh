@@ -127,6 +127,7 @@ alias api::send::put='Api::send::put'
 alias api::send::patch='Api::send::patch'
 alias api::send::delete='Api::send::delete'
 alias api::send::get='Api::send::get'
+alias api::check::content_type='Api::check::content_type'
 
 ROUTERS+=("Api::router")
 

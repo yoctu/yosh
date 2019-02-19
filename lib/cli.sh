@@ -56,23 +56,23 @@ Cli::error(){
 }
 
 Cli::error::stacktrace(){
-  [private:int] err=$?
+    [private:int] err=$?
 
-  set +o xtrace
+    set +o xtrace
 
-  [private] code="${1:-1}"
+    [private] code="${1:-1}"
 
-  Cli::error "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
-  # Print out the stack trace described by $function_stack  
+    Cli::error "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
+    # Print out the stack trace described by $function_stack  
 
-  if (( ${#FUNCNAME[@]} >> 2 )); then
-    Cli::error "Call tree:"
-    for ((i=1;i<${#FUNCNAME[@]}-1;i++)); do
-      Cli::error " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
-    done
-  fi
+    if (( ${#FUNCNAME[@]} >> 2 )); then
+        Cli::error "Call tree:"
+        for ((i=1;i<${#FUNCNAME[@]}-1;i++)); do
+            Cli::error " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+        done
+    fi
 
-  Cli::error "Exiting with status ${code}"
+    Cli::error "Exiting with status ${code}"
     exit $err
 }
 

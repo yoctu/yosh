@@ -1,5 +1,3 @@
-
-
 Img::print::out(){
     [private] img_file="${1#img/}"
     

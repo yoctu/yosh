@@ -39,6 +39,27 @@ Log::print::audit(){
     ${LOG['@audit']} "${application_name^^} Audit: $_msg"
 }
 
+Log::stack::trace(){
+    [private:int] err=$?
+
+    set +o xtrace
+
+    [private] code="${1:-1}"
+
+    Log::print::error "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
+    # Print out the stack trace described by $function_stack  
+
+    if (( ${#FUNCNAME[@]} >> 2 )); then
+        Log::print::error "Call tree:"
+        for ((i=1;i<${#FUNCNAME[@]}-1;i++)); do
+            Log::print::error " $i: ${BASH_SOURCE[$i+1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+        done
+    fi
+
+    Log::print::error "Exiting with status ${code}"
+    exit $err
+}
+
 
 alias log::print='Log::print'
 alias log::print::deprecated='Log::print::deprecated'
