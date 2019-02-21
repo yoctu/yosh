@@ -1,4 +1,8 @@
 # Parse POST Data
+[public:assoc] POST
+[public:assoc] GET
+[public:assoc] COOKIE
+
 Http::read::post(){
     [private] raw key
 
