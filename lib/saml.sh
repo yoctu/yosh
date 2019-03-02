@@ -109,7 +109,7 @@ Saml::validate::Sign(){
 
     echo "$xmlResponse" > $tmpXmlFile
 
-    echo "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
+    echo -e "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
 
     xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null | return 1
 

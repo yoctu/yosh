@@ -54,7 +54,7 @@ DOCUMENT_ROOT="${DOCUMENT_ROOT%/*}"
 [[ -f "$_config_file" ]] && source $_config_file 
 
 # Clean TMP file on exit
-trap "rm $tmpStdout; rm $tmpStderr" EXIT
+#trap "rm $tmpStdout; rm $tmpStderr" EXIT
 
 trap 'Cli::error::stacktrace' ERR
 set -o errtrace
