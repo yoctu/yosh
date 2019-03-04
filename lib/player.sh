@@ -1,5 +1,15 @@
 
 
+Player::router::check(){
+    [private] player_file="$1"
+    
+    [[ -z "$player_file" ]] && return 1
+    [[ -f "${player_dir}/$player_file" ]] || return 1
+
+    router_run="Player::print::out"
+}
+
+
 Player::print::out(){
     [private] player_file="$1"
     
@@ -15,6 +25,6 @@ Player::print::out(){
 
 }
 
-ROUTERS+=( "Player::print::out" )
+ROUTERS+=( "Player::router::check" )
 
 alias player::print::out='Player::print::out'

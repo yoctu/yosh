@@ -1,4 +1,12 @@
 
+Js::router::check(){
+    [private] js_file="${1#js/}"
+
+    [[ -z "$js_file" ]] && return
+    [[ -f "${js_dir}/$js_file" ]] || return 1
+
+    router_run="Js::print::out"
+}
 
 Js::print::out(){
     [private] js_file="${1#js/}"
@@ -15,6 +23,6 @@ Js::print::out(){
 
 }
 
-ROUTERS+=("Js::print::out")
+ROUTERS+=("Js::router::check")
 
 alias js::print::out='Js::print::out'

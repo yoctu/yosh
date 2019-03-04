@@ -2,6 +2,8 @@
 
 # main file
 
+#set -x
+
 # use autoloader
 source /usr/share/yosh/autoloader.sh
 
@@ -13,13 +15,19 @@ _exit() {
 
     # send data from route
     [[ -s "$tmpStdout" ]] && cat $tmpStdout
-    [[ -s "$tmpStderr" ]] && @error "$(<$tmpStderr)"
+    if [[ -s "$tmpStderr" ]]; then
+#        Log::stack::trace
+        @error "$(<$tmpStderr)"
+    fi
 
+    Log::print::error::array
     Mktemp::remove::public::all
 }
 
-trap 'Log::stack::trace' ERR
+
 set -o errtrace
+#set -e
+trap 'Log::stack::trace' ERR
 
 # Clean TMP file on exit
 trap '_exit' EXIT

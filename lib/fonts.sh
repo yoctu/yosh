@@ -1,4 +1,13 @@
 
+Fonts::router::check(){
+    [private] fonts_file="${1#fonts/}" 
+    [private] extension="${1##*.}"
+    
+    [[ -z "$fonts_file" ]] && return 1
+    [[ -f "${fonts_dir}/$fonts_file" ]] || return 1
+
+    router_run="Fonts::print::out"
+}
 
 Fonts::print::out(){
     [private] fonts_file="${1#fonts/}" 
@@ -19,4 +28,4 @@ Fonts::print::out(){
 }
 
 alias fonts::print::out='Fonts::print::out'
-ROUTERS+=("Fonts::print::out")
+ROUTERS+=("Fonts::router::check")

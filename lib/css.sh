@@ -1,12 +1,18 @@
 
 
-Css::print::out(){
+Css::router::check(){
     [private] css_file="${1#css/}" uri="$1"
 
     [[ "$uri" =~ ^css.* ]] || return
 
     [[ -z "$css_file" ]] && return 1
     [[ -f "${css_dir}/$css_file" ]] || return 1
+
+    router_run="Css::print::out"
+}
+
+Css::print::out(){
+    [private] css_file="${1#css/}" uri="$1"
 
     # Set content-type
     Http::send::content-type text/css
@@ -19,4 +25,4 @@ Css::print::out(){
 
 alias css::print::out='Css::print::out'
 
-ROUTERS+=("Css::print::out")
+ROUTERS+=("Css::router::check")
