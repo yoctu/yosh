@@ -1,4 +1,11 @@
+Img::router::check(){
+    [private] img_file="${1#img/}"
+    
+    [[ -z "$img_file" ]] && return 1
+    [[ -f "${img_dir}/$img_file" ]] || return 1
 
+    router_run="Img::print::out"
+}
 
 Img::print::out(){
     [private] img_file="${1#img/}"
@@ -15,6 +22,6 @@ Img::print::out(){
 
 }
 
-ROUTERS+=( "Img::print::out" )
+ROUTERS+=( "Img::router::check" )
 
 alias img::print::out='Img::print::out'

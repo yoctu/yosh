@@ -1,8 +1,12 @@
 # Parse POST Data
+[public:assoc] POST
+[public:assoc] GET
+[public:assoc] COOKIE
+
 Http::read::post(){
     [private] raw key
 
-    [[ -t 0 ]] && return
+    (( ${CONTENT_LENGTH} )) || return 0
 
     # Get data from stdin
     read -n ${CONTENT_LENGTH:-1} raw <&0

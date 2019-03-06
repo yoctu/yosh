@@ -43,10 +43,14 @@ Route::check(){
         return
     fi
 
+#    Api::router "$uri"
+
     # Try a centrelized way of doing this
     for router in ${ROUTERS[@]}; do
         $router "$uri" && break
     done
+
+    [[ -z "$router_run" ]] || $router_run "$uri"
 }
 
 Route::simple(){
@@ -54,7 +58,7 @@ Route::simple(){
     if [[ -z "${ROUTE["/$uri":"$REQUEST_METHOD"]}" ]]; then
         return 1
     else
-        ${ROUTE["/$uri":"$REQUEST_METHOD"]}
+        router_run="${ROUTE["/$uri":"$REQUEST_METHOD"]}"
     fi
 }
 

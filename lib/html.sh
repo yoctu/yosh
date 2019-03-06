@@ -12,6 +12,14 @@ Html::print::footer(){
     cat $html_footer_file
 }
 
+Html::router::check(){
+    [private] body_file="${html_dir%/}/${1%.html}.html"
+
+    [[ ! -f "$body_file" ]] && return 1
+    
+    router_run="Html::print::out"
+}
+
 Html::print::out(){
     [private] body_file="${html_dir%/}/${1%.html}.html"
 
@@ -29,7 +37,7 @@ Html::print::out(){
     Html::print::footer
 }
 
-ROUTERS+=("Html::print::out")
+ROUTERS+=("Html::router::check")
 
 alias html::print::header='Html::print::header'
 alias html::print::footer='Html::print::footer'

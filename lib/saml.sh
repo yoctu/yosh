@@ -104,17 +104,14 @@ Saml::validate::Sign(){
     [private] xmlSigned 
     [private] xmltoCheck 
     [private] result 
-    [private] tmpXmlFile="$(mktemp)" 
-    [private] tmpCert="$(mktemp)"
+    [private] tmpXmlFile="$(Mktemp::create)" 
+    [private] tmpCert="$(Mktemp::create)"
 
     echo "$xmlResponse" > $tmpXmlFile
 
-    echo "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
+    echo -e "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
 
-    xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null | return 1
-
-    rm $tmpXmlFile
-    rm $tmpCert
+    xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null || return 1
 
 }
 
@@ -129,7 +126,7 @@ Saml::retrieve::Identity(){
     [private] username
     [private] decodedXmlResponse
     [private] username
-    [private] xmlTmpFile="$(mktemp)"
+    [private] xmlTmpFile="$(Mktemp::create)"
     
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
@@ -151,8 +148,6 @@ Saml::retrieve::Identity(){
     Session::save
 
     Http::send::cookie "USERNAME=${SESSION['USERNAME']}; Max-Age=$default_session_expiration"
-
-    rm $xmlTmpFile
 
     Http::send::redirect temporary /
 }

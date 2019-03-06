@@ -4,8 +4,19 @@
     API_MSG['500']="An Error occured while running request...."
     API_MSG['404']="Request not found"
     API_MSG['401']="No Authorization!"
+    API_MSG['400']="Server could not handle the request"
 
 [public:assoc] API_RESPONSE
+[public:assoc] API
+    API['content-type']="Application/json"
+    API['response':'Application/json']="Json::create"
+
+Api::router::check(){
+    [private] url="$1"
+    [[ "$url" =~ ^api.* ]] || return
+
+    router_run="Api::router"    
+}
 
 Api::router(){
     [private] url="$1"
@@ -14,7 +25,7 @@ Api::router(){
 
     [[ "$url" =~ ^api.* ]] || return
 
-    Http::send::content-type "Application/json"
+    Http::send::content-type "${API['content-type']}"
 
     if [[ -z "$default_api_function" ]]; then
         Api::search::function
@@ -35,11 +46,21 @@ Api::call::function(){
     $default_api_function
 }
 
+Api::check::content_type(){
+    if [[ "$CONTENT_TYPE" != "${API['content-type']}" ]]; then
+        Http::send::status 400
+        API_RESPONSE['msg']="${API_MSG['400']} : Content-type should be ${API['content-type']}"
+        
+        ${API['response':${API['content-type']}]} API_RESPONSE
+        exit
+    fi
+}
+
 Api::send::fail(){
     Http::send::status 500
     API_RESPONSE['msg']="${API_MSG['500']}"
 
-    Json::create API_RESPONSE    
+    ${API['response':${API['content-type']}]} API_RESPONSE    
     exit
 }
 
@@ -47,7 +68,7 @@ Api::send::unauthorized(){
     Http::send::status 401
     API_RESPONSE['msg']="${API_MSG['401']}"
 
-    Json::create API_RESPONSE
+    ${API['response':${API['content-type']}]} API_RESPONSE
     exit
 }
 
@@ -55,7 +76,7 @@ Api::send::not_found(){
     Http::send::status 404
     API_RESPONSE['msg']="${API_MSG['404']}"
 
-    Json::create API_RESPONSE
+    ${API['response':${API['content-type']}]} API_RESPONSE
     exit
 }
 
@@ -66,7 +87,7 @@ Api::send::post(){
 
     Http::send::status 201 
 
-    Json::create $array
+    ${API['response':${API['content-type']}]} $array
 }
 
 Api::send::put(){
@@ -74,7 +95,7 @@ Api::send::put(){
 
     Http::send::status 204
 
-    Json::create $array
+    ${API['response':${API['content-type']}]} $array
 }
 
 Api::send::patch(){
@@ -84,14 +105,14 @@ Api::send::patch(){
 
     Http::send::status 202
 
-    Json::create $array
+    ${API['response':${API['content-type']}]} $array
 }
 
 Api::send::delete(){
     [private] array="$1"
     Http::send::status 200
 
-    Json::create $array
+    ${API['response':${API['content-type']}]} $array
 }
 
 Api::send::get(){
@@ -100,7 +121,7 @@ Api::send::get(){
     [[ -z "$array" ]] && Api::send::fail
 
     Http::send::status 200
-    Json::create $array
+    ${API['response':${API['content-type']}]} $array
 }
 
 # apply function names lowercase
@@ -114,6 +135,7 @@ alias api::send::put='Api::send::put'
 alias api::send::patch='Api::send::patch'
 alias api::send::delete='Api::send::delete'
 alias api::send::get='Api::send::get'
+alias api::check::content_type='Api::check::content_type'
 
-ROUTERS+=("Api::router")
+ROUTERS+=("Api::router::check")
 

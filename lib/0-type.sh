@@ -2,6 +2,8 @@
 Type::function::exist(){
     # multiple function are accepted
 
+    [[ -z "$*" ]] && return 1
+
     for _function in "$@"; do
         if [[ $(type -t "$_function") == "function" ]]; then
             return 0
@@ -13,6 +15,8 @@ Type::function::exist(){
 
 Type::command::exist(){
     # multiple commands are accepted
+
+    [[ -z "$*" ]] && return 1
     
     for _command in "$@"; do
         type "$_command" &>/dev/null
