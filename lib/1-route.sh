@@ -16,7 +16,7 @@ Route::check(){
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
     uri="${uri:-/}"
-    uri="$(printf '%s' "$uri" | urlencode.pl)"
+    uri="$(printf '%s' "$uri" | urlencode.pl -d)"
 
 
     (( route_auditing )) && @audit "$application_name"
