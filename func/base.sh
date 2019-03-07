@@ -12,10 +12,8 @@ trim(){
     [[ -z "$variable" ]] && return
     
     typeset -n new_variable="$variable"
-    new_variable="${new_variable% }"
-    new_variable="${new_variable# }"
+    new_variable="$(echo "$new_variable" | xargs)"
 
-    declare -g ${variable}="$new_variable"
 }
 
 
