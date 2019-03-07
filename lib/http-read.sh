@@ -21,7 +21,7 @@ Http::read::post(){
         # Save data as POST[KEY]=VALUE
         for key in "${raw[@]}"; do
             trim key
-            POST[$(echo "${key%%=*}" | urlencode.pl -d )]="$(echo "${key#*=}" | urlencode.pl -d )"
+            POST[$(printf '%s' "${key%%=*}" | urlencode.pl -d )]="$(printf '%s' "${key#*=}" | urlencode.pl -d )"
         done
 
     elif [[ "$CONTENT_TYPE" =~ application/json.* ]]; then
@@ -60,7 +60,7 @@ Http::read::get(){
     # Save data as GET[KEY]=VALUE
     for key in "${raw[@]}"; do
         trim key
-        GET[$(echo "${key%%=*}" | urlencode.pl -d )]="$(echo "${key#*=}" | urlencode.pl -d )"
+        GET[$(printf '%s' "${key%%=*}" | urlencode.pl -d )]="$(printf '%s' "${key#*=}" | urlencode.pl -d )"
     done
     
     unset key
