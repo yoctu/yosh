@@ -60,16 +60,16 @@ Http::send::out(){
 
     # Send cookies
     for value in "${cookies[@]}"; do
-        echo "Set-Cookie: $value"
+        printf 'Set-Cookie: %s\n' "$value"
     done
 
     # Print out headers
     for key in "${!HEADERS_TO_SENT[@]}"; do
-        echo "$key: ${HEADERS_TO_SENT[$key]}"
+        printf '%s: %s\n' "$key" "${HEADERS_TO_SENT[$key]}"
     done
 
     # From HTTP RFC 2616 send newline before body
-    echo 
+    printf "\n" 
 }
 
 Http::send::options(){

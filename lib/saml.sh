@@ -8,7 +8,7 @@ SAML['logoutrequestxml']=""
 SAML['privkey']=""
 
 Saml::idGen(){
-    echo "$(uuidgen)"
+    printf '%s' "$(uuidgen)"
 }
 
 Saml::request::id(){
@@ -93,7 +93,7 @@ Saml::validate::Issuer(){
     [private] idpIssuer 
     [private] responseIssuer
 
-    responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
+    responseIssuer="$(printf '%s' "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
     idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})"
     idpIssuer="${idpIssuer//\/sso/}"
 
@@ -109,9 +109,9 @@ Saml::validate::Sign(){
     [private] tmpXmlFile="$(Mktemp::create)" 
     [private] tmpCert="$(Mktemp::create)"
 
-    echo "$xmlResponse" > $tmpXmlFile
+    printf "$xmlResponse" > $tmpXmlFile
 
-    echo -e "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
+    printf "-----BEGIN CERTIFICATE-----\n$(printf "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
 
     xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null || return 1
 
@@ -120,7 +120,7 @@ Saml::validate::Sign(){
 Saml::get::Assertion(){
     [private]  xmlResponse="$1"
 
-    echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
+    printf "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
 }
 
 Saml::retrieve::Identity(){
@@ -132,9 +132,9 @@ Saml::retrieve::Identity(){
     
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
-    xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
+    xmlResponse="$(printf "${POST['SAMLResponse']}" | base64 -d)"
 
-    echo "$xmlResponse" > $xmlTmpFile
+    printf "$xmlResponse" > $xmlTmpFile
 
     decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']} $xmlTmpFile)"
 
@@ -143,7 +143,7 @@ Saml::retrieve::Identity(){
 
     Session::start
 
-    Json::to::array SESSION "$(echo "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
+    Json::to::array SESSION "$(printf "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
 
     Session::set USERNAME ${SESSION['user_name']}
     
@@ -157,7 +157,7 @@ Saml::retrieve::Identity(){
 Saml::validate::NameId(){
     [private] xmlResponse="$1"
 
-    if [[ "$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:NameID"]')" == "$(Session::get USERNAME)" ]]; then
+    if [[ "$(printf "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:NameID"]')" == "$(Session::get USERNAME)" ]]; then
         return 0
     else
         return 1
@@ -227,11 +227,11 @@ Saml::build::LogoutRequest(){
 }
 
 Saml::validate::LogoutRequest(){
-    [private] xmlData="$(echo "${POST['SAMLRequest']}" | base64 -d)"
+    [private] xmlData="$(printf "${POST['SAMLRequest']}" | base64 -d)"
 
     Session::check || { Http::send::redirect temporary "/"; return 1; }
 
-    echo "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' &>/dev/null || return 1
+    printf "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' &>/dev/null || return 1
 
     Saml::validate::Issuer "$xmlData" || return 1
     Saml::validate::NameId "$xmlData" || return 1

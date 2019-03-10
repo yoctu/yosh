@@ -12,36 +12,8 @@ trim(){
     [[ -z "$variable" ]] && return
     
     typeset -n new_variable="$variable"
-    new_variable="$(echo "$new_variable" | xargs)"
+    new_variable="$(printf '%s' "$new_variable" | xargs)"
 
 }
 
-
-# XXX: use gridsite-clients instead
-# decode url
-#function url_decode ()
-#{
-#    local value="$1"
-#    value="${value//+/ }"
-#    value="${value//%/\\x}"
-#    
-#    echo -e "$value"
-#}
-#
-#function url_encode() 
-#{
-#    local _length="${#1}"
-#
-#    for (( _offset = 0 ; _offset < _length ; _offset++ ))
-#    do
-#        _print_offset="${1:_offset:1}"
-#
-#        case "${_print_offset}" in
-#            [a-zA-Z0-9.~_-]) printf "${_print_offset}" ;;
-#            ' ') printf + ;;
-#            *) printf '%%%X' "'${_print_offset}" ;;
-#        esac
-#
-#    done
-#}
 
