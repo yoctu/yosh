@@ -12,7 +12,7 @@ trim(){
     [[ -z "$variable" ]] && return
     
     typeset -n new_variable="$variable"
-    new_variable="$(printf '%s' "$new_variable" | xargs)"
+    new_variable="$(printf '%s' "$new_variable" | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//' )"
 
 }
 
