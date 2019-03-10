@@ -56,6 +56,6 @@ Mktemp::create(){
 
     Mktemp::set::$priority "$tmpFile"
 
-    echo "$tmpFile"
+    printf '%s' "$tmpFile"
 }
 

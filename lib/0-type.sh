@@ -67,7 +67,7 @@ Type::array::get::key(){
     Type::array::is::assoc "$2" || return 1
 
     for key in "${!array[@]}";do
-        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; echo ${key%%:*}; }
+        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; printf '%s\n' ${key%%:*}; }
     done | sort | uniq
 
 }
@@ -106,10 +106,6 @@ Type::variable::int(){
     [[ "${string#*=}" =~ ^[0-9]+$ ]] && return
 
     return 1
-}
-
-Type::array::to::case(){
-    echo not ready yet    
 }
 
 alias type::function::exist='Type::function::exist'

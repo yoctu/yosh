@@ -1,10 +1,10 @@
 App::find(){
     if [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}" ]]; then
-        echo "${DOCUMENT_ROOT%/}/../app/${uri}"
+        printf '%s' "${DOCUMENT_ROOT%/}/../app/${uri}"
     elif [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}.sh" ]]; then
-        echo "${DOCUMENT_ROOT%/}/../app/${uri}.sh"
+        printf '%s' "${DOCUMENT_ROOT%/}/../app/${uri}.sh"
     elif [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}.bash" ]]; then
-        echo "${DOCUMENT_ROOT%/}/../app/${uri}.bash"
+        printf '%s' "${DOCUMENT_ROOT%/}/../app/${uri}.bash"
     else
         return 1
     fi

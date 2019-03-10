@@ -16,11 +16,11 @@ Mapping::check::match() {
 	Type::variable::set wayTo id end || return 1
 	if [[ "$string" =~ $wayTo(.+)$end ]]; then
 	    array["$id"]="${BASH_REMATCH[1]}"
-	    echo "${array}"
+	    printf '%s' "${array}"
 	    return 0
 	else
 	    array["$id"]=""
-	    echo "${array}"
+	    printf '%s' "${array}"
 	    return 0
 	fi
     else
