@@ -3,7 +3,7 @@
 SELF="${BASH_SOURCE[0]##*/}"
 NAME="${SELF%.sh}"
 
-OPTS="d:c:svxEh"
+OPTS="y:d:c:svxEh"
 USAGE="Usage: $SELF [$OPTS]"
 
 HELP="
@@ -13,6 +13,7 @@ $USAGE
         -d      Document root
         -c      Config File, should contain for example the POST Data for the request url
         -s      simulate
+        -y      YOSH_PATH
         -v      set -v
         -x      set -x
         -e      set -ve
@@ -24,6 +25,7 @@ $USAGE
 while getopts "${OPTS}" arg; do
     case "${arg}" in
         d) export DOCUMENT_ROOT="$OPTARG"                               ;;
+        y) YOSH_PATH="$OPTARG"                                          ;;
         c) _config_file="${OPTARG}"                                     ;;
         s) _run="echo"                                                  ;;
         v) set -v                                                       ;;
