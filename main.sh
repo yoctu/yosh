@@ -3,9 +3,10 @@
 # main file
 
 #set -x
-
+YOSH_PATH="${YOSH_PATH:-/usr/share/yosh}"
+declare -r YOSH_PATH="${YOSH_PATH%/}"
 # use autoloader
-source /usr/share/yosh/autoloader.sh
+source ${YOSH_PATH}/autoloader.sh
 
 _exit() {
     # Send header

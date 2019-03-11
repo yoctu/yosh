@@ -36,7 +36,9 @@ while getopts "${OPTS}" arg; do
 done
 shift $((OPTIND - 1))
 
-source /usr/share/yosh/autoloader.sh
+YOSH_PATH="${YOSH_PATH:-/usr/share/yosh}"
+declare -r YOSH_PATH="${YOSH_PATH%/}"
+source ${YOSH_PATH}/autoloader.sh
 
 (( help )) && Cli::help
 [[ -z "$errorMSG" ]] || Cli::error "$errorMSG"
