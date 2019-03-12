@@ -35,9 +35,13 @@ Api::router(){
 }
 
 Api::search::function(){
-    Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}" || Api::send::not_found
-
-    Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}
+    if Type::function::exist "Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,}"; then
+        Api::${uri[1]}::${uri[2]}::${REQUEST_METHOD,,} "$(printf '%s/' "${uri[*]:3}")"
+    elif Type::function::exist "Api::${uri[1]}::${REQUEST_METHOD,,}"; then
+        Api::${uri[1]}::${REQUEST_METHOD,,} "$(printf '%s/' "${uri[*]:2}")"
+    else
+        Api::send::not_found
+    fi
 }
 
 Api::call::function(){

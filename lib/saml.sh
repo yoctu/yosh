@@ -8,7 +8,7 @@ SAML['logoutrequestxml']=""
 SAML['privkey']=""
 
 Saml::idGen(){
-    echo "$(uuidgen)"
+    printf '%s' "$(uuidgen)"
 }
 
 Saml::request::id(){
@@ -58,7 +58,7 @@ Saml::createSamlRequest(){
 Saml::createSignature(){   
     [private] _query_string="$*"
 
-    echo -n "$_query_string" | openssl dgst -sha1 -sign "${SAML['privkey']}" | base64 -w0
+    printf '%s' "$_query_string" | openssl dgst -sha1 -sign "${SAML['privkey']}" | base64 -w0
 }
 
 Saml::buildAuthnRequest(){
@@ -76,10 +76,12 @@ Saml::buildAuthnRequest(){
 
 
     for key in "${!tmpSaml[@]}"; do
-        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
+        _query+="$key=$(printf '%s' "${tmpSaml[$key]}" | urlencode.pl)&"
     done
 
-    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
+
+    _query="${_query%&}&Signature=$(Saml::createSignature "SAMLRequest=$( printf '%s' "${tmpSaml['SAMLRequest']}" | urlencode.pl )&RelayState=$(printf '%s' "${tmpSaml['RelayState']}" | urlencode.pl )&SigAlg=$(printf '%s' "${tmpSaml['SigAlg']}" | urlencode.pl)" | urlencode.pl)"
+#    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
     Http::send::redirect temporary "$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})?${_query%&}"
 
@@ -91,7 +93,7 @@ Saml::validate::Issuer(){
     [private] idpIssuer 
     [private] responseIssuer
 
-    responseIssuer="$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
+    responseIssuer="$(printf '%s' "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:Issuer"]')"
     idpIssuer="$(xmlstarlet sel -t -v '//*[name()="SingleSignOnService"]/@Location' ${SAML['idpxml']})"
     idpIssuer="${idpIssuer//\/sso/}"
 
@@ -106,19 +108,21 @@ Saml::validate::Sign(){
     [private] result 
     [private] tmpXmlFile="$(Mktemp::create)" 
     [private] tmpCert="$(Mktemp::create)"
+    [private] attrID="$2"
 
-    echo "$xmlResponse" > $tmpXmlFile
+    printf '%s\n' "$xmlResponse" > $tmpXmlFile
 
-    echo -e "-----BEGIN CERTIFICATE-----\n$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')\n-----END CERTIFICATE-----" > $tmpCert
+    cat $tmpXmlFile
 
-    xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:Response" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null || return 1
+    printf -- '-----BEGIN CERTIFICATE-----\n%s\n-----END CERTIFICATE-----\n' "$(printf '%s' "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="ds:X509Certificate"]')" > $tmpCert
 
+    xmlsec1 verify --id-attr:ID "urn:oasis:names:tc:SAML:2.0:protocol:$attrID" --pubkey-cert-pem $tmpCert $tmpXmlFile &>/dev/null || return 1
 }
 
 Saml::get::Assertion(){
     [private]  xmlResponse="$1"
 
-    echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
+    printf "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="http://schemas.xmlsoap.org/claims/CommonName"]'
 }
 
 Saml::retrieve::Identity(){
@@ -130,18 +134,18 @@ Saml::retrieve::Identity(){
     
     [[ -z "${POST['SAMLResponse']}" ]] && { Saml::buildAuthnRequest; return 1; }
 
-    xmlResponse="$(echo "${POST['SAMLResponse']}" | base64 -d)"
+    xmlResponse="$(printf '%s' "${POST['SAMLResponse']}" | base64 -d)"
 
-    echo "$xmlResponse" > $xmlTmpFile
+    printf '%s' "$xmlResponse" > $xmlTmpFile
 
     decodedXmlResponse="$(xmlsec1 --decrypt --privkey-pem ${SAML['privkey']} $xmlTmpFile)"
 
     Saml::validate::Issuer "$xmlResponse" || { Saml::buildAuthnRequest; return 1; }
-    Saml::validate::Sign "$xmlResponse" || { Saml::buildAuthnRequest; return 1; }
+    Saml::validate::Sign "$xmlResponse" "Response" || { Saml::buildAuthnRequest; return 1; }
 
     Session::start
 
-    Json::to::array SESSION "$(echo "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
+    Json::to::array SESSION "$(printf '%s' "$decodedXmlResponse" | xmlstarlet sel -t -v '//*[name()="AttributeStatement"]/*[name()="Attribute"][@Name="user_entity"]')"
 
     Session::set USERNAME ${SESSION['user_name']}
     
@@ -155,7 +159,7 @@ Saml::retrieve::Identity(){
 Saml::validate::NameId(){
     [private] xmlResponse="$1"
 
-    if [[ "$(echo "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:NameID"]')" == "$(Session::get USERNAME)" ]]; then
+    if [[ "$(printf '%s' "$xmlResponse" | xmlstarlet sel -t -v '//*[name()="saml:NameID"]')" == "$(Session::get USERNAME)" ]]; then
         return 0
     else
         return 1
@@ -211,10 +215,12 @@ Saml::build::LogoutRequest(){
     tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
     for key in "${!tmpSaml[@]}"; do
-        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
+        _query+="$key=$(printf '%s' "${tmpSaml[$key]}" | urlencode.pl)&"
     done
 
-    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
+    _query="${_query%&}&Signature=$(Saml::createSignature "SAMLRequest=$( printf '%s' "${tmpSaml['SAMLRequest']}" | urlencode.pl )&RelayState=$(printf '%s' "${tmpSaml['RelayState']}" | urlencode.pl )&SigAlg=$(printf '%s' "${tmpSaml['SigAlg']}" | urlencode.pl)" | urlencode.pl)"
+
+#    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
     Session::destroy
     Http::send::cookie "USERNAME=delete; Max-Age=1"
@@ -223,15 +229,17 @@ Saml::build::LogoutRequest(){
 }
 
 Saml::validate::LogoutRequest(){
-    [private] xmlData="$(echo "${POST['SAMLRequest']}" | base64 -d)"
+    [private] xmlData="$(printf "${POST['SAMLRequest']}" | base64 -d)"
 
     Session::check || { Http::send::redirect temporary "/"; return 1; }
 
-    echo "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' &>/dev/null || return 1
+    printf '%s' "$xmlData" | xmlstarlet sel -t -v '//*[name()="LogoutRequest"]' &>/dev/null || return 1
 
     Saml::validate::Issuer "$xmlData" || return 1
     Saml::validate::NameId "$xmlData" || return 1
-    Saml::validate::Sign "$xmlData" || return 1
+    Saml::validate::Sign "$xmlData" "LogoutRequest" || return 1
+
+    echo "haa"
 
     Saml::build::LogoutResponse
 
@@ -270,10 +278,12 @@ Saml::build::LogoutResponse(){
     tmpSaml['SigAlg']="http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
     for key in "${!tmpSaml[@]}"; do
-        _query+="$key=$(urlencode "${tmpSaml[$key]}")&"
+        _query+="$key=$(printf '%s' "${tmpSaml[$key]}" | urlencode.pl)&"
     done
 
-    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
+    _query="${_query%&}&Signature=$(Saml::createSignature "SAMLRequest=$( printf '%s' "${tmpSaml['SAMLRequest']}" | urlencode.pl )&RelayState=$(printf '%s' "${tmpSaml['RelayState']}" | urlencode.pl )&SigAlg=$(printf '%s' "${tmpSaml['SigAlg']}" | urlencode.pl)" | urlencode.pl)"
+
+#    _query="${_query%&}&Signature=$(urlencode "$(Saml::createSignature "SAMLRequest=$( urlencode "${tmpSaml['SAMLRequest']}")&RelayState=$(urlencode "${tmpSaml['RelayState']}")&SigAlg=$(urlencode "${tmpSaml['SigAlg']}")")")"
 
     Session::destroy
     Http::send::cookie "USERNAME=delete; Max-Age=1"

@@ -25,7 +25,7 @@ Cli::help(){
         ${CLI["$route":'help']} ${@:2}
         return
     else
-        echo "$HELP"
+        printf '%s\n' "$HELP"
         exit
     fi
 }
@@ -42,17 +42,17 @@ Cli::colorize(){
         [WHITE]='\033[0;37m'
     )
     
-    printf "%s" "${COLORS[${1^^}]:-${COLORS[BLACK]}}"
+    printf '%s' "${COLORS[${1^^}]:-${COLORS[BLACK]}}"
 }
 
 Cli::list(){
-    echo -e "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)"
+    printf "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)"
 }
 
 Cli::error(){
     [private] msg="$*"
 
-    echo -e "$(Cli::colorize red)$msg$(Cli::colorize white)" >&2
+    printf "$(Cli::colorize red)$msg$(Cli::colorize white)" >&2
 }
 
 Cli::error::stacktrace(){

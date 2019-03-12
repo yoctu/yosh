@@ -27,8 +27,6 @@ function tmp::Session::save ()
 {
     # save session array to a file
         
-    # sed -i "/SESSION\['$key'\]=.*/d" $TMPDIR/${COOKIE[$default_session_name]}
-    # echo "SESSION['$key']=\"${SESSION[$key]}\"" >> $TMPDIR/${COOKIE[$default_session_name]}
     # We should juste serialize the array
     declare -p SESSION > $TMPDIR/${COOKIE[$default_session_name]}
     sed -i "s/declare -A//g;s/'//;s/\(.*\)'/\1/" $TMPDIR/${COOKIE[$default_session_name]}
@@ -61,5 +59,5 @@ function tmp::Session::get ()
 
     tmp::Session::read
 
-    echo "${SESSION[$key]}"
+    printf '%s' "${SESSION[$key]}"
 }

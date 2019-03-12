@@ -37,13 +37,13 @@ Json::create(){
     for key in "${!array[@]}"; do
         IFS=':' read -ra subKeys <<< "$key"
         for subKey in "${subKeys[@]}"; do
-            echo -n "{ \"$subKey\" :" 
+            printf '{ "%s" :' "$subKey" 
             end+=" }"
         done
         data="${array[$key]//\\/\\\\}"
         data="${data//\"/\\\"}"
-        echo -n "\"$data\""
-        echo "$end"
+        printf '"%s"' "$data"
+        printf '%s\n' "$end"
         unset end
     done | jq --slurp 'reduce .[] as $item ({}; . * $item)' | jq -c -r . #| sed '/"[0-9]*":.*"$/{n;s/}/]/g}' | sed -zE 's/\{([^\n]*\n[^\n]*\"[0-9]*\"\:)/[\1/g' | sed 's/\"[0-9]*\"\://g' | jq -c -r .
 }
@@ -62,7 +62,7 @@ Json::to::array(){
         value="${value%,}"
         value="${value%\"}"
         array[${key}]="${value#\"}"
-    done < <(echo "$json" | jq --arg delim ':' 'reduce (tostream|select(length==2)) as $i ({}; [$i[0][]|tostring] as $path_as_strings | ($path_as_strings|join($delim)) as $key | $i[1] as $value | .[$key] = $value )')
+    done < <(printf '%s' "$json" | jq --arg delim ':' 'reduce (tostream|select(length==2)) as $i ({}; [$i[0][]|tostring] as $path_as_strings | ($path_as_strings|join($delim)) as $key | $i[1] as $value | .[$key] = $value )')
 }
 
 # to be more simple

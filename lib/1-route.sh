@@ -16,6 +16,8 @@ Route::check(){
     uri="${REQUEST_URI%%\?*}"
     uri="${uri#/}"
     uri="${uri:-/}"
+    uri="$(printf '%s' "$uri" | urlencode.pl -d)"
+
 
     (( route_auditing )) && @audit "$application_name"
 
@@ -64,18 +66,18 @@ Route::simple(){
 
 Route::error(){
     Http::send::status 404
-    echo "No Route Found!"
+    printf '%s\n' "No Route Found!"
 }
 
 Route::get::auth(){
     for key in "${!AUTH[@]}"; do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
-            echo "${AUTH[$key]}"
+            printf '%s' "${AUTH[$key]}"
             return
         fi
     done
 
-    echo "${AUTH['/':$REQUEST_METHOD]:-none}"
+    printf '%s' "${AUTH['/':$REQUEST_METHOD]:-none}"
 }
 
 Route::get::login(){
@@ -92,12 +94,12 @@ Route::get::login(){
 Route::get::rights(){
     for key in "${!RIGHTS[@]}"; do
         if [[ "/$uri:$REQUEST_METHOD" =~ $key ]]; then
-            echo "${RIGHTS[$key]}"
+            printf '%s' "${RIGHTS[$key]}"
             return
         fi
     done
 
-    echo "${RIGHTS['/':$REQUEST_METHOD]:-none}"
+    printf '%s' "${RIGHTS['/':$REQUEST_METHOD]:-none}"
 }
 
 alias route::api::mode='Route::api::mode'
