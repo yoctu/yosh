@@ -28,6 +28,7 @@ TMPDIR="${TMPDIR%/}"
 
 Api::config::get(){
     [private] url="$1"
+    [private:assoc] response
     
     IFS='/' read -a configArray <<<"$url"
 
@@ -41,6 +42,10 @@ Api::config::get(){
         Api::send::not_found
     fi
 
-    Api::send::get "${configArray[0]^^}"
+    for key in "${!array[@]}"; do
+        response["${configArray[0]}:$key"]="${array[$key]}"
+    done
+
+    Api::send::get "response"
 }
 

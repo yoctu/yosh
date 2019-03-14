@@ -10,6 +10,7 @@
 [public:assoc] API
     API['content-type']="Application/json"
     API['response':'Application/json']="Json::create"
+    API['request':'Application/json']="Json::to::array"
 
 Api::router::check(){
     [private] url="$1"
