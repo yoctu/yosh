@@ -25,12 +25,15 @@ Api::router(){
 
     [[ "$url" =~ ^api.* ]] || return
 
+    Api::check::content_type
     Http::send::content-type "${API['content-type']}"
 
-    if [[ -z "$default_api_function" ]]; then
-        Api::search::function
-    else
-        Api::call::function
+    if ! Api::search::function; then
+        if ! [[ -z "$default_api_function" ]]; then
+            Api::call::function
+        else
+            Api::send::not_found
+        fi
     fi
 }
 
@@ -40,12 +43,12 @@ Api::search::function(){
     elif Type::function::exist "Api::${uri[1]}::${REQUEST_METHOD,,}"; then
         Api::${uri[1]}::${REQUEST_METHOD,,} "$(printf '%s/' "${uri[*]:2}")"
     else
-        Api::send::not_found
+        return 1
     fi
 }
 
 Api::call::function(){
-    Type::function::exist $default_api_function || Api::send::not_found
+    Type::function::exist $default_api_function || return 1
 
     $default_api_function
 }
