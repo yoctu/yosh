@@ -8,9 +8,9 @@
 
 [public:assoc] API_RESPONSE
 [public:assoc] API
-    API['content-type']="Application/json"
-    API['response':'Application/json']="Json::create"
-    API['request':'Application/json']="Json::to::array"
+    API['content-type']="application/json"
+    API['response':'application/json']="Json::create"
+    API['request':'application/json']="Json::to::array"
 
 Api::router::check(){
     [private] url="$1"
@@ -55,7 +55,7 @@ Api::call::function(){
 }
 
 Api::check::content_type(){
-    if [[ "$CONTENT_TYPE" != "${API['content-type']}" ]]; then
+    if [[ "${CONTENT_TYPE,,}" != "${API['content-type']}" ]]; then
         Http::send::status 400
         API_RESPONSE['msg']="${API_MSG['400']} : Content-type should be ${API['content-type']}"
         
