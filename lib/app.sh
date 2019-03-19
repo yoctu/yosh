@@ -10,6 +10,18 @@ App::find(){
     fi
 }
 
+App::search(){
+    if [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}" ]]; then
+        router_run="App::source"
+    elif [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}.sh" ]]; then
+        router_run="App::source"
+    elif [[ -f "${DOCUMENT_ROOT%/}/../app/${uri}.bash" ]]; then
+        router_run="App::source"
+    else
+        return 1
+    fi
+}
+
 App::source(){
     [private] file
 
@@ -24,4 +36,4 @@ App::source(){
 alias app::find='App::find'
 alias app::source='App::source'
 
-ROUTERS+=( "App::source" )
+ROUTERS+=( "App::search" )
