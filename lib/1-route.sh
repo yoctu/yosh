@@ -40,10 +40,10 @@ Route::check(){
     # just be sure
     uri="${uri:-/}"
 
-    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]; then
-        Http::send::options
-        return
-    fi
+#    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]; then
+#        Http::send::options
+#        return
+#    fi
 
 #    Api::router "$uri"
 
