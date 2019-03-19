@@ -55,7 +55,8 @@ Api::call::function(){
 }
 
 Api::check::content_type(){
-    if [[ "${CONTENT_TYPE,,}" != "${API['content-type']}" ]]; then
+    [private] contentType="${CONTENT_TYPE,,}"
+    if [[ "${contentType:-${API['content-type']}}" != "${API['content-type']}" ]]; then
         Http::send::status 400
         API_RESPONSE['msg']="${API_MSG['400']} : Content-type should be ${API['content-type']}"
         
