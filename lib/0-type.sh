@@ -108,6 +108,9 @@ Type::variable::int(){
     return 1
 }
 
+# Serialize Data (function, array, etc...)
+
+
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
 alias type::array::contains='Type::array::contains'
