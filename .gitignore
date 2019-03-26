@@ -1,0 +1,5 @@
+# Ignore package folder
+package/*
+
+# Ignore swp files
+*.swp
