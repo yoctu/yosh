@@ -48,7 +48,7 @@ Cli::colorize(){
 }
 
 Cli::list(){
-    printf "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)"
+    printf "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)\n"
 }
 
 Cli::error(){
