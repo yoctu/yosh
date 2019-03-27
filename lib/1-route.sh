@@ -27,7 +27,7 @@ Route::check(){
 
     IFS=',' read -r authArr <<<$auths
 
-    for auth in "${auths[@]}"; do
+    for auth in "${authArr[@]}"; do
         Auth::check "$auth" || continue
         # Does we really need this?
         Auth::check::rights "$auth" "$(Route::get::rights)" || continue
