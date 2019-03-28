@@ -1,11 +1,6 @@
 # a litte lib of type checking and data checker
-declare -A HELP_LIST
 
 Type::function::exist(){
-    HELP_LIST[$FUNCNAME:'args']='function names'
-    HELP_LIST[$FUNCNAME:'description']="Check if function exist and if command is a function or not"
-    HELP_LIST[$FUNCNAME:'output']="Return code: 0 == ok, 1 == nok"
-
     # multiple function are accepted
 
     [[ -z "$*" ]] && return 1
@@ -73,7 +68,7 @@ Type::array::get::key(){
     Type::array::is::assoc "$2" || return 1
 
     for key in "${!array[@]}";do
-        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; printf '%s\n' ${key%%:*}; }
+        [[ "$key" =~ ^${level} ]] && { key="${key//$level}"; printf '%s\n' "${key%%:*}"; }
     done | sort | uniq
 
 }
@@ -132,13 +127,13 @@ alias \[map\]='local -n'
 alias \[array\]='declare -a'
 alias \[assoc\]='declare -A'
 alias \[string\]='declare'
-alias \[public:int\]='declare -i'
+alias \[public:int\]='declare -gi'
 alias \[private:int\]='local -i'
 alias \[public:string\]='declare -g'
 alias \[private:string\]='local'
 alias \[public:map\]='declare -gn'
 alias \[private:map\]='local -n'
-alias \[public:array\]='declare -a'
+alias \[public:array\]='declare -ga'
 alias \[private:array\]='local -a'
 alias \[public:assoc\]='declare -gA'
 alias \[private:assoc\]='local -A'
