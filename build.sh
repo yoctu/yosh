@@ -62,9 +62,7 @@ echo "deb https://ppa.yoctu.com/ all unstable" | sudo tee /etc/apt/sources.list
 sudo apt-get update &>/dev/null
 cd /tmp
 
-sudo apt-get download yoctu-scripts
-sudo dpkg --force-all -i yoctu-scripts*.deb
-#sudo apt-get install yoctu-scripts &>/dev/null
+sudo apt-get install --no-install-recommends yoctu-scripts &>/dev/null
 sudo apt-get install yosh &>/dev/null
 sudo apt-get install yoctu-client-scripts &>/dev/null
 
