@@ -51,7 +51,7 @@ IFS=/ read refs heads branch <<<$CPHP_GIT_REF
 trap '_quit 2 "An Error occured while running script"' ERR
 
 _notify "Install dependencies"
-sudo apt-get update >&/dev/null ; sudo apt-get install -y apt-transport-https devscripts debianutils jq gridsite-clients ldap-utils uuid-runtime xmlsec1 xmlstarlet php &>/dev/null 
+sudo apt-get update >&/dev/null ; sudo apt-get install -y apt-transport-https devscripts debianutils jq gridsite-clients ldap-utils uuid-runtime xmlsec1 xmlstarlet &>/dev/null 
 wget -qO - https://ppa.yoctu.com/archive.key | sudo apt-key add -
 
 curl -s -o /tmp/jq -O -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
