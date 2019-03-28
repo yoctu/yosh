@@ -1,5 +1,11 @@
 # a litte lib of type checking and data checker
+declare -A HELP_LIST
+
 Type::function::exist(){
+    HELP_LIST[$FUNCNAME:'args']='function names'
+    HELP_LIST[$FUNCNAME:'description']="Check if function exist and if command is a function or not"
+    HELP_LIST[$FUNCNAME:'output']="Return code: 0 == ok, 1 == nok"
+
     # multiple function are accepted
 
     [[ -z "$*" ]] && return 1
