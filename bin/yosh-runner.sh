@@ -45,7 +45,7 @@ source ${YOSH_PATH}/autoloader.sh
 (( help )) && Cli::help
 [[ -z "$errorMSG" ]] || Cli::error "$errorMSG"
 
-[[ -z "$1" || "$1" == "help" ]] && Cli::help
+#[[ -z "$1" || "$1" == "help" ]] && Cli::help
 REQUEST_URI="$1"
 
 [[ -z "$REQUEST_URI" ]] && Cli::help

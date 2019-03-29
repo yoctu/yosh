@@ -24,8 +24,8 @@ Cli::help(){
     [private] route="$1"
 
     if Type::function::exist ${CLI["$route":'help']};then
-        ${CLI["$route":'help']} ${@:2}
-        return
+        ${CLI["$route":'help']} ${*:2}
+        exit
     else
         printf '%s\n' "$HELP"
         exit

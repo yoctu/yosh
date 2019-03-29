@@ -8,7 +8,7 @@
 [public:assoc] DOC
 DOC['config':'func':'docpath']="${YOSH_PATH}/doc/funcname.sh"
 
-Doc::create::func(){
+Doc::func::create(){
     [private] title="$1"
     [private] funcname="${2//:/|}"
     [private] msg="${@:3}"
@@ -16,13 +16,23 @@ Doc::create::func(){
     DOC[func:"$funcname":$title]="$msg"
 }
 
-Doc::list::args(){
+Doc::func::args(){
+
+    if [[ "$1" == @(-h|--help) ]]; then
+        Doc::func::help
+    fi
+
     for key in "$@"; do
         DOC_ARGS+=("${key//:/|}")
     done
 }
 
-Doc::list::function(){
+Doc::func::help(){
+    printf "Args: optional funcname\n"
+    exit
+}
+
+Doc::func::main(){
     [private:array] toDisplay
     source ${DOC['config':'func':'docpath']}
 
@@ -67,10 +77,11 @@ Doc::list::function(){
     done
 }
 
-alias Doc::create::func::args='Doc::create::func args'
-alias Doc::create::func::description='Doc::create::func description'
-alias Doc::create::func::output='Doc::create::func output'
-alias Doc::create::func::example='Doc::create::func example'
+alias Doc::func::create::args='Doc::func::create args'
+alias Doc::func::create::description='Doc::func::create description'
+alias Doc::func::create::output='Doc::func::create output'
+alias Doc::func::create::example='Doc::func::create example'
 
-CLI['doc-func':'args']="Doc::list::args"
-CLI['doc-func':'main']="Doc::list::function"
+CLI['doc-func':'args']="Doc::func::args"
+CLI['doc-func':'main']="Doc::func::main"
+CLI['doc-func':'help']="Doc::func::help"
