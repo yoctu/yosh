@@ -38,14 +38,15 @@ Yosh::lib::helper(){
     [private] array="${1,,}"
     [private] key="$2"
 
-    alias ${array^}::set::$key="Yosh::lib::helper::setter ${array^^} $key"
-    alias ${array^}::get::$key="Yosh::lib::helper::getter ${array^^} $key"
+    alias ${array^}::set::${key//:/::}="Yosh::lib::helper::setter ${array^^} $key"
+    alias ${array^}::get::${key//:/::}="Yosh::lib::helper::getter ${array^^} $key"
 }
 
 Yosh::lib::helper::getter(){
     [private:map] array="$1"
-    [private] key="$2"
+    [private] key="${2}"
 
+    [[ -z "${array[$key]}" ]] && return 1
     printf '%s' "${array[$key]}"
 }
 
