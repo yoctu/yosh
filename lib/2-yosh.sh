@@ -34,6 +34,30 @@ Yosh::on::exit(){
     done
 }
 
+Yosh::lib::helper(){
+    [private] array="${1,,}"
+    [private] key="$2"
+
+    alias ${array^}::set::$key="Yosh::lib::helper::setter ${array^^} $key"
+    alias ${array^}::get::$key="Yosh::lib::helper::getter ${array^^} $key"
+}
+
+Yosh::lib::helper::getter(){
+    [private:map] array="$1"
+    [private] key="$2"
+
+    printf '%s' "${array[$key]}"
+}
+
+Yosh::lib::helper::setter(){
+    [private:map] array="$1"
+    [private] key="$2"
+    [private] value="$3"
+
+    array[$key]="$value"
+}
+
+
 Yosh::on::start::add Http::read::get
 Yosh::on::start::add Http::read::post
 Yosh::on::start::add Http::read::cookie
