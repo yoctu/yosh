@@ -55,6 +55,8 @@ Yosh::lib::helper::setter(){
     [private] key="$2"
     [private] value="$3"
 
+    Type::variable::set value || return 1
+
     array[$key]="$value"
 }
 
