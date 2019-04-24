@@ -47,7 +47,7 @@ Yosh::lib::helper::getter(){
     [private] key="${2}"
 
     [[ -z "${array[$key]}" ]] && return 1
-    printf '%s' "${array[$key]}"
+    @return "${array[$key]}"
 }
 
 Yosh::lib::helper::setter(){

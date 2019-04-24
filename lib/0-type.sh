@@ -29,9 +29,10 @@ Type::array::contains(){
     
     local key="$1"
     local -n array="$2"
+    local value
 
-    for value in "${array[@]}"; do
-        [[ "$key" == "$value" ]] && return 0
+    for _value in "${array[@]}"; do
+        [[ "$key" == "$_value" ]] && return 0
     done
 
     return 1
@@ -49,6 +50,7 @@ Type::array::is::assoc(){
 
 Type::variable::set(){
     # Check if varaibles are set
+    local value
 
     for value in "$@"; do
         [[ -z "${!value}" ]] && return 1
@@ -62,13 +64,21 @@ Type::array::get::key(){
     # $2 is the array
     local level="${1%:}:"
     local -n array="$2"
+    local key
 
     Type::variable::set level || return 1
 
     Type::array::is::assoc "$2" || return 1
 
     for key in "${!array[@]}";do
-        [[ "$key" =~ ^${level} ]] && { key="${key//$level}"; printf '%s\n' "${key%%:*}"; }
+        if [[ "$key" =~ ^${level} ]]; then
+            if [[ -z "${BASH_REMATCH[1]}" ]]; then
+                key="${key//$level}"
+                printf '%s\n' "${key%%:*}"
+            else
+                printf '%s\n' "${BASH_REMATCH[1]}"
+            fi
+        fi
     done | sort | uniq
 
 }
@@ -77,6 +87,7 @@ Type::fusion::array::in::assoc(){
     local -n array="$1"
     local -n assoc="$2"
     local string="${3%:}"
+    local key
 
     Type::variable::set string || return 1
 
@@ -93,6 +104,7 @@ Type::array::fusion(){
     local -n srcArray="$1"
     local -n dstArray="$2"
     local regex="${3:-.*}"
+    local key
 
     Type::array::is::assoc "$1" || return 1
     Type::array::is::assoc "$2" || return 1
@@ -109,8 +121,12 @@ Type::variable::int(){
     return 1
 }
 
-# Serialize Data (function, array, etc...)
+@return(){
+    local string="$1"
 
+    printf '%s' "$string"
+    return
+}
 
 alias type::function::exist='Type::function::exist'
 alias type::command::exist='Type::command::exist'
