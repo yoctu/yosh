@@ -73,7 +73,7 @@ Http::send::out(){
 }
 
 Http::send::options(){
-    [private] _methods="${HTTP_METHODS[@]}"
+    [private] _methods="${HTTP_METHODS[*]}"
     Http::send::header Allow "${_methods// /,}"
          
 }

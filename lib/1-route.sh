@@ -27,7 +27,7 @@ Route::check(){
 
     IFS=',' read -r authArr <<<$auths
 
-    for auth in "${auths[@]}"; do
+    for auth in "${authArr[@]}"; do
         Auth::check "$auth" || continue
         # Does we really need this?
         Auth::check::rights "$auth" "$(Route::get::rights)" || continue
@@ -40,10 +40,10 @@ Route::check(){
     # just be sure
     uri="${uri:-/}"
 
-    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]; then
-        Http::send::options
-        return
-    fi
+#    if [[ "$REQUEST_METHOD" == "OPTIONS" ]]; then
+#        Http::send::options
+#        return
+#    fi
 
 #    Api::router "$uri"
 

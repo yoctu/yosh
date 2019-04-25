@@ -1,4 +1,5 @@
 # a litte lib of type checking and data checker
+
 Type::function::exist(){
     # multiple function are accepted
 
@@ -28,9 +29,10 @@ Type::array::contains(){
     
     local key="$1"
     local -n array="$2"
+    local value
 
-    for value in "${array[@]}"; do
-        [[ "$key" == "$value" ]] && return 0
+    for _value in "${array[@]}"; do
+        [[ "$key" == "$_value" ]] && return 0
     done
 
     return 1
@@ -48,6 +50,7 @@ Type::array::is::assoc(){
 
 Type::variable::set(){
     # Check if varaibles are set
+    local value
 
     for value in "$@"; do
         [[ -z "${!value}" ]] && return 1
@@ -61,13 +64,21 @@ Type::array::get::key(){
     # $2 is the array
     local level="${1%:}:"
     local -n array="$2"
+    local key
 
     Type::variable::set level || return 1
 
     Type::array::is::assoc "$2" || return 1
 
     for key in "${!array[@]}";do
-        [[ "$key" =~ ${level} ]] && { key="${key//$level}"; printf '%s\n' ${key%%:*}; }
+        if [[ "$key" =~ ^${level} ]]; then
+            if [[ -z "${BASH_REMATCH[1]}" ]]; then
+                key="${key//$level}"
+                printf '%s\n' "${key%%:*}"
+            else
+                printf '%s\n' "${BASH_REMATCH[1]}"
+            fi
+        fi
     done | sort | uniq
 
 }
@@ -76,6 +87,7 @@ Type::fusion::array::in::assoc(){
     local -n array="$1"
     local -n assoc="$2"
     local string="${3%:}"
+    local key
 
     Type::variable::set string || return 1
 
@@ -92,6 +104,7 @@ Type::array::fusion(){
     local -n srcArray="$1"
     local -n dstArray="$2"
     local regex="${3:-.*}"
+    local key
 
     Type::array::is::assoc "$1" || return 1
     Type::array::is::assoc "$2" || return 1
@@ -106,6 +119,13 @@ Type::variable::int(){
     [[ "${string#*=}" =~ ^[0-9]+$ ]] && return
 
     return 1
+}
+
+@return(){
+    local string="$1"
+
+    printf '%s' "$string"
+    return
 }
 
 alias type::function::exist='Type::function::exist'
@@ -123,13 +143,13 @@ alias \[map\]='local -n'
 alias \[array\]='declare -a'
 alias \[assoc\]='declare -A'
 alias \[string\]='declare'
-alias \[public:int\]='declare -i'
+alias \[public:int\]='declare -gi'
 alias \[private:int\]='local -i'
 alias \[public:string\]='declare -g'
 alias \[private:string\]='local'
 alias \[public:map\]='declare -gn'
 alias \[private:map\]='local -n'
-alias \[public:array\]='declare -a'
+alias \[public:array\]='declare -ga'
 alias \[private:array\]='local -a'
 alias \[public:assoc\]='declare -gA'
 alias \[private:assoc\]='local -A'

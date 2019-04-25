@@ -23,7 +23,7 @@ Html::router::check(){
 Html::print::out(){
     [private] body_file="${html_dir%/}/${1%.html}.html"
 
-    [[ ! -f "$body_file" ]] && return 1
+    [[ ! -f "$body_file" ]] && { printf 'File not found: %s' "$body_file" 1>&2; return 1; }
     # Set content-type
     Http::send::content-type text/html
 

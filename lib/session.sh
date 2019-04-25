@@ -1,5 +1,3 @@
-
-
 # XXX: why not using typeset -p ? hmmm should be checked
 
 [public:assoc] SESSION

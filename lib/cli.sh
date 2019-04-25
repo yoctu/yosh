@@ -15,15 +15,17 @@ Cli::router(){
 Cli::args(){
     [private] route="$1"
 
-    Type::function::exist ${CLI["$route":"args"]} && ${CLI["$route":'args']} "${argsArr[@]}"
+    if Type::function::exist ${CLI["$route":"args"]}; then
+        ${CLI["$route":'args']} "${argsArr[@]}"
+    fi
 }
 
 Cli::help(){
     [private] route="$1"
 
     if Type::function::exist ${CLI["$route":'help']};then
-        ${CLI["$route":'help']} ${@:2}
-        return
+        ${CLI["$route":'help']} ${*:2}
+        exit
     else
         printf '%s\n' "$HELP"
         exit
@@ -46,13 +48,13 @@ Cli::colorize(){
 }
 
 Cli::list(){
-    printf "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)"
+    printf "$(Cli::colorize green)$(Type::array::get::key ".*" CLI)$(Cli::colorize white)\n"
 }
 
 Cli::error(){
     [private] msg="$*"
 
-    printf "$(Cli::colorize red)$msg$(Cli::colorize white)" >&2
+    printf "$(Cli::colorize red)$msg$(Cli::colorize white)\n" >&2
 }
 
 Cli::error::stacktrace(){

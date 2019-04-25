@@ -21,8 +21,7 @@ _exit() {
         @error "$(<$tmpStderr)"
     fi
 
-    Log::print::error::array
-    Mktemp::remove::public::all
+    Yosh::on::exit
 }
 
 
@@ -37,10 +36,7 @@ trap '_exit' EXIT
 tmpStdout="$(Mktemp::create)"
 tmpStderr="$(Mktemp::create)"
 
-# get GET and POST and COOKIE variable
-Http::read::get
-Http::read::post
-Http::read::cookie
+Yosh::on::start
 
 # check if application.sh exist
 [[ -f "${DOCUMENT_ROOT%/}/../application.sh" ]] && source ${DOCUMENT_ROOT%/}/../application.sh

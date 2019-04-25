@@ -25,3 +25,27 @@ fi
 
 # Just remove final slach :p
 TMPDIR="${TMPDIR%/}"
+
+Api::config::get(){
+    [private] url="$1"
+    [private:assoc] response
+    
+    IFS='/' read -a configArray <<<"$url"
+
+    if [[ -z "${configArray[0]^^}" ]]; then
+        Api::send::not_found
+    fi
+
+    [private:map] array="${configArray[0]^^}"
+
+    if [[ -z "${array[@]}" ]]; then
+        Api::send::not_found
+    fi
+
+    for key in "${!array[@]}"; do
+        response["${configArray[0]}:$key"]="${array[$key]}"
+    done
+
+    Api::send::get "response"
+}
+
