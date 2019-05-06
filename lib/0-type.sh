@@ -96,7 +96,7 @@ Type::fusion::array::in::assoc(){
     local -i count="0"
     for key in "${array[@]}"; do
         assoc[$string:$count]="$key"
-        ((count++))
+        count="$((count+1))"
     done
 }
 
