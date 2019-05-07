@@ -5,6 +5,3 @@ YOSH_PATH="./"
 etc_conf_dir="./"
 
 
-\[private\](){
-    echo haha
-}
