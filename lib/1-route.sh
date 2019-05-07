@@ -6,8 +6,6 @@
 # RewriteRule ^.*$ - [NC,L]
 # RewriteRule ^.*$ /main.sh [NC,L]
 
-# shellcheck source=/var/tmp/yosh/tests/set_variables.sh
-
 Route::check(){
     [private] uri
     [private:array] authArr
@@ -77,7 +75,7 @@ Route::get::auth(){
         fi
     done
 
-    printf '%s' "${AUTH['/':$REQUEST_METHOD]:-none}"
+    printf '%s' "${AUTH["/:$REQUEST_METHOD"]:-none}"
 }
 
 Route::get::login(){
@@ -88,7 +86,7 @@ Route::get::login(){
         fi
     done
 
-    login_method="${LOGIN['/':$REQUEST_METHOD]:-Auth::request}"
+    login_method="${LOGIN["/:$REQUEST_METHOD"]:-Auth::request}"
 }
 
 Route::get::rights(){
@@ -99,7 +97,7 @@ Route::get::rights(){
         fi
     done
 
-    printf '%s' "${RIGHTS['/':$REQUEST_METHOD]:-none}"
+    printf '%s' "${RIGHTS["/:$REQUEST_METHOD"]:-none}"
 }
 
 alias route::api::mode='Route::api::mode'

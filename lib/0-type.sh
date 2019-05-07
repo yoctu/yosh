@@ -1,3 +1,4 @@
+# shellcheck disable=SC2034
 # a litte lib of type checking and data checker
 
 Type::function::exist(){
@@ -40,7 +41,7 @@ Type::array::contains(){
 
 Type::array::is::assoc(){
     if declare -p "$1" &>/dev/null; then
-        if [[ "$(declare -p "$1")" =~ "declare -A $1" ]]; then
+        if [[ "$(declare -p "$1")" == "declare -A $1"* ]]; then
             return 0
         else
             return 1
@@ -95,7 +96,7 @@ Type::fusion::array::in::assoc(){
 
     local -i count="0"
     for key in "${array[@]}"; do
-        assoc[$string:$count]="$key"
+        assoc["$string:$count"]="$key"
         count="$((count+1))"
     done
 }

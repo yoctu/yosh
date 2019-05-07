@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#shellcheck source=shellcheck.sh
 # main file
 
 #set -x
