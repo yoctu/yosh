@@ -2,6 +2,8 @@
 #shellcheck source=shellcheck.sh
 # main file
 
+declare -r USERPID="$(uuidgen)"
+
 #set -x
 YOSH_PATH="${YOSH_PATH:-/usr/share/yosh}"
 declare -r YOSH_PATH="${YOSH_PATH%/}"
