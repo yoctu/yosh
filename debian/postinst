@@ -1,0 +1,2 @@
+#!/bin/bash
+for i in /dev/shm/tmp.*; do rm "$i"; done
