@@ -1,2 +1,2 @@
 #!/bin/bash
-for i in /dev/shm/tmp.*; do rm "$i"; done
+for i in /dev/shm/tmp.*; do if [ -f "$i" ]; then sudo rm $i;fi;done
