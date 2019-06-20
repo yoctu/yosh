@@ -9,7 +9,7 @@ Http::read::post(){
     (( ${CONTENT_LENGTH} )) || return 0
 
     # Get data from stdin
-    read -n ${CONTENT_LENGTH:-1} raw <&0
+    read -rn ${CONTENT_LENGTH:-1} raw <&0
 
     # set global POST env vars
     [public:assoc] POST
