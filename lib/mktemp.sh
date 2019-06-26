@@ -41,21 +41,24 @@ Mktemp::remove::private(){
 }
 
 Mktemp::remove::public::all(){
-    for file in "${MKTEMP_PUBLIC[@]}"; do
-        if [[ -f "$file" ]]; then
-            rm $file
-        fi
-    done
+    [[ -d "${MKTEMP['config':'tmpdir']%/}/$USERPID" ]] && rm -rf ${MKTEMP['config':'tmpdir']%/}/$USERPID
 
     unset MKTEMP_PUBLIC      
 }
 
 Mktemp::create(){
-    [private] tmpFile="$(mktemp -p "${MKTEMP['config':'tmpdir']}")"
     [private] priority="${1:-public}"
+    [private] tmpFile
+
+    if [[ "$priority" == "public" ]]; then
+        [[ ! -d "${MKTEMP['config':'tmpdir']%/}/$USERPID" ]] && mkdir ${MKTEMP['config':'tmpdir']%/}/$USERPID
+        tmpFile="$(mktemp -p "${MKTEMP['config':'tmpdir']%/}/$USERPID")"
+    else
+        tmpFile="$(mktemp -p "${MKTEMP['config':'tmpdir']}")"
+    fi
 
     Mktemp::set::$priority "$tmpFile"
 
-    printf '%s' "$tmpFile"
+    @return "$tmpFile"
 }
 

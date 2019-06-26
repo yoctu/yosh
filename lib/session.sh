@@ -6,7 +6,7 @@ default_session_name="${default_session_name:-BASHSESSID}"
 default_session_expiration="${default_session_expiration:-21600}"
 
 Session::start(){
-    [private] id="$(uuidgen)"
+    [private] id="$(String::Generate::UUID)"
 
     if ! Session::check; then
 

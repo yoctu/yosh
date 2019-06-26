@@ -8,7 +8,7 @@ SAML['logoutrequestxml']=""
 SAML['privkey']=""
 
 Saml::idGen(){
-    printf '%s' "$(uuidgen)"
+    printf '%s' "$(String::Generate::UUID)"
 }
 
 Saml::request::id(){
